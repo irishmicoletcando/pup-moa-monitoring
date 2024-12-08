@@ -10,7 +10,7 @@ exports.signup = (req, res) => {
     bcrypt.hash(password, 10, (err, hashedPassword) => {
         if (err) return res.status(500).send('Error hashing password');
 
-        const query = `INSERT INTO users (email, password) VALUES (?, ?, ?)`;
+        const query = `INSERT INTO users (email, password) VALUES (?, ?)`;
 
         db.query(query, [email, hashedPassword], (err, result) => {
             if (err) return res.status(400).send('User already exists');
