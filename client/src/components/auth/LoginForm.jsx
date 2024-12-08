@@ -1,7 +1,15 @@
-export default function SignUpForm() {
+import { useNavigate } from "react-router-dom"
+
+export default function LoginForm() {
+  const navigate = useNavigate();
+
+  const handleSignUpButtonClick = () => {
+    navigate("/")
+  }
+
   return (
     <div className="m-20 w-full">
-      <h2 className="text-5xl font-bold mb-4">Sign Up</h2>
+      <h2 className="text-5xl font-bold mb-4">Login</h2>
       <p className="mb-7">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam imperdiet quam a orci aliquam tincidunt. Nullam eget lacinia est, quis iaculis risus.</p>
       <form>
         <div className="mb-4">
@@ -26,17 +34,6 @@ export default function SignUpForm() {
             className="border-gray-300 border-2 px-3 py-2 w-full"
           />
         </div>
-        <div className="mb-4">
-          <label htmlFor="confirmPassword" className="block font-bold mb-2">
-            Confirm Password
-          </label>
-          <input
-            type="password"
-            id="confirmPassword"
-            placeholder="********"
-            className="border-gray-300 border-2 px-3 py-2 w-full"
-          />
-        </div>
         <div className="mb-8 flex justify-end">
           <a href="#" className="text-maroon hover:text-red-700">
             Forgot Password?
@@ -46,10 +43,10 @@ export default function SignUpForm() {
             type="submit"
             className="bg-maroon text-white font-bold py-2 px-4 w-full hover:bg-red-700"
           >
-            Create Account
+            Login
           </button>
         <p className="text-center mt-4">
-          Have an account? <a href="#" className="text-maroon font-medium hover:text-red-700"> Login
+          Don&lsquo;t have an account yet? <a onClick={handleSignUpButtonClick} className="text-maroon font-medium hover:text-red-700 hover:cursor-pointer"> Sign Up
           </a>
         </p>
       </form>

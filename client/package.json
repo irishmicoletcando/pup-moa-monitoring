@@ -1,5 +1,5 @@
 {
-  "name": "server",
+  "name": "pup-moa-monitoring",
   "private": true,
   "version": "0.0.0",
   "type": "module",
