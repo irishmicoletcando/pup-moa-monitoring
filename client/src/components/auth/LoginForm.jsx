@@ -7,6 +7,10 @@ export default function LoginForm() {
     navigate("/")
   }
 
+  const handleLoginButtonClick = () => {
+    navigate("/moa-monitoring")
+  }
+
   return (
     <div className="m-20 w-full">
       <h2 className="text-5xl font-bold mb-4">Login</h2>
@@ -42,6 +46,7 @@ export default function LoginForm() {
         <button
             type="submit"
             className="bg-maroon text-white font-bold py-2 px-4 w-full hover:bg-red-700"
+            onClick={handleLoginButtonClick}
           >
             Login
           </button>
