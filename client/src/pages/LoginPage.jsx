@@ -7,7 +7,7 @@ export default function LoginPage() {
   return (
     <div className="flex h-screen font-Source-Sans-Pro">
       <div className="bg-maroon flex-1 flex flex-col justify-around space-y-40">
-        <Logo />
+        <Logo logoStyle="h-20 mr-2" pupNameStyle="text-white font-normal text-s" websiteNameStyle="text-white font-medium text-2xl"/>
         <WelcomeMessage />
         <Website />
       </div>
