@@ -1,7 +1,14 @@
 import Logo from '../auth/Logo'
 import { User } from 'lucide-react';
+import { useNavigate } from "react-router-dom"
 
 export default function Navbar() {
+  const navigate = useNavigate();
+  
+  const handleAddAdminButtonClick = () => {
+    navigate("/add-admin")
+  }
+
   return (
     <nav className="w-full flex items-center justify-between px-3 py-3 sm:px-10 text-white text-md font-medium bg-maroon sm:shadow-md relative z-10">
       <Logo logoStyle="h-10 mr-2" pupNameStyle="text-white font-normal text-xs" websiteNameStyle="text-white font-medium text-medium"/>
@@ -18,7 +25,7 @@ export default function Navbar() {
               </button>
           </li>
           <li>
-              <button className="flex px-4 py-2">
+              <button className="flex px-4 py-2" onClick={handleAddAdminButtonClick}>
                 <User />
                 <span className="ml-1">Florinda Oquindo</span>
               </button>
