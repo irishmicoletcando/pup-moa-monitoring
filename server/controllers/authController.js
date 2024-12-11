@@ -5,7 +5,6 @@ const db = require('../config/db');
 // Register User
 const addUser = (req, res) => {
     const { firstname, lastname, email, role, contactNumber, password } = req.body;
-    console.log(req.body);
 
     // Check if the email already exists
     const emailCheckQuery = 'SELECT * FROM users WHERE email = ?';
@@ -40,6 +39,48 @@ const addUser = (req, res) => {
     });
 };
 
+// Get All Users
+const getAllUsers = (req, res) => {
+    const query = 'SELECT user_id, firstname, lastname, email, role, contact_number FROM users';
+    db.query(query, (err, results) => {
+        console.log("Get all users error:", err);
+        if (err) return res.status(500).send('Error retrieving users');
+        res.status(200).json(results);
+    });
+};
+
+// Update User
+const updateUser = (req, res) => {
+    const { id } = req.params;
+    const { firstname, lastname, email, role, contactNumber } = req.body;
+
+    const query = `
+        UPDATE users SET firstname = ?, lastname = ?, email = ?, role = ?, contact_number = ? WHERE id = ?
+    `;
+
+    db.query(
+        query,
+        [firstname, lastname, email, role, contactNumber, id],
+        (err, result) => {
+            if (err) return res.status(500).send('Error updating user');
+            if (result.affectedRows === 0) return res.status(404).send('User not found');
+            res.status(200).send('User updated successfully');
+        }
+    );
+};
+
+// Delete User
+const deleteUser = (req, res) => {
+    const { id } = req.params;
+
+    const query = 'DELETE FROM users WHERE id = ?';
+
+    db.query(query, [id], (err, result) => {
+        if (err) return res.status(500).send('Error deleting user');
+        if (result.affectedRows === 0) return res.status(404).send('User not found');
+        res.status(200).send('User deleted successfully');
+    });
+};
 
 
 // Login User
@@ -83,6 +124,9 @@ const protectedRoute = (req, res) => {
 
 module.exports = {
     addUser,
+    getAllUsers,
+    updateUser,
+    deleteUser,
     login,
     protected: protectedRoute,
 };
