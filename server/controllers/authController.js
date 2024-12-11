@@ -55,7 +55,7 @@ const updateUser = (req, res) => {
     const { firstname, lastname, email, role, contactNumber } = req.body;
 
     const query = `
-        UPDATE users SET firstname = ?, lastname = ?, email = ?, role = ?, contact_number = ? WHERE id = ?
+        UPDATE users SET firstname = ?, lastname = ?, email = ?, role = ?, contact_number = ? WHERE user_id = ?
     `;
 
     db.query(
@@ -73,7 +73,7 @@ const updateUser = (req, res) => {
 const deleteUser = (req, res) => {
     const { id } = req.params;
 
-    const query = 'DELETE FROM users WHERE id = ?';
+    const query = 'DELETE FROM users WHERE user_id = ?';
 
     db.query(query, [id], (err, result) => {
         if (err) return res.status(500).send('Error deleting user');
