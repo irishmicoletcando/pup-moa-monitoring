@@ -8,6 +8,7 @@ export default {
     extend: {
       colors: {
         maroon: '#800000',
+        red: '#AC0303',
         yellow: '#FFDF0D',
         orange: '#DAA520'
       },
