@@ -95,6 +95,8 @@ const login = (req, res) => {
     const query = `SELECT * FROM users WHERE email = ?`;
 
     db.query(query, [email], (err, results) => {
+        console.log('Login error:', err);
+        console.log('Login results:', results);
         if (err || results.length === 0) return res.status(400).send('User not found');
 
         const user = results[0];
@@ -115,7 +117,6 @@ const login = (req, res) => {
         });
     });
 };
-
 
 // Protected Route
 const protectedRoute = (req, res) => {
