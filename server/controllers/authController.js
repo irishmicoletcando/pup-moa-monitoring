@@ -109,7 +109,7 @@ const login = (req, res) => {
 
             // Generate JWT token if the passwords match
             const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
+            console.log('Generated JWT token:', token);
             res.status(200).json({ 
                 token,
                 message: 'Login successful'
