@@ -95,6 +95,8 @@ const login = (req, res) => {
     const query = `SELECT * FROM users WHERE email = ?`;
 
     db.query(query, [email], (err, results) => {
+        console.log('Login error:', err);
+        console.log('Login results:', results);
         if (err || results.length === 0) return res.status(400).send('User not found');
 
         const user = results[0];
@@ -107,7 +109,7 @@ const login = (req, res) => {
 
             // Generate JWT token if the passwords match
             const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
+            console.log('Generated JWT token:', token);
             res.status(200).json({ 
                 token,
                 message: 'Login successful'
@@ -115,7 +117,6 @@ const login = (req, res) => {
         });
     });
 };
-
 
 // Protected Route
 const protectedRoute = (req, res) => {
