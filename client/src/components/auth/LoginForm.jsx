@@ -28,7 +28,7 @@ export default function LoginForm() {
       const data = await response.json();
       localStorage.setItem("token", data.token); // Store the JWT token
       toast.success("Login successful! Redirecting...", { position: "top-right" });
-      setTimeout(() => navigate("/moa-monitoring"), 2000); // Navigate after 2 seconds
+      setTimeout(() => navigate("/moa-dashboard"), 2000); // Navigate after 2 seconds
     } catch (err) {
       toast.error(err.message, { position: "top-right" });
     }
