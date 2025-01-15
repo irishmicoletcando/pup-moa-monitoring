@@ -1,8 +1,8 @@
 export default function DashboardStats() {
   return (
-    <main className="flex-1 px-10 py-5">
+    <main className="flex-1 px-6 py-5">
       {/* Dashboard Header */}
-      <h1 className="text-2xl font-bold mb-8">Dashboard</h1>
+      <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
       
       {/* MOA Statistics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-10">

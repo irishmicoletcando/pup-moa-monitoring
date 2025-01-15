@@ -5,7 +5,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   
   const handleAddAdminButtonClick = () => {
-    navigate("/add-admin");
+    navigate("/moa-monitoring-admin");
   };
 
   const handleAddMOAButtonClick = () => {
