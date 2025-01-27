@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import Dashboard from "./pages/Dashboard";
-import AddAdmin from "./components/profile/AddAdmin";
+import AddAdmin from "./components/add-admin/AddAdminModal";
 import MOA from "./pages/MOA";
 import Admin from "./pages/Admin";
 

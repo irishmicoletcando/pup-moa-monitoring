@@ -69,21 +69,21 @@ export default function AdminModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg w-full max-w-md relative">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg w-full max-w-xs sm:max-w-md lg:max-w-lg mx-auto shadow-lg h-auto overflow-y-auto relative m-4 p-6">
         {/* Close button */}
-        <button 
+        <button
           onClick={onClose}
           className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
         >
           ✕
         </button>
-        
+
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {/* Name fields row */}
-          <div className="flex gap-4">
-            <div className="flex-1">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
               <label htmlFor="firstName" className="block font-bold mb-2">
                 First Name
               </label>
@@ -92,13 +92,13 @@ export default function AdminModal({ isOpen, onClose }) {
                 id="firstName"
                 name="firstName"
                 placeholder="Ex: John"
-                className="border-gray-300 border-2 px-3 py-2 w-full rounded-md"
+                className="border-gray-300 border px-3 py-2 w-full rounded-md"
                 value={formData.firstName}
                 onChange={handleChange}
                 required
               />
             </div>
-            <div className="flex-1">
+            <div>
               <label htmlFor="lastName" className="block font-bold mb-2">
                 Last Name
               </label>
@@ -107,7 +107,7 @@ export default function AdminModal({ isOpen, onClose }) {
                 id="lastName"
                 name="lastName"
                 placeholder="Ex: Dela Cruz"
-                className="border-gray-300 border-2 px-3 py-2 w-full rounded-md"
+                className="border-gray-300 border px-3 py-2 w-full rounded-md"
                 value={formData.lastName}
                 onChange={handleChange}
                 required
@@ -125,7 +125,7 @@ export default function AdminModal({ isOpen, onClose }) {
               id="email"
               name="email"
               placeholder="Ex: johndelacruz@pup.edu.ph"
-              className="border-gray-300 border-2 px-3 py-2 w-full rounded-md"
+              className="border-gray-300 border px-3 py-2 w-full rounded-md"
               value={formData.email}
               onChange={handleChange}
               required
@@ -140,7 +140,7 @@ export default function AdminModal({ isOpen, onClose }) {
             <select
               id="role"
               name="role"
-              className="border-gray-300 border-2 px-3 py-2 w-full rounded-md"
+              className="border-gray-300 border px-3 py-2 w-full rounded-md"
               value={formData.role}
               onChange={handleChange}
               required
@@ -162,45 +162,45 @@ export default function AdminModal({ isOpen, onClose }) {
               id="contact"
               name="contact"
               placeholder="Ex: 09123456789"
-              className="border-gray-300 border-2 px-3 py-2 w-full rounded-md"
+              className="border-gray-300 border px-3 py-2 w-full rounded-md"
               value={formData.contact}
               onChange={handleChange}
               required
             />
           </div>
 
-          {/* Password field */}
-          <div>
-            <label htmlFor="password" className="block font-bold mb-2">
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              placeholder="********"
-              className="border-gray-300 border-2 px-3 py-2 w-full rounded-md"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          {/* Confirm Password field */}
-          <div>
-            <label htmlFor="confirmPassword" className="block font-bold mb-2">
-              Confirm Password
-            </label>
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              placeholder="********"
-              className="border-gray-300 border-2 px-3 py-2 w-full rounded-md"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              required
-            />
+          {/* Password fields */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="password" className="block font-bold mb-2">
+                Password
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="********"
+                className="border-gray-300 border px-3 py-2 w-full rounded-md"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="confirmPassword" className="block font-bold mb-2">
+                Confirm Password
+              </label>
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                placeholder="********"
+                className="border-gray-300 border px-3 py-2 w-full rounded-md"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+              />
+            </div>
           </div>
 
           {/* Submit button */}
