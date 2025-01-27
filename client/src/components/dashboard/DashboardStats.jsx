@@ -29,6 +29,14 @@ export default function DashboardStats() {
             <p className="text-gray-600 font-semibold mt-4">Number of Practicum MOAs</p>
           </div>
         </div>
+
+        <div>
+          <h2 className="text-lg font-bold mb-4">Scholarship</h2>
+          <div className="bg-light-gray p-6 rounded-lg flex flex-row justify-center items-center space-x-4">
+            <p className="text-7xl font-bold">300+</p>
+            <p className="text-gray-600 font-semibold mt-4">Number of Scholarship MOAs</p>
+          </div>
+        </div>
       </div>
     </main>
   )
