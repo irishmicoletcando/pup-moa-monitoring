@@ -4,6 +4,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Trash2, Search, RefreshCw } from "lucide-react";
 import Modal from "../layout/Modal";
+import RoleBadge from "../layout/RoleBadge";
 
 export default function AdminTable() {
   const [users, setUsers] = useState([]);
@@ -34,7 +35,7 @@ export default function AdminTable() {
     return () => {
       document.removeEventListener("keydown", handleEscape);
     };
-  }, [deleteModal.isOpen, deleteModal.isDeleting]);
+  });
 
   const fetchUsers = async () => {
     try {
@@ -143,7 +144,7 @@ export default function AdminTable() {
   if (loading) {
     return (
       <div className="bg-white rounded-lg shadow p-8 text-center">
-        <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+        <div className="w-8 h-8 border-4 border-maroon border-t-transparent rounded-full animate-spin mx-auto mb-4" />
         <p className="text-gray-600">Loading users...</p>
       </div>
     );
@@ -195,6 +196,9 @@ export default function AdminTable() {
                     </div>
                   </td>
                   <td className="p-4 text-sm text-gray-600">{user.email}</td>
+                  <td className="p-4 text-sm">
+                    <RoleBadge role={user.role} />
+                  </td>
                   <td className="p-4 text-sm text-gray-600">
                     {user.last_login ? (
                       <div className="flex items-center gap-2">
