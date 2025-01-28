@@ -33,7 +33,7 @@ export default function AddAdminButton() {
           throw new Error(`API error: ${response.status}`);
         }
   
-        const users = await response.json(); // Assuming the response is an array of users
+        const { users } = await response.json(); // Destructure to get the `users` array
         console.log('User data fetched:', users);
         
         // Find the logged-in user in the array by email

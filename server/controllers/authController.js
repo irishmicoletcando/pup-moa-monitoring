@@ -45,7 +45,7 @@ const getAllUsers = (req, res) => {
     db.query(query, (err, results) => {
         console.log("Get all users error:", err);
         if (err) return res.status(500).send('Error retrieving users');
-        res.status(200).json(results);
+        res.status(200).json({ users: results });
     });
 };
 
