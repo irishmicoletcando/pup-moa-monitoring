@@ -1,24 +1,77 @@
 import { Plus } from 'lucide-react';
-import { useState } from 'react';
-import AddAdminModal from './AddAdminModal'; 
+import { useState, useEffect } from 'react';
+import AddAdminModal from './AddAdminModal';
 
 export default function AddAdminButton() {
-  const [isModalOpen, setIsModalOpen] = useState(false); 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
 
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      try {
+        console.log('Fetching user data from /api/auth/users...');
+        
+        // Retrieve the JWT token and logged-in user email from localStorage
+        const token = localStorage.getItem('token');
+        const loggedInEmail = localStorage.getItem('userEmail');
+        console.log('Retrieved JWT token:', token);
+        console.log('Retrieved logged-in user email:', loggedInEmail);
+
+        if (!token || !loggedInEmail) {
+          throw new Error('JWT token or logged-in user email not found');
+        }
+  
+        const response = await fetch('/api/auth/users', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+  
+        if (!response.ok) {
+          throw new Error(`API error: ${response.status}`);
+        }
+  
+        const users = await response.json(); // Assuming the response is an array of users
+        console.log('User data fetched:', users);
+        
+        // Find the logged-in user in the array by email
+        const loggedInUser = users.find(user => user.email === loggedInEmail);
+        if (loggedInUser && loggedInUser.role === 'Super Admin') {
+          setIsSuperAdmin(true);
+          console.log('User is a Super Admin');
+        } else {
+          console.log('User is not a Super Admin');
+        }
+      } catch (error) {
+        console.error('Error fetching user role:', error);
+      }
+    };
+  
+    fetchUserRole();
+  }, []);
+
+  if (!isSuperAdmin) {
+    console.log('Button not rendered because user is not a Super Admin');
+    return null; // Do not render the button if not a Super Admin
+  }
+
+  console.log('Rendering AddAdminButton for Super Admin');
   return (
     <div>
-      <button 
-        onClick={() => setIsModalOpen(true)} 
+      <button
+        onClick={() => setIsModalOpen(true)}
         className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-xl hover:bg-gray-800"
       >
         <Plus className="h-4 w-4" />
         Add Admin
       </button>
 
-      <AddAdminModal 
+      <AddAdminModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />
     </div>
-  )
+  );
 }
