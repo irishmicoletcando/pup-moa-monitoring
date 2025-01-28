@@ -82,17 +82,45 @@ const updateUser = (req, res) => {
     );
 };
 
-// Delete User
-const deleteUser = (req, res) => {
+// Delete user
+const deleteUser = async (req, res) => {
     const { id } = req.params;
+    
+    const userId = parseInt(id, 10);
+    if (!userId || isNaN(userId)) {
+        return res.status(400).json({ 
+            message: 'Invalid user ID'
+        });
+    }
 
-    const query = 'DELETE FROM users WHERE user_id = ?';
+    try {
+        const query = 'DELETE FROM users WHERE user_id = ?';
+        
+        db.query(query, [userId], (err, result) => {
+            if (err) {
+                console.error('Error deleting user:', err);
+                return res.status(500).json({ 
+                    message: 'An error occurred while deleting the user'
+                });
+            }
 
-    db.query(query, [id], (err, result) => {
-        if (err) return res.status(500).send('Error deleting user');
-        if (result.affectedRows === 0) return res.status(404).send('User not found');
-        res.status(200).send('User deleted successfully');
-    });
+            if (result.affectedRows === 0) {
+                return res.status(404).json({ 
+                    message: 'User not found'
+                });
+            }
+
+            // Send response without trying to stringify undefined or null values
+            res.status(200).send({ 
+                message: 'User deleted successfully'
+            });
+        });
+    } catch (error) {
+        console.error('Error in delete operation:', error);
+        res.status(500).json({ 
+            message: 'Server error while deleting user'
+        });
+    }
 };
 
 // Login User

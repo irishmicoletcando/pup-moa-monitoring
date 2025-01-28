@@ -8,10 +8,13 @@ import Modal from "../layout/Modal";
 export default function AdminTable() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [deleting, setDeleting] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [refreshing, setRefreshing] = useState(false);
-  const [deleteModal, setDeleteModal] = useState({ isOpen: false, user: null });
+  const [deleteModal, setDeleteModal] = useState({ 
+    isOpen: false, 
+    user: null,
+    isDeleting: false 
+  });
 
   useEffect(() => {
     fetchUsers();
@@ -19,7 +22,7 @@ export default function AdminTable() {
 
   useEffect(() => {
     const handleEscape = (e) => {
-      if (e.key === "Escape") {
+      if (e.key === "Escape" && !deleteModal.isDeleting) {
         closeDeleteModal();
       }
     };
@@ -31,7 +34,7 @@ export default function AdminTable() {
     return () => {
       document.removeEventListener("keydown", handleEscape);
     };
-  }, [deleteModal.isOpen]);
+  }, [deleteModal.isOpen, deleteModal.isDeleting]);
 
   const fetchUsers = async () => {
     try {
@@ -55,9 +58,7 @@ export default function AdminTable() {
         throw new Error("API response is not valid: 'users' is not an array");
       }
     } catch (error) {
-      toast.error(`Failed to load users: ${error.message}`, {
-        position: "top-right",
-      });
+      toast.error(`Failed to load users: ${error.message}`);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -70,47 +71,72 @@ export default function AdminTable() {
   };
 
   const openDeleteModal = (user) => {
-    setDeleteModal({ isOpen: true, user });
+    setDeleteModal({ isOpen: true, user, isDeleting: false });
   };
 
   const closeDeleteModal = () => {
-    setDeleteModal({ isOpen: false, user: null });
+    if (!deleteModal.isDeleting) {
+      setDeleteModal({ isOpen: false, user: null, isDeleting: false });
+    }
   };
 
   const handleDelete = async () => {
-    const userId = deleteModal.user.id;
-    setDeleting(userId);
+    if (!deleteModal.user?.user_id) {
+      toast.error("Invalid user ID");
+      return;
+    }
+  
+    setDeleteModal(prev => ({ ...prev, isDeleting: true }));
+  
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`/api/auth/users/${userId}`, {
+      const response = await fetch(`/api/auth/delete-user/${deleteModal.user.user_id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
         },
       });
-
+  
+      // First check if the response is ok
       if (!response.ok) {
-        const errorMessage = await response.text();
+        let errorMessage = 'Failed to delete user';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+        } catch (e) {
+          // If JSON parsing fails, use the status text
+          errorMessage = response.statusText || errorMessage;
+        }
         throw new Error(errorMessage);
       }
-
-      setUsers(users.filter((user) => user.id !== userId));
-      toast.success("Admin deleted successfully", {
-        position: "top-right",
-      });
-      closeDeleteModal();
+  
+      // Try to parse the response, but don't fail if it's empty
+      let message = 'User deleted successfully';
+      try {
+        const data = await response.json();
+        message = data.message || message;
+      } catch (e) {
+        // If JSON parsing fails, use the default message
+        console.log('No JSON response, using default success message', e);
+      }
+  
+      // Update UI and show success message
+      setUsers(prev => prev.filter(user => user.user_id !== deleteModal.user.user_id));
+      toast.success(message);
+      setDeleteModal({ isOpen: false, user: null, isDeleting: false });
     } catch (error) {
-      toast.error(`Failed to delete admin: ${error.message}`, {
-        position: "top-right",
-      });
-    } finally {
-      setDeleting(null);
+      console.error('Delete error:', error);
+      toast.error(error.message);
+      setDeleteModal(prev => ({ ...prev, isDeleting: false }));
     }
   };
 
   const filteredUsers = users.filter(
     (user) =>
-      `${user.firstname} ${user.lastname}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      `${user.firstname} ${user.lastname}`
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -126,6 +152,7 @@ export default function AdminTable() {
   return (
     <div className="bg-white rounded-lg shadow">
       <ToastContainer />
+      {/* Search and Refresh Section */}
       <div className="p-4 border-b border-gray-200">
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div className="relative">
@@ -148,6 +175,8 @@ export default function AdminTable() {
           </button>
         </div>
       </div>
+
+      {/* Users Table */}
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-50">
@@ -156,7 +185,10 @@ export default function AdminTable() {
           <tbody>
             {filteredUsers.length > 0 ? (
               filteredUsers.map((user) => (
-                <tr key={user.id} className="border-t border-gray-200 hover:bg-gray-50 transition-colors">
+                <tr
+                  key={user.id}
+                  className="border-t border-gray-200 hover:bg-gray-50 transition-colors"
+                >
                   <td className="p-4 text-sm text-gray-900">
                     <div className="font-medium">
                       {user.firstname} {user.lastname}
@@ -179,15 +211,10 @@ export default function AdminTable() {
                   <td className="p-4 text-sm">
                     <button
                       onClick={() => openDeleteModal(user)}
-                      disabled={deleting === user.id}
-                      className="text-red-600 hover:text-red-800 disabled:opacity-50 disabled:cursor-not-allowed p-2 rounded-full hover:bg-red-50 transition-colors"
+                      className="text-red-600 hover:text-red-800 p-2 rounded-full hover:bg-red-50 transition-colors"
                       title="Delete admin"
                     >
-                      {deleting === user.id ? (
-                        <div className="w-5 h-5 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
-                      ) : (
-                        <Trash2 className="w-5 h-5" />
-                      )}
+                      <Trash2 className="w-5 h-5" />
                     </button>
                   </td>
                 </tr>
@@ -213,7 +240,12 @@ export default function AdminTable() {
         </table>
       </div>
 
-      <Modal isOpen={deleteModal.isOpen} onClose={closeDeleteModal} title="Delete Admin User">
+      {/* Delete Modal */}
+      <Modal 
+        isOpen={deleteModal.isOpen} 
+        onClose={closeDeleteModal} 
+        title="Delete Admin"
+      >
         <div className="p-4">
           <p className="text-gray-600">
             Are you sure you want to delete{" "}
@@ -226,22 +258,23 @@ export default function AdminTable() {
         <div className="flex justify-end gap-2 px-6 py-4">
           <button
             onClick={closeDeleteModal}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-md border border-gray-300 transition-colors"
+            disabled={deleteModal.isDeleting}
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-md border border-gray-300 transition-colors disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             onClick={handleDelete}
-            disabled={deleting !== null}
+            disabled={deleteModal.isDeleting}
             className="px-4 py-2 text-sm font-medium text-white bg-red hover:bg-maroon hover:bg-red-600 disabled:bg-red-300 rounded-md transition-colors flex items-center gap-2"
           >
-            {deleting ? (
+            {deleteModal.isDeleting ? (
               <>
                 <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 <span>Deleting...</span>
               </>
             ) : (
-              'Delete'
+              "Delete"
             )}
           </button>
         </div>
