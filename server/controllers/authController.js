@@ -41,10 +41,23 @@ const addUser = (req, res) => {
 
 // Get All Users
 const getAllUsers = (req, res) => {
-    const query = 'SELECT user_id, firstname, lastname, email, role, contact_number FROM users';
+    // Ensure 'last_login' is included in the query
+    const query = `
+    SELECT user_id, firstname, lastname, email, role, contact_number, 
+            CONVERT_TZ(last_login, '+00:00', '+08:00') AS last_login
+    FROM users;
+    `;
+
+    
     db.query(query, (err, results) => {
-        console.log("Get all users error:", err);
-        if (err) return res.status(500).send('Error retrieving users');
+        if (err) {
+        console.error("Error fetching users:", err);  // Log the error for easier debugging
+        return res.status(500).send('Error retrieving users');
+        }
+        
+        // Log the fetched results to verify if 'last_login' is present
+        console.log("Fetched users data:", results);  
+        
         res.status(200).json({ users: results });
     });
 };
@@ -82,37 +95,48 @@ const deleteUser = (req, res) => {
     });
 };
 
-
 // Login User
 const login = (req, res) => {
     const { email, password } = req.body;
 
-    // Check if email or password is missing
     if (!email || !password) {
         return res.status(400).send('Email and password are required');
     }
 
     const query = `SELECT * FROM users WHERE email = ?`;
-
     db.query(query, [email], (err, results) => {
-        console.log('Login error:', err);
-        console.log('Login results:', results);
         if (err || results.length === 0) return res.status(400).send('User not found');
 
         const user = results[0];
 
-        // Compare the plain text password with the hashed password in the database
         bcrypt.compare(password, user.password, (err, isMatch) => {
-            console.log(password, user.password, isMatch);
             if (err) return res.status(500).send('Error comparing passwords');
             if (!isMatch) return res.status(401).send('Invalid credentials');
 
-            // Generate JWT token if the passwords match
-            const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-            console.log('Generated JWT token:', token);
-            res.status(200).json({ 
-                token,
-                message: 'Login successful'
+            // Update the last login time to the current timestamp
+            const updateQuery = `UPDATE users SET last_login = NOW() WHERE user_id = ?`;
+            db.query(updateQuery, [user.user_id], (err, updateResult) => {
+                if (err) {
+                    console.error('Error updating last login time:', err);
+                    return res.status(500).send('Error updating last login time');
+                }
+
+                // Check if the update was successful
+                if (updateResult.affectedRows === 0) {
+                    console.log('No rows were updated for user_id:', user.user_id);
+                } else {
+                    console.log('Last login time updated for user_id:', user.user_id);
+                }
+
+                // Generate JWT token if the passwords match
+                const token = jwt.sign({ id: user.user_id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+                // Return the token and last login time in the response
+                res.status(200).json({
+                    token,
+                    lastLogin: user.last_login, // Send the updated last_login value
+                    message: 'Login successful'
+                });
             });
         });
     });

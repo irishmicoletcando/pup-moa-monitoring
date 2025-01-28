@@ -73,7 +73,7 @@ export default function AdminTable() {
                   </td>
                   <td className="p-4 text-sm text-gray-900">{user.email}</td>
                   <td className="p-4 text-sm text-gray-900">
-                    {user.lastLogin || "Never"}
+                    {user.last_login ? new Date(user.last_login).toLocaleString() : "Never"}
                   </td>
                 </tr>
               ))

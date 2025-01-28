@@ -10,7 +10,7 @@ export default function LoginForm() {
 
   const handleLoginButtonClick = async (e) => {
     e.preventDefault(); // Prevent form submission from refreshing the page
-
+  
     try {
       const response = await fetch("/api/auth/login", {
         method: "POST",
@@ -19,21 +19,22 @@ export default function LoginForm() {
         },
         body: JSON.stringify({ email, password }),
       });
-
+  
       if (!response.ok) {
         const errorMessage = await response.text();
         throw new Error(errorMessage);
       }
-
+  
       const data = await response.json();
       localStorage.setItem("token", data.token); // Store the JWT token
       localStorage.setItem("userEmail", email); // Store the email
+      localStorage.setItem("lastLogin", data.lastLogin); // Store last login time if needed
       toast.success("Login successful! Redirecting...", { position: "top-right" });
       setTimeout(() => navigate("/moa-dashboard"), 2000); // Navigate after 2 seconds
     } catch (err) {
       toast.error(err.message, { position: "top-right" });
     }
-  };
+  };  
 
   const handleSignUpButtonClick = () => {
     navigate("/");
