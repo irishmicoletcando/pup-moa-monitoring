@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import AdminHeader from "./AdminHeader";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Trash2, Search, RefreshCw } from "lucide-react";
+import { Trash2, Search, RefreshCw, X } from "lucide-react";
 import Modal from "../layout/Modal";
 import RoleBadge from "../layout/RoleBadge";
 
@@ -11,6 +11,7 @@ export default function AdminTable() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedRoles, setSelectedRoles] = useState([]);
   const [deleteModal, setDeleteModal] = useState({ 
     isOpen: false, 
     user: null,
@@ -111,14 +112,12 @@ export default function AdminTable() {
         }
         throw new Error(errorMessage);
       }
-  
-      // Try to parse the response, but don't fail if it's empty
+
       let message = 'User deleted successfully';
       try {
         const data = await response.json();
         message = data.message || message;
       } catch (e) {
-        // If JSON parsing fails, use the default message
         console.log('No JSON response, using default success message', e);
       }
   
@@ -133,13 +132,38 @@ export default function AdminTable() {
     }
   };
 
-  const filteredUsers = users.filter(
-    (user) =>
+  const roles = [
+    "Super Admin",
+    "Employment Admin",
+    "Practicum Admin",
+    "Research Admin"
+  ];
+
+  const toggleRole = (role) => {
+    setSelectedRoles(prev =>
+      prev.includes(role)
+        ? prev.filter(r => r !== role)
+        : [...prev, role]
+    );
+  };
+
+  const clearFilters = () => {
+    setSelectedRoles([]);
+    setSearchTerm("");
+  };
+
+  const filteredUsers = users.filter(user => {
+    const matchesSearch = (
       `${user.firstname} ${user.lastname}`
         .toLowerCase()
         .includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    );
+    
+    const matchesRole = selectedRoles.length === 0 || selectedRoles.includes(user.role);
+    
+    return matchesSearch && matchesRole;
+  });
 
   if (loading) {
     return (
@@ -153,28 +177,84 @@ export default function AdminTable() {
   return (
     <div className="bg-white rounded-lg shadow">
       <ToastContainer />
-      {/* Search and Refresh Section */}
+
+      {/* Search, Filter and Refresh Section */}
       <div className="p-4 border-b border-gray-200">
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div className="relative">
-            <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search users..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-            />
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          {/* Search and Role Filters */}
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Search Input */}
+            <div className="relative">
+              <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search admins..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 pr-20 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-maroon focus:border-maroon outline-none"
+              />
+            </div>
+            
+            {/* Role Filter Buttons */}
+            <div className="flex flex-wrap gap-4">
+              {roles.map(role => (
+                <button
+                  key={role}
+                  onClick={() => toggleRole(role)}
+                  className={`px-5 py-1.5 text-sm font-medium rounded-full transition-colors ${
+                    selectedRoles.includes(role)
+                      ? "bg-maroon/10 text-maroon hover:bg-maroon/20"
+                      : "bg-light-gray text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  {role}
+                </button>
+              ))}
+            </div>
           </div>
-          <button
-            onClick={handleRefresh}
-            disabled={refreshing}
-            className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
-            Refresh
-          </button>
+
+          {/* Action Buttons */}
+          <div className="flex items-center gap-2">
+            {(selectedRoles.length > 0 || searchTerm) && (
+              <button
+                onClick={clearFilters}
+                className="flex items-center gap-1 px-3 py-2 text-sm text-gray-600 hover:text-maroon hover:bg-light-gray rounded-lg transition-colors"
+              >
+                <X className="w-4 h-4" />
+                Clear filters
+              </button>
+            )}
+            <button
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
+              Refresh
+            </button>
+          </div>
         </div>
+        
+        {/* Active Filters Summary */}
+        {selectedRoles.length > 0 && (
+          <div className="mt-3 flex items-center gap-2 text-sm text-gray-600">
+            <span className="font-medium">Active filters:</span>
+            {selectedRoles.map(role => (
+              <span
+                key={role}
+                className="inline-flex items-center gap-1 px-2 py-1 bg-maroon/5 text-maroon rounded-full"
+              >
+                {role}
+                <button
+                  onClick={() => toggleRole(role)}
+                  className="hover:text-red"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Users Table */}
@@ -195,7 +275,11 @@ export default function AdminTable() {
                       {user.firstname} {user.lastname}
                     </div>
                   </td>
-                  <td className="p-4 text-sm text-gray-600">{user.email}</td>
+                  <td className="p-4 text-sm text-gray-600">
+                    <div className="truncate max-w-md" title={user.email}>
+                      {user.email}
+                    </div>
+                  </td>
                   <td className="p-4 text-sm">
                     <RoleBadge role={user.role} />
                   </td>
@@ -270,7 +354,7 @@ export default function AdminTable() {
           <button
             onClick={handleDelete}
             disabled={deleteModal.isDeleting}
-            className="px-4 py-2 text-sm font-medium text-white bg-red hover:bg-maroon hover:bg-red-600 disabled:bg-red-300 rounded-md transition-colors flex items-center gap-2"
+            className="px-4 py-2 text-sm font-medium text-white bg-maroon hover:bg-red hover:bg-red-600 disabled:bg-red-300 rounded-md transition-colors flex items-center gap-2"
           >
             {deleteModal.isDeleting ? (
               <>
