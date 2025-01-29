@@ -53,7 +53,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
       date_notarized: formatDate(notarizedDate),
       expiry_date: formatDate(expiryDate),
       year_submitted: year,
-      user_id: 1,
+      user_id: localStorage.getItem("user_id"),
     };
   
     try {
