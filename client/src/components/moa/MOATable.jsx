@@ -12,11 +12,22 @@ export default function MOATable({ isModalOpen, setIsModalOpen }) {
       email: 'mark@companyx.com',
       status: 'Active',
       validity: 3,
-      dateNotarized: '05/22/23',
-      expiryDate: '05/31/26', 
-      yearSubmitted: 2023
+      dateNotarized: '2023-05-22',
     }
   ];
+
+  // Compute expiryDate and yearSubmitted dynamically
+  const processedMoas = moas.map(moa => {
+    const notarizedDate = new Date(moa.dateNotarized);
+    const expiryDate = new Date(notarizedDate);
+    expiryDate.setFullYear(expiryDate.getFullYear() + moa.validity);
+    
+    return {
+      ...moa,
+      expiryDate: expiryDate.toISOString().split('T')[0],
+      yearSubmitted: notarizedDate.getFullYear()
+    };
+  });
 
   return (
     <div className="bg-white rounded-lg shadow">
@@ -26,7 +37,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen }) {
             <MOAHeader />
           </thead>
           <tbody>
-            {moas.map((moa, index) => (
+            {processedMoas.map((moa, index) => (
               <tr key={index} className="border-t border-gray-200">
                 <td className="p-4">
                   <input type="checkbox" className="h-4 w-4 rounded border-gray-300" />
@@ -56,4 +67,4 @@ export default function MOATable({ isModalOpen, setIsModalOpen }) {
       />
     </div>
   );
-};
+}
