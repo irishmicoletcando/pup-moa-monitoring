@@ -1,10 +1,12 @@
 import MOAHeader from "./MOAHeader";
+import AddMOAModal from "./AddMOAModal";
 
-export default function MOATable() {
+export default function MOATable({ isModalOpen, setIsModalOpen }) {
   const moas = [
     {
       name: 'CompanyX',
       type: 'Practicum',
+      natureBusiness: 'Technology',
       contactPerson: 'Mark Perez',
       contactNumber: '09123456789',
       email: 'mark@companyx.com',
@@ -31,6 +33,7 @@ export default function MOATable() {
                 </td>
                 <td className="p-4 text-sm text-gray-900">{moa.name}</td>
                 <td className="p-4 text-sm text-gray-900">{moa.type}</td>
+                <td className="p-4 text-sm text-gray-900">{moa.natureBusiness}</td>
                 <td className="p-4 text-sm text-gray-900">{moa.contactPerson}</td>
                 <td className="p-4 text-sm text-gray-900">{moa.contactNumber}</td>
                 <td className="p-4 text-sm text-gray-900">{moa.email}</td>
@@ -44,6 +47,13 @@ export default function MOATable() {
           </tbody>
         </table>
       </div>
+      <AddMOAModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onMOAAdded={() => {
+          console.log('MOA added successfully');
+        }}
+      />
     </div>
   );
 };

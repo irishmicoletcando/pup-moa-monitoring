@@ -11,6 +11,9 @@ export default function MOAHeader() {
         Type of MOA
       </th>
       <th className="p-4 text-left text-sm font-medium">
+        Nature of Business
+      </th>
+      <th className="p-4 text-left text-sm font-medium">
         Contact Person
       </th>
       <th className="p-4 text-left text-sm font-medium">
