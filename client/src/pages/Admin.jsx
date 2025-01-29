@@ -1,27 +1,37 @@
+import { useState, useCallback } from 'react';
 import AddAdminButton from '../components/add-admin/AddAdminButton.jsx';
 import AdminTable from '../components/add-admin/AdminTable.jsx';
 import Navbar from '../components/layout/Navbar.jsx';
 
 export default function Admin() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  // Handle refresh when new admin is added
+  const handleRefresh = useCallback(() => {
+    setRefreshTrigger(prev => prev + 1);
+  }, []);
+
   return (
     <div className="flex h-screen overflow-hidden">
-      {/* Fixed Left Sidebar */}
       <Navbar />
 
-      {/* Main Content Area with Scroll */}
       <div className="flex-1 overflow-x-auto">
         <div className="p-6">
-          {/* Header with Title and Add Button */}
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-2">
               <h1 className="text-3xl font-bold">Admins</h1>
             </div>
-            <AddAdminButton />
+            <AddAdminButton onClick={() => setIsModalOpen(true)} />
           </div>
 
-          {/* Table Section */}
           <div className="bg-gray-50 rounded-lg">
-            <AdminTable />
+            <AdminTable 
+              isModalOpen={isModalOpen} 
+              setIsModalOpen={setIsModalOpen}
+              refreshTrigger={refreshTrigger}
+              onRefreshNeeded={handleRefresh}
+            />
           </div>
         </div>
       </div>

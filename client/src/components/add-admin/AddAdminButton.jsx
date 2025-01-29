@@ -40,10 +40,7 @@ export default function AddAdminButton() {
         const loggedInUser = users.find(user => user.email === loggedInEmail);
         if (loggedInUser && loggedInUser.role === 'Super Admin') {
           setIsSuperAdmin(true);
-          console.log('User is a Super Admin');
-        } else {
-          console.log('User is not a Super Admin');
-        }
+        } 
       } catch (error) {
         console.error('Error fetching user role:', error);
       }
@@ -53,11 +50,9 @@ export default function AddAdminButton() {
   }, []);
 
   if (!isSuperAdmin) {
-    console.log('Button not rendered because user is not a Super Admin');
     return null; // Do not render the button if not a Super Admin
   }
 
-  console.log('Rendering AddAdminButton for Super Admin');
   return (
     <div>
       <button

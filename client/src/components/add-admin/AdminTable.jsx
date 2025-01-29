@@ -5,8 +5,9 @@ import "react-toastify/dist/ReactToastify.css";
 import { Trash2, Search, RefreshCw, X } from "lucide-react";
 import Modal from "../layout/Modal";
 import RoleBadge from "../layout/RoleBadge";
+import AdminModal from "./AddAdminModal";
 
-export default function AdminTable() {
+export default function AdminTable({ isModalOpen, setIsModalOpen, refreshTrigger, onRefreshNeeded  }) {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -16,26 +17,6 @@ export default function AdminTable() {
     isOpen: false, 
     user: null,
     isDeleting: false 
-  });
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === "Escape" && !deleteModal.isDeleting) {
-        closeDeleteModal();
-      }
-    };
-
-    if (deleteModal.isOpen) {
-      document.addEventListener("keydown", handleEscape);
-    }
-
-    return () => {
-      document.removeEventListener("keydown", handleEscape);
-    };
   });
 
   const fetchUsers = async () => {
@@ -49,26 +30,39 @@ export default function AdminTable() {
       });
 
       if (!response.ok) {
-        const errorMessage = await response.text();
-        throw new Error(errorMessage);
+        throw new Error("Failed to fetch users");
       }
 
       const data = await response.json();
       if (Array.isArray(data.users)) {
         setUsers(data.users);
       } else {
-        throw new Error("API response is not valid: 'users' is not an array");
+        throw new Error("Invalid response format");
       }
     } catch (error) {
-      toast.error(`Failed to load users: ${error.message}`);
+      console.error("Fetch users error:", error);
+      toast.error(error.message);
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
   };
 
+  useEffect(() => {
+    fetchUsers();
+  }, [refreshTrigger]);
+
   const handleRefresh = () => {
     setRefreshing(true);
+    fetchUsers();
+  };
+
+  const handleUserAdded = () => {
+    // Call the parent's refresh function if it exists
+    if (onRefreshNeeded && typeof onRefreshNeeded === 'function') {
+      onRefreshNeeded();
+    }
+    // Also fetch users directly as a fallback
     fetchUsers();
   };
 
@@ -87,9 +81,9 @@ export default function AdminTable() {
       toast.error("Invalid user ID");
       return;
     }
-  
+
     setDeleteModal(prev => ({ ...prev, isDeleting: true }));
-  
+
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(`/api/auth/delete-user/${deleteModal.user.user_id}`, {
@@ -99,45 +93,23 @@ export default function AdminTable() {
           "Content-Type": "application/json"
         },
       });
-  
-      // First check if the response is ok
+
       if (!response.ok) {
-        let errorMessage = 'Failed to delete user';
-        try {
-          const errorData = await response.json();
-          errorMessage = errorData.message || errorMessage;
-        } catch (e) {
-          // If JSON parsing fails, use the status text
-          errorMessage = response.statusText || errorMessage;
-        }
-        throw new Error(errorMessage);
+        throw new Error("Failed to delete user");
       }
 
-      let message = 'User deleted successfully';
-      try {
-        const data = await response.json();
-        message = data.message || message;
-      } catch (e) {
-        console.log('No JSON response, using default success message', e);
-      }
-  
-      // Update UI and show success message
       setUsers(prev => prev.filter(user => user.user_id !== deleteModal.user.user_id));
-      toast.success(message);
-      setDeleteModal({ isOpen: false, user: null, isDeleting: false });
+      toast.success("User deleted successfully");
+      closeDeleteModal();
     } catch (error) {
       console.error('Delete error:', error);
       toast.error(error.message);
+    } finally {
       setDeleteModal(prev => ({ ...prev, isDeleting: false }));
     }
   };
 
-  const roles = [
-    "Super Admin",
-    "Employment Admin",
-    "Practicum Admin",
-    "Research Admin"
-  ];
+  const roles = ["Super Admin", "Employment Admin", "Practicum Admin", "Research Admin"];
 
   const toggleRole = (role) => {
     setSelectedRoles(prev =>
@@ -367,6 +339,11 @@ export default function AdminTable() {
           </button>
         </div>
       </Modal>
+      <AdminModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        onUserAdded={handleUserAdded}
+      />
     </div>
   );
 }

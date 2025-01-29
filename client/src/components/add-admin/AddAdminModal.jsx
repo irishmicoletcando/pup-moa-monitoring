@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import { Plus } from "lucide-react";
 
-export default function AdminModal({ isOpen, onClose }) {
+export default function AdminModal({ isOpen, onClose, onUserAdded }) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -21,19 +21,24 @@ export default function AdminModal({ isOpen, onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (isSubmitting) return;
 
     const { firstName, lastName, email, role, contact, password, confirmPassword } = formData;
 
     if (password !== confirmPassword) {
-      toast.error("Passwords do not match!", { position: "top-right" });
+      toast.error("Passwords do not match!");
       return;
     }
+
+    setIsSubmitting(true);
 
     try {
       const response = await fetch("/api/auth/add-user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({
           firstname: firstName,
@@ -45,12 +50,27 @@ export default function AdminModal({ isOpen, onClose }) {
         }),
       });
 
-      if (!response.ok) {
-        const errorMessage = await response.text();
-        throw new Error(errorMessage);
+      const textResponse = await response.text();
+      let data;
+      
+      try {
+        data = JSON.parse(textResponse);
+      } catch (e) {
+        data = { message: textResponse };
       }
 
-      toast.success("Admin created successfully!", { position: "top-right" });
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to create admin');
+      }
+
+      toast.success(data.message || "Admin created successfully!");
+      
+      // Call onUserAdded if it exists
+      if (onUserAdded && typeof onUserAdded === 'function') {
+        onUserAdded();
+      }
+
+      // Reset form
       setFormData({
         firstName: "",
         lastName: "",
@@ -60,9 +80,13 @@ export default function AdminModal({ isOpen, onClose }) {
         password: "",
         confirmPassword: "",
       });
-      setTimeout(() => onClose(), 2000);
-    } catch (err) {
-      toast.error(err.message, { position: "top-right" });
+      
+      onClose();
+    } catch (error) {
+      console.error("Add user error:", error);
+      toast.error(error.message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -71,7 +95,6 @@ export default function AdminModal({ isOpen, onClose }) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg w-full max-w-xs sm:max-w-md lg:max-w-lg mx-auto shadow-lg h-auto overflow-y-auto relative m-4 p-6">
-        {/* Close button */}
         <button
           onClick={onClose}
           className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
@@ -79,9 +102,7 @@ export default function AdminModal({ isOpen, onClose }) {
           ✕
         </button>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Name fields row */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="firstName" className="block font-bold mb-2">
@@ -115,7 +136,6 @@ export default function AdminModal({ isOpen, onClose }) {
             </div>
           </div>
 
-          {/* Email field */}
           <div>
             <label htmlFor="email" className="block font-bold mb-2">
               Email
@@ -132,7 +152,6 @@ export default function AdminModal({ isOpen, onClose }) {
             />
           </div>
 
-          {/* Role field */}
           <div>
             <label htmlFor="role" className="block font-bold mb-2">
               Role
@@ -152,7 +171,6 @@ export default function AdminModal({ isOpen, onClose }) {
             </select>
           </div>
 
-          {/* Contact field */}
           <div>
             <label htmlFor="contact" className="block font-bold mb-2">
               Contact Number
@@ -169,7 +187,6 @@ export default function AdminModal({ isOpen, onClose }) {
             />
           </div>
 
-          {/* Password fields */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="password" className="block font-bold mb-2">
@@ -203,17 +220,27 @@ export default function AdminModal({ isOpen, onClose }) {
             </div>
           </div>
 
-          {/* Submit button */}
           <button
             type="submit"
-            className="w-full bg-maroon hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md flex items-center justify-center gap-2"
+            disabled={isSubmitting}
+            className={`w-full bg-maroon hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md flex items-center justify-center gap-2 ${
+              isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
           >
-            <Plus className="h-5 w-5" />
-            Add Admin
+            {isSubmitting ? (
+              <>
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Adding...
+              </>
+            ) : (
+              <>
+                <Plus className="h-5 w-5" />
+                Add Admin
+              </>
+            )}
           </button>
         </form>
       </div>
-      <ToastContainer />
     </div>
   );
 }
