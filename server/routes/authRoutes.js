@@ -1,9 +1,15 @@
 const express = require('express');
-const {login, protected, addUser } = require('../controllers/authController');
+const { login, protected, addUser, getAllUsers, updateUser, deleteUser } = require('../controllers/authController');
 const authMiddleware = require('../middleware/authMiddleware');
 const router = express.Router();
 
-router.post('/add-user', addUser);
+// User Management Routes
+router.post('/add-user', addUser); // Create user
+router.get('/users', authMiddleware, getAllUsers); // Get all users
+router.put('/update-user/:id', authMiddleware, updateUser); // Update user
+router.delete('/delete-user/:id', authMiddleware, deleteUser); // Delete user
+
+// Authentication Routes
 router.post('/login', login);
 router.get('/protected', authMiddleware, protected);
 
