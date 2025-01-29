@@ -161,6 +161,7 @@ const login = (req, res) => {
 
                 // Return the token and last login time in the response
                 res.status(200).json({
+                    user_id: user.user_id,
                     token,
                     lastLogin: user.last_login, // Send the updated last_login value
                     message: 'Login successful'
