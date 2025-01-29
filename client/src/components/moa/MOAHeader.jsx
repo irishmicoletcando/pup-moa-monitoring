@@ -17,7 +17,7 @@ export default function MOAHeader() {
         Contact Person
       </th>
       <th className="p-4 text-left text-sm font-medium">
-        Contact #
+        Contact Number
       </th>
       <th className="p-4 text-left text-sm font-medium">
         Email Address
@@ -37,6 +37,7 @@ export default function MOAHeader() {
       <th className="p-4 text-left text-sm font-medium">
         Year Submitted to ARCDO
       </th>
+      <th className="p-4 text-left text-sm font-medium"></th>
     </tr>
   )
 }
