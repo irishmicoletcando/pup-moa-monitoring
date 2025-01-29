@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const authRoutes = require('./routes/authRoutes');
+const moaRoutes = require('./routes/moaRoutes');
 
 // Specifying the path to the parent folder's .env file
 dotenv.config({ path: '../.env' });
@@ -15,6 +16,8 @@ app.use(express.json());
 
 // Use authentication routes
 app.use('/api/auth', authRoutes);
+// Register MOA routes
+app.use('/api', moaRoutes);
 
 const PORT = process.env.PORT || 5000;
 
