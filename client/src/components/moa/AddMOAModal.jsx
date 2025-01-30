@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { Plus } from "lucide-react";
+import { Plus, Upload, X } from "lucide-react";
 
 export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [files, setFiles] = useState([]);
   const [formData, setFormData] = useState({
     moaName: "",
     typeOfMoa: "Practicum",
     natureOfBusiness: "",
-    contactPerson: "",
+    firstName: "",
+    lastName: "",
     contactNumber: "",
     emailAddress: "",
     moaStatus: "Active",
@@ -21,63 +23,102 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
     setFormData({ ...formData, [name]: value });
   };
 
+  const handleFileChange = (e) => {
+    const newFiles = Array.from(e.target.files);
+    setFiles(prevFiles => [...prevFiles, ...newFiles]);
+  };
+
+  const removeFile = (indexToRemove) => {
+    setFiles(prevFiles => prevFiles.filter((_, index) => index !== indexToRemove));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
     setIsSubmitting(true);
   
-    // Create dates without time components to avoid timezone issues
-    const [year, month, day] = formData.dateNotarized.split('-').map(Number);
-    const notarizedDate = new Date(year, month - 1, day);
-    const expiryDate = new Date(year, month - 1, day);
-    expiryDate.setFullYear(expiryDate.getFullYear() + parseInt(formData.validity));
-    
-    // Format dates as YYYY-MM-DD strings
-    const formatDate = (date) => {
-      const y = date.getFullYear();
-      const m = String(date.getMonth() + 1).padStart(2, '0');
-      const d = String(date.getDate()).padStart(2, '0');
-      return `${y}-${m}-${d}`;
-    };
-  
-    const payload = {
-      name: formData.moaName,
-      typeOfMoa: formData.typeOfMoa,
-      nature_of_business: formData.natureOfBusiness,
-      contactFirstName: formData.firstName,
-      contactLastName: formData.lastName,
-      contactNumber: formData.contactNumber,
-      emailAddress: formData.emailAddress,
-      status: formData.moaStatus,
-      years_validity: formData.validity,
-      date_notarized: formatDate(notarizedDate),
-      expiry_date: formatDate(expiryDate),
-      year_submitted: year,
-      user_id: localStorage.getItem("user_id"),
-    };
-  
     try {
+      // Create dates without time components
+      const [year, month, day] = formData.dateNotarized.split('-').map(Number);
+      const notarizedDate = new Date(year, month - 1, day);
+      const expiryDate = new Date(year, month - 1, day);
+      expiryDate.setFullYear(expiryDate.getFullYear() + parseInt(formData.validity));
+      
+      // Format dates as YYYY-MM-DD strings
+      const formatDate = (date) => {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      };
+    
+      // Create FormData object
+      const formDataToSend = new FormData();
+      
+      // Prepare documents array to match backend expectation
+      const documentsArray = files.map(file => ({
+        document_name: file.name
+      }));
+      
+      // Append all the form fields
+      const dataToSend = {
+        name: formData.moaName,
+        typeOfMoa: formData.typeOfMoa.trim(),
+        nature_of_business: formData.natureOfBusiness,
+        contactFirstName: formData.firstName,
+        contactLastName: formData.lastName,
+        contactNumber: formData.contactNumber,
+        emailAddress: formData.emailAddress,
+        status: formData.moaStatus,
+        years_validity: formData.validity,
+        date_notarized: formatDate(notarizedDate),
+        expiry_date: formatDate(expiryDate),
+        year_submitted: year,
+        user_id: localStorage.getItem("user_id"),
+        documents: documentsArray // Add the documents array
+      };
+      
+      // Validate required fields
+      const requiredFields = Object.entries(dataToSend).filter(([key]) => 
+        !['user_id', 'expiry_date', 'documents'].includes(key)
+      );
+      
+      for (const [key, value] of requiredFields) {
+        if (!value) {
+          throw new Error(`${key.replace(/_/g, ' ')} is required`);
+        }
+      }
+      
+      // Append the stringified data object
+      formDataToSend.append('data', JSON.stringify(dataToSend));
+      
+      // Append files with specific keys
+      files.forEach((file) => {
+        formDataToSend.append('files', file);
+      });
+
+    
       const response = await fetch("/api/moas", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify(payload),
+        body: formDataToSend,
       });
-  
-      const data = await response.json();
-  
+    
       if (!response.ok) {
+        const data = await response.json();
         throw new Error(data.message || "Failed to create MOA");
       }
-  
+    
+      const data = await response.json();
       toast.success(data.message || "MOA created successfully!");
-  
+    
       if (onMOAAdded && typeof onMOAAdded === "function") {
         onMOAAdded();
       }
-  
+    
+      // Reset form
       setFormData({
         moaName: "",
         typeOfMoa: "Practicum",
@@ -90,7 +131,8 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
         validity: "",
         dateNotarized: "",
       });
-  
+      setFiles([]);
+    
       onClose();
     } catch (error) {
       console.error("Add MOA error:", error);
@@ -99,7 +141,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
       setIsSubmitting(false);
     }
   };
-  
+
   if (!isOpen) return null;
 
   return (
@@ -133,7 +175,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
             />
           </div>
 
-          {/* Type of MOA and Nature of Business - Side by side */}
+          {/* Type of MOA and Nature of Business */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label htmlFor="typeOfMoa" className="block font-bold mb-2">
@@ -291,6 +333,51 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
                 required
               />
             </div>
+          </div>
+
+          {/* New Document Upload Section */}
+          <div className="space-y-4">
+            <div>
+              <label className="block font-bold mb-2">
+                Upload Documents
+              </label>
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+                <div className="flex items-center justify-center">
+                  <label className="flex flex-col items-center cursor-pointer">
+                    <Upload className="w-8 h-8 text-gray-400" />
+                    <span className="mt-2 text-sm text-gray-500">Click to upload documents</span>
+                    <input
+                      type="file"
+                      multiple
+                      className="hidden"
+                      onChange={handleFileChange}
+                      accept=".pdf,.doc,.docx,.txt"
+                    />
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            {/* File List */}
+            {files.length > 0 && (
+              <div className="space-y-2">
+                <p className="font-semibold">Selected Files:</p>
+                <div className="space-y-2">
+                  {files.map((file, index) => (
+                    <div key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded">
+                      <span className="text-sm truncate">{file.name}</span>
+                      <button
+                        type="button"
+                        onClick={() => removeFile(index)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="mt-6">
