@@ -68,6 +68,7 @@ export function BarGraph({ stats }) {
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
+              nameKey="moaType"
             />
             <Bar
               dataKey="moaNumber"
