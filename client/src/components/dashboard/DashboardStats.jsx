@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { PieGraph } from './PieGraph';
+import {BarGraph} from './BarGraph';
 
 export default function DashboardStats() {
   const [stats, setStats] = useState({
@@ -47,15 +48,16 @@ export default function DashboardStats() {
   return (
     <main className="flex-1 px-6 py-5">
       <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <MoaCard title="Employment" count={stats.employment} description="Total Number:" />
           <MoaCard title="Research" count={stats.research} description="Total Number:" />
           <MoaCard title="Practicum" count={stats.practicum} description="Total Number:" />
           <MoaCard title="Scholarship" count={stats.scholarship} description="Total Number:" />
         </div>
-        <PieGraph stats={stats} />
+        <BarGraph stats={stats} />
       </div>
+        <PieGraph stats={stats} />
     </main>
   );
 }

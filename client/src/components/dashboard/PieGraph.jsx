@@ -7,6 +7,7 @@ import {
   Card,
   CardContent,
   CardHeader,
+  CardTitle,
 } from "@/components/ui/card"
 import {
   ChartContainer,
@@ -48,6 +49,7 @@ export function PieGraph({ stats }) {
     return (
       <Card className="flex flex-col bg-transparent shadow-none border-none">
         <CardHeader className="items-center pb-0"></CardHeader>
+        <CardTitle className="">Validity Distribution</CardTitle>
         <CardContent className="flex-1 pb-0">
           <ChartContainer
             config={chartConfig}
