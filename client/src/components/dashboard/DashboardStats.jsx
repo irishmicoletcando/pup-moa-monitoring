@@ -76,30 +76,28 @@ export default function DashboardStats() {
   return (
     <main className="flex-1 px-6 py-5">
       <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <MoaCard title="Employment" count={typeStats.employment} description="Total Number:" />
-          <MoaCard title="Research" count={typeStats.research} description="Total Number:" />
-          <MoaCard title="Practicum" count={typeStats.practicum} description="Total Number:" />
-          <MoaCard title="Scholarship" count={typeStats.scholarship} description="Total Number:" />
+      <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 h-full">
+          <MoaCard title="Employment" count={typeStats.employment} description="Total Number"/>
+          <MoaCard title="Research" count={typeStats.research} description="Total Number" />
+          <MoaCard title="Practicum" count={typeStats.practicum} description="Total Number" />
+          <MoaCard title="Scholarship" count={typeStats.scholarship} description="Total Number" />
         </div>
-        <BarGraph stats={typeStats} />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <BarGraph stats={typeStats} />
+          <PieGraph stats={statusStats}/>
+        </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <PieGraph stats={statusStats} />
-        <div></div>
-      </div>
-      
     </main>
   );
 }
 
-const MoaCard = ({ title, count, description }) => (
+const MoaCard = ({ title, count, description}) => (
   <div className="p-4 rounded-xl shadow-md hover:shadow-md transition bg-white border-2 border-gray-200 dark:bg-gray-800">
-    <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">{title}</h2>
-    <div className="p-4 rounded-lg flex flex-row justify-center items-center space-x-4">
-      <p className="text-gray-600 dark:text-gray-300 font-semibold">{description}</p>
-      <p className="text-7xl font-bold text-gray-900 dark:text-white">{count}</p>
+    <p className="text-md font-bold text-gray-900 dark:text-white mb-2">{title}</p>
+    <div className="p-2 rounded-lg flex flex-row justify-center items-center space-x-4">
+      <p className="text-4xl font-bold text-gray-900 dark:text-white">{count}</p>
     </div>
+    <p className="text-sm text-gray-600 dark:text-gray-300 font-semibold">{description}</p>
   </div>
 );

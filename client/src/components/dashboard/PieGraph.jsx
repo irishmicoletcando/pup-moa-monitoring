@@ -8,6 +8,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card"
 import {
   ChartContainer,
@@ -42,13 +43,13 @@ export function PieGraph({ stats }) {
     }, [chartData]); // Now it updates when chartData changes
   
     return (
-      <Card className="flex flex-col bg-transparent shadow-none border-none">
-        <CardHeader className="items-center pb-0"></CardHeader>
-        <CardTitle className="">Validity Distribution</CardTitle>
-        <CardContent className="flex-1 pb-0">
+      <Card className="flex flex-col justify-between h-full">
+        <CardHeader>
+            <CardTitle className="text-md">Validity Distribution</CardTitle>
+        </CardHeader>
+        <CardContent>
           <ChartContainer
             config={chartConfig}
-            className="mx-auto aspect-square max-h-[300px]"
           >
             <PieChart>
               <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
@@ -78,7 +79,7 @@ export function PieGraph({ stats }) {
               </Pie>
             </PieChart>
           </ChartContainer>
-          <div className="flex justify-center gap-4 mt-4">
+          <div className="flex justify-center gap-2">
             {Object.entries(chartConfig).map(([key, value]) => (
               <div key={key} className="flex items-center gap-2">
                 <span className="w-4 h-4 rounded" style={{ backgroundColor: value.color }}></span>
@@ -87,6 +88,11 @@ export function PieGraph({ stats }) {
             ))}
           </div>
         </CardContent>
+        <CardFooter className="flex-col items-start gap-2 text-sm">
+            <div className="leading-none text-muted-foreground">
+            Showing MOA Distribution in terms of validity.
+            </div>
+        </CardFooter>
       </Card>
     );
   }

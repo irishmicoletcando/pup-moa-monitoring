@@ -47,9 +47,9 @@ export function BarGraph({ stats }) {
   .sort((a, b) => b.moaNumber - a.moaNumber);  // Sorting in descending order by moaNumber
 
   return (
-    <Card>
+    <Card className="flex flex-col justify-between h-full">
       <CardHeader>
-        <CardTitle>MOA Types</CardTitle>
+        <CardTitle className="text-md">MOA Types Count</CardTitle>
         {/* <CardDescription>January - June 2024</CardDescription> */}
       </CardHeader>
       <CardContent>
