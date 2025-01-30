@@ -35,7 +35,7 @@ export default function LoginForm() {
       localStorage.setItem("role", data.role); // Store the role
       localStorage.setItem("lastLogin", data.lastLogin); // Store last login time if needed
       toast.success("Login successful! Redirecting...", { position: "top-right" });
-      setTimeout(() => navigate("/moa-dashboard"), 2000); // Navigate after 2 seconds
+      setTimeout(() => navigate("/moa-homepage"), 2000); // Navigate after 2 seconds
     } catch (err) {
       toast.error(err.message, { position: "top-right" });
     }

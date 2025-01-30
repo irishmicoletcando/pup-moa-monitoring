@@ -34,7 +34,6 @@ const Navbar = () => {
     }
   }, [location.pathname]);
 
-  // Retrieve user data from localStorage
   useEffect(() => {
     const firstname = localStorage.getItem("firstname") || "User";
     const lastname = localStorage.getItem("lastname") || "";
@@ -63,10 +62,16 @@ const Navbar = () => {
     navigate("/moa-dashboard");
   };
 
+  const handleHomePageClick = () => {
+    navigate("/moa-homepage");
+  };
+
   return (
     <nav className="w-20 m-3 rounded-lg bg-maroon max-h-screen flex flex-col items-center py-4">
       <div className="mb-8">
-        <img src="/PUP.png" alt="PUP Logo" className="w-12 h-12" />
+        <img src="/PUP.png" alt="PUP Logo" 
+        className= {"w-12 h-12"}
+        onClick={ handleHomePageClick } />
       </div>
 
       <div className="flex flex-col space-y-5 flex-grow justify-center w-full">
