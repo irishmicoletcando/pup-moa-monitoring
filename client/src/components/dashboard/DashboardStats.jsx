@@ -54,18 +54,18 @@ export default function DashboardStats() {
           <MoaCard title="Practicum" count={stats.practicum} description="Total Number:" />
           <MoaCard title="Scholarship" count={stats.scholarship} description="Total Number:" />
         </div>
-        <PieGraph />
+        <PieGraph stats={stats} />
       </div>
     </main>
   );
 }
 
 const MoaCard = ({ title, count, description }) => (
-  <div>
-    <h2 className="text-lg font-bold mb-4">{title}</h2>
-    <div className="bg-light-gray p-6 rounded-lg flex flex-row justify-center items-center space-x-4">
-      <p className="text-gray-600 font-semibold mt-4">{description}</p>
-      <p className="text-7xl font-bold">{count}</p>
+  <div className="p-4 rounded-xl shadow-md hover:shadow-md transition bg-white border-2 border-gray-200 dark:bg-gray-800">
+    <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">{title}</h2>
+    <div className="p-4 rounded-lg flex flex-row justify-center items-center space-x-4">
+      <p className="text-gray-600 dark:text-gray-300 font-semibold">{description}</p>
+      <p className="text-7xl font-bold text-gray-900 dark:text-white">{count}</p>
     </div>
   </div>
 );
