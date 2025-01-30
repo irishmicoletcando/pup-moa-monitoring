@@ -30,6 +30,9 @@ export default function LoginForm() {
       localStorage.setItem("token", data.token); // Store the JWT token
       localStorage.setItem("user_id", data.user_id); // Store the user ID
       localStorage.setItem("userEmail", email); // Store the email
+      localStorage.setItem("firstname", data.firstname); // Store the first name
+      localStorage.setItem("lastname", data.lastname); // Store the last name
+      localStorage.setItem("role", data.role); // Store the role
       localStorage.setItem("lastLogin", data.lastLogin); // Store last login time if needed
       toast.success("Login successful! Redirecting...", { position: "top-right" });
       setTimeout(() => navigate("/moa-dashboard"), 2000); // Navigate after 2 seconds
