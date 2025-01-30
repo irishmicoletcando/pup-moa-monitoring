@@ -9,9 +9,9 @@ const ProfilePopover = ({ show, onClose }) => {
   const popoverRef = useRef(null);
 
   const roleStyles = {
-    'Super Admin': 'bg-purple-500',
-    'Employment Admin': 'bg-blue-500',
-    'Practicum Admin': 'bg-green-500',
+    'Super Admin': 'bg-purple-700',
+    'Employment Admin': 'bg-blue-700',
+    'Practicum Admin': 'bg-green-700',
     'Research Admin': 'bg-gray-500',
   };
 
@@ -29,12 +29,6 @@ const ProfilePopover = ({ show, onClose }) => {
     setUser({ firstname, lastname, role });
   }, []);
 
-  // Generate initials for avatar
-  const getInitials = (firstname, lastname) => {
-    const firstInitial = firstname ? firstname.charAt(0).toUpperCase() : "";
-    const lastInitial = lastname ? lastname.charAt(0).toUpperCase() : "";
-    return `${firstInitial}${lastInitial}`;
-  };
 
   const handleUserLogout = () => {
     try {
@@ -73,22 +67,24 @@ const ProfilePopover = ({ show, onClose }) => {
   return (
     <div 
       ref={popoverRef}
-      className={`absolute bottom-0 left-full ml-2 w-60 bg-white shadow-xl rounded-lg p-5 flex flex-col items-center text-black transition-all duration-200 ease-out transform ${
+      className={`absolute bottom-0 left-full ml-2 w-60 bg-white shadow-xl rounded-lg px-0 pb-5 flex flex-col items-center text-black transition-all duration-200 ease-out transform ${
         show ? "opacity-100 scale-100" : "opacity-0 scale-95"
       }`}
     >
       {/* Triangle Pointer */}
       {/* <div className="absolute right-full top-1/1 -translate-y-1/2 w-0 h-0 border-y-8 border-r-8 border-r-maroon border-y-transparent"></div> */}
 
-      <InitialsAvatar
+      <div className="w-full flex items-center justify-center rounded-t-lg py-3 bg-gray-100 mt-0">
+        <InitialsAvatar 
             firstname={user.firstname}
             lastname={user.lastname}
             role={user.role}
             roleStyles={roleStyles}
-      />
+        />
+      </div>
 
       <span className="font-semibold mt-3 text-lg">{user.firstname} {user.lastname}</span>
-      <span className="text-sm text-gray-500 mt-1 mb-24">{user.role}</span>
+      <span className="text-sm text-gray-500 mt-1 mb-28">{user.role}</span>
 
       <button
         className="group flex items-center space-x-2 mt-2 w-full justify-center py-2 rounded-md transition-all duration-200 text-black hover:text-red"

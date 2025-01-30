@@ -15,9 +15,9 @@ const Navbar = () => {
   });
 
   const roleStyles = {
-    "Super Admin": "bg-purple-500",
-    "Employment Admin": "bg-blue-500",
-    "Practicum Admin": "bg-green-500",
+    "Super Admin": "bg-purple-700",
+    "Employment Admin": "bg-blue-700",
+    "Practicum Admin": "bg-green-700",
     "Research Admin": "bg-gray-500",
   };
 
