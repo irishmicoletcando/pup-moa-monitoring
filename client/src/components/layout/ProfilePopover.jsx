@@ -8,8 +8,14 @@ const ProfilePopover = ({ show, onClose }) => {
   const popoverRef = useRef(null); // Reference for popover div
 
   const handleUserLogout = () => {
-    // TODO: Add logout logic here
-    navigate("/");
+    try {
+      localStorage.removeItem("token"); // Remove the JWT token
+
+      toast.success("Logout successful! Redirecting...", { position: "top-right" });
+      setTimeout(() => navigate("/"), 1000); // Redirect after 1 second
+    } catch (err) {
+      toast.error(err.message, { position: "top-right" });
+    }
   };
 
   useEffect(() => {
