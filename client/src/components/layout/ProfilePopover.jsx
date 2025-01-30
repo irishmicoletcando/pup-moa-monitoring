@@ -67,7 +67,7 @@ const ProfilePopover = ({ show, onClose }) => {
   return (
     <div 
       ref={popoverRef}
-      className={`absolute bottom-0 left-full ml-2 w-80 bg-white shadow-xl rounded-lg px-0 pb-5 flex flex-col items-center text-black transition-all duration-200 ease-out transform ${
+      className={`absolute z-50 bottom-0 left-full ml-2 w-80 bg-white shadow-xl rounded-lg px-0 pb-5 flex flex-col items-center text-black transition-all duration-200 ease-out transform ${
         show ? "opacity-100 scale-100" : "opacity-0 scale-95"
       }`}
     >
