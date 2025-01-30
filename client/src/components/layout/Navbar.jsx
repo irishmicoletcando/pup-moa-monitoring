@@ -1,13 +1,16 @@
 // src/components/Navbar.jsx
 import { User, LayoutDashboard, FileText } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import ProfilePopover from "./ProfilePopover";
 import InitialsAvatar from "./InitialsAvatar";
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [showProfile, setShowProfile] = useState(false);
+  const [activeTab, setAsActive] = useState('');
+
   const [user, setUser] = useState({
     firstname: "",
     lastname: "",
@@ -20,6 +23,16 @@ const Navbar = () => {
     "Practicum Admin": "bg-green-700",
     "Research Admin": "bg-gray-500",
   };
+
+  useEffect(() => {
+    if (location.pathname === "/moa-dashboard") {
+      setAsActive("dashboard");
+    } else if (location.pathname === "/moa-monitoring") {
+      setAsActive("addMOA");
+    } else if (location.pathname === "/moa-monitoring-admin") {
+      setAsActive("addAdmin");
+    }
+  }, [location.pathname]);
 
   // Retrieve user data from localStorage
   useEffect(() => {
@@ -36,14 +49,17 @@ const Navbar = () => {
   };
 
   const handleAddAdminButtonClick = () => {
+    setAsActive('addAdmin');
     navigate("/moa-monitoring-admin");
   };
 
   const handleAddMOAButtonClick = () => {
+    setAsActive('addMOA');
     navigate("/moa-monitoring");
   };
 
   const handleDashboardButtonClick = () => {
+    setAsActive('dashboard');
     navigate("/moa-dashboard");
   };
 
@@ -54,23 +70,23 @@ const Navbar = () => {
       </div>
 
       <div className="flex flex-col space-y-5 flex-grow justify-center w-full">
-        <button
-          className="text-white hover:bg-red w-full flex items-center justify-center p-4 transition-colors duration-200"
-          onClick={handleDashboardButtonClick}
+        <button 
+          className= {`text-white w-full flex items-center justify-center p-4 transition-colors duration-200 ${ activeTab === 'dashboard' ? 'bg-red' : 'hover:bg-red' }`}
+          onClick={ handleDashboardButtonClick }
         >
           <LayoutDashboard size={24} />
         </button>
-
-        <button
-          className="text-white hover:bg-red w-full flex items-center justify-center p-4 transition-colors duration-200"
-          onClick={handleAddMOAButtonClick}
-        >
+        
+        <button 
+          className= {`text-white w-full flex items-center justify-center p-4 transition-colors duration-200 ${ activeTab === 'addMOA' ? 'bg-red' : 'hover:bg-red' }`}
+          onClick={ handleAddMOAButtonClick }
+          >
           <FileText size={24} />
         </button>
 
-        <button
-          className="text-white hover:bg-red w-full flex items-center justify-center p-4 transition-colors duration-200"
-          onClick={handleAddAdminButtonClick}
+        <button 
+          className= {`text-white w-full flex items-center justify-center p-4 transition-colors duration-200 ${ activeTab === 'addAdmin' ? 'bg-red' : 'hover:bg-red' }`}
+          onClick={ handleAddAdminButtonClick }
         >
           <User size={24} />
         </button>

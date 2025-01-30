@@ -3,9 +3,11 @@ import Navbar from "../components/layout/Navbar";
 
 export default function Dashboard() {
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen overflow-hidden">
       <Navbar />
-      <DashboardStats />
+      <div className="overflow-auto flex-1">
+        <DashboardStats />
+      </div>
     </div>
   )
 }
