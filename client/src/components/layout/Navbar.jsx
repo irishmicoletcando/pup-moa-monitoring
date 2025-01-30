@@ -4,10 +4,11 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const location = useLocation();
+  const location = useLocation(); // Get current location (URL path)
 
-  const [activeTab, setAsActive] = useState('dashboard');
-  
+  const [activeTab, setAsActive] = useState('');
+
+  // Update activeTab based on the current route
   useEffect(() => {
     if (location.pathname === '/moa-dashboard') {
       setAsActive('dashboard');
@@ -16,17 +17,20 @@ const Navbar = () => {
     } else if (location.pathname === '/moa-monitoring-admin') {
       setAsActive('addAdmin');
     }
-  }, [location.pathname]); 
-
+  }, [location.pathname]);
+  
   const handleAddAdminButtonClick = () => {
+    setAsActive('addAdmin');
     navigate("/moa-monitoring-admin");
   };
 
   const handleAddMOAButtonClick = () => {
+    setAsActive('addMOA');
     navigate("/moa-monitoring");
   };
 
   const handleDashboardButtonClick = () => {
+    setAsActive('dashboard');
     navigate("/moa-dashboard");
   };
 
@@ -39,21 +43,21 @@ const Navbar = () => {
       <div className="flex flex-col space-y-5 flex-grow justify-center w-full">
         <button 
           className= {`text-white w-full flex items-center justify-center p-4 transition-colors duration-200 ${ activeTab === 'dashboard' ? 'bg-red' : 'hover:bg-red' }`}
-          onClick={() => { handleDashboardButtonClick(); }}
+          onClick={ handleDashboardButtonClick }
         >
           <LayoutDashboard size={24} />
         </button>
         
         <button 
           className= {`text-white w-full flex items-center justify-center p-4 transition-colors duration-200 ${ activeTab === 'addMOA' ? 'bg-red' : 'hover:bg-red' }`}
-          onClick={() => { handleAddMOAButtonClick(); }}
+          onClick={ handleAddMOAButtonClick }
           >
           <FileText size={24} />
         </button>
 
         <button 
           className= {`text-white w-full flex items-center justify-center p-4 transition-colors duration-200 ${ activeTab === 'addAdmin' ? 'bg-red' : 'hover:bg-red' }`}
-          onClick={() => { handleAddAdminButtonClick(); }}
+          onClick={ handleAddAdminButtonClick }
         >
           <User size={24} />
         </button>
