@@ -1,6 +1,6 @@
 const db = require('../config/db');
 
-const getMOAStats = (req, res) => {
+const getMOACOuntByType = (req, res) => {
     const query = `
         SELECT 
             type_id, 
@@ -41,4 +41,39 @@ const getMOAStats = (req, res) => {
     });
 };
 
-module.exports = { getMOAStats };
+const getMOACountByStatus = (req, res) => {
+    const query = `
+        SELECT 
+            status, 
+            COUNT(*) AS count 
+        FROM moa_info 
+        GROUP BY status
+    `;
+
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error("Error fetching MOA statistics by status:", err);
+            return res.status(500).send('Error retrieving MOA statistics by status');
+        }
+
+        // Convert results into a dictionary
+        const stats = {};
+        results.forEach(row => {
+            stats[row.status] = row.count;
+        });
+
+        // Ensure all possible statuses exist in the response (default to 0 if missing)
+        const possibleStatuses = ["Active", "Expiry", "Expired"];
+        possibleStatuses.forEach(status => {
+            if (!stats[status]) {
+                stats[status] = 0;
+            }
+        });
+
+        res.status(200).json(stats);
+    });
+};
+
+
+
+module.exports = { getMOACOuntByType, getMOACountByStatus };

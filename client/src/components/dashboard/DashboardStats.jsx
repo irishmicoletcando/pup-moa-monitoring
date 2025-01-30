@@ -1,28 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import { PieGraph } from './PieGraph';
-import {BarGraph} from './BarGraph';
+import { BarGraph } from './BarGraph';
 
 export default function DashboardStats() {
-  const [stats, setStats] = useState({
+  const [typeStats, setTypeStats] = useState({
     practicum: 0,
     employment: 0,
     scholarship: 0,
     research: 0
   });
+  
+  const [statusStats, setStatusStats] = useState({
+    Active: 0,
+    Expiry: 0,
+    Expired: 0
+  });
+
   const [loading, setLoading] = useState(true); // Add loading state
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch('/api/moastats');
+        const response = await fetch('/api/moa-count-type');
         if (!response.ok) {
           throw new Error('Failed to fetch MOA stats');
         }
 
         const data = await response.json();
-        console.log("Fetched MOA stats:", data);
+        console.log("Fetched MOA type stats:", data);
 
-        setStats(data);
+        setTypeStats(data);
       } catch (error) {
         console.error('Error fetching MOA stats:', error);
       } finally {
@@ -31,6 +38,27 @@ export default function DashboardStats() {
     };
 
     fetchStats();
+  }, []);
+
+  // Fetch stats for MOA status
+  useEffect(() => {
+    const fetchStatusStats = async () => {
+      try {
+        const response = await fetch('/api/moa-count-status');
+        if (!response.ok) {
+          throw new Error('Failed to fetch MOA status stats');
+        }
+
+        const data = await response.json();
+        console.log("Fetched MOA status stats:", data);
+
+        setStatusStats(data);
+      } catch (error) {
+        console.error('Error fetching MOA status stats:', error);
+      }
+    };
+
+    fetchStatusStats();
   }, []);
 
   if (loading) {
@@ -50,14 +78,18 @@ export default function DashboardStats() {
       <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <MoaCard title="Employment" count={stats.employment} description="Total Number:" />
-          <MoaCard title="Research" count={stats.research} description="Total Number:" />
-          <MoaCard title="Practicum" count={stats.practicum} description="Total Number:" />
-          <MoaCard title="Scholarship" count={stats.scholarship} description="Total Number:" />
+          <MoaCard title="Employment" count={typeStats.employment} description="Total Number:" />
+          <MoaCard title="Research" count={typeStats.research} description="Total Number:" />
+          <MoaCard title="Practicum" count={typeStats.practicum} description="Total Number:" />
+          <MoaCard title="Scholarship" count={typeStats.scholarship} description="Total Number:" />
         </div>
-        <BarGraph stats={stats} />
+        <BarGraph stats={typeStats} />
       </div>
-        <PieGraph stats={stats} />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <PieGraph stats={statusStats} />
+        <div></div>
+      </div>
+      
     </main>
   );
 }

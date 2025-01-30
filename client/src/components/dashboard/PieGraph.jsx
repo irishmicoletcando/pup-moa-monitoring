@@ -16,30 +16,25 @@ import {
 } from "@/components/ui/chart"
 
 const chartConfig = {
-  employment: {
-    label: "Employment",
+  active: {
+    label: "Active",
     color: "hsla(52, 100%, 53%, 1)",
   },
-  research: {
-    label: "Research",
+  expiry: {
+    label: "Expiry",
     color: "hsla(43, 74%, 49%, 1)",
   },
-  practicum: {
-    label: "Practicum",
+  expired: {
+    label: "Expired",
     color: "hsla(0, 100%, 25%, 1)",
-  },
-  scholarship: {
-    label: "Scholarship",
-    color: "hsl(var(--chart-4))",
   },
 }
 
 export function PieGraph({ stats }) {
     const chartData = [
-      { moaType: "employment", moaNumber: stats.employment, fill: "var(--color-employment)" },
-      { moaType: "research", moaNumber: stats.research, fill: "var(--color-research)" },
-      { moaType: "practicum", moaNumber: stats.practicum, fill: "var(--color-practicum)" },
-      { moaType: "scholarship", moaNumber: stats.scholarship, fill: "var(--color-scholarship)" },
+      { moaType: "active", moaNumber: stats.Active, fill: "var(--color-active)" },
+      { moaType: "expiry", moaNumber: stats.Expiry, fill: "var(--color-expiry)" },
+      { moaType: "expired", moaNumber: stats.Expired, fill: "var(--color-expired)" },
     ];
   
     const totalMOA = React.useMemo(() => {
