@@ -67,12 +67,11 @@ const ProfilePopover = ({ show, onClose }) => {
   return (
     <div 
       ref={popoverRef}
-      className={`absolute bottom-0 left-full ml-2 w-60 bg-white shadow-xl rounded-lg px-0 pb-5 flex flex-col items-center text-black transition-all duration-200 ease-out transform ${
+      className={`absolute bottom-0 left-full ml-2 w-80 bg-white shadow-xl rounded-lg px-0 pb-5 flex flex-col items-center text-black transition-all duration-200 ease-out transform ${
         show ? "opacity-100 scale-100" : "opacity-0 scale-95"
       }`}
     >
-      {/* Triangle Pointer */}
-      {/* <div className="absolute right-full top-1/1 -translate-y-1/2 w-0 h-0 border-y-8 border-r-8 border-r-maroon border-y-transparent"></div> */}
+      <div className="absolute right-full bottom-4 -ml-2 -translate-y-1/2 w-0 h-0 border-y-8 border-l-8 border-l-maroon border-y-transparent"></div>
 
       <div className="w-full flex items-center justify-center rounded-t-lg py-3 bg-gray-100 mt-0">
         <InitialsAvatar 
