@@ -2,10 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import InitialsAvatar from "./InitialsAvatar";
 
 const ProfilePopover = ({ show, onClose }) => {
   const navigate = useNavigate();
-  const popoverRef = useRef(null); // Reference for popover div
+  const popoverRef = useRef(null);
 
   const roleStyles = {
     'Super Admin': 'bg-purple-500',
@@ -37,12 +38,12 @@ const ProfilePopover = ({ show, onClose }) => {
 
   const handleUserLogout = () => {
     try {
-      localStorage.removeItem("token"); // Remove JWT token
-      localStorage.removeItem("firstname"); // Remove firstname
-      localStorage.removeItem("lastname"); // Remove lastname
-      localStorage.removeItem("role"); // Remove role
-      localStorage.removeItem("user_id"); // Remove user ID
-      localStorage.removeItem("userEmail"); // Remove email
+      localStorage.removeItem("token");
+      localStorage.removeItem("firstname");
+      localStorage.removeItem("lastname");
+      localStorage.removeItem("role");
+      localStorage.removeItem("user_id");
+      localStorage.removeItem("userEmail");
 
       toast.success("Logout successful! Redirecting...", { position: "top-right" });
       setTimeout(() => navigate("/"), 1000);
@@ -72,28 +73,29 @@ const ProfilePopover = ({ show, onClose }) => {
   return (
     <div 
       ref={popoverRef}
-      className={`absolute left-full ml-2 w-48 bg-gray-100 shadow-md rounded-lg p-3 flex flex-col items-center text-black transition-all duration-200 ease-out transform ${
+      className={`absolute bottom-0 left-full ml-2 w-60 bg-white shadow-xl rounded-lg p-5 flex flex-col items-center text-black transition-all duration-200 ease-out transform ${
         show ? "opacity-100 scale-100" : "opacity-0 scale-95"
       }`}
     >
+      {/* Triangle Pointer */}
+      {/* <div className="absolute right-full top-1/1 -translate-y-1/2 w-0 h-0 border-y-8 border-r-8 border-r-maroon border-y-transparent"></div> */}
 
-      <div className="absolute left-0 top-1/2 -translate-y-1/2 -ml-2 w-0 h-0 border-y-8 border-l-8 border-l-maroon border-y-transparent"></div>
+      <InitialsAvatar
+            firstname={user.firstname}
+            lastname={user.lastname}
+            role={user.role}
+            roleStyles={roleStyles}
+      />
 
-      <div className={`w-12 h-12 rounded-full text-white flex items-center justify-center text-lg font-bold ${
-        roleStyles[user.role] || "bg-gray-500"
-      }`}>
-        {getInitials(user.firstname, user.lastname)}
-      </div>
+      <span className="font-semibold mt-3 text-lg">{user.firstname} {user.lastname}</span>
+      <span className="text-sm text-gray-500 mt-1 mb-24">{user.role}</span>
 
-      <span className="font-semibold mt-2">{user.firstname} {user.lastname}</span>
-      <span className="text-sm text-gray-500">{user.role}</span>
-
-      <button 
-        className="text-red-600 hover:text-red-800 flex items-center space-x-2 mt-3"
+      <button
+        className="group flex items-center space-x-2 mt-2 w-full justify-center py-2 rounded-md transition-all duration-200 text-black hover:text-red"
         onClick={handleUserLogout}
       >
-        <LogOut size={20} />
-        <span>Logout</span>
+        <LogOut size={20} className="transition-all duration-200 group-hover:text-red" />
+        <span className="transition-all duration-150 group-hover:text-red">Logout</span>
       </button>
     </div>
   );

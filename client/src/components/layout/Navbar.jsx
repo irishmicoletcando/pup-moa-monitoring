@@ -1,18 +1,40 @@
-import { User, LayoutDashboard, FileText } from 'lucide-react';
+// src/components/Navbar.jsx
+import { User, LayoutDashboard, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState } from 'react';
+import { useState, useEffect } from "react";
 import ProfilePopover from "./ProfilePopover";
+import InitialsAvatar from "./InitialsAvatar";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const [showProfile, setShowProfile] = useState(false);
+  const [user, setUser] = useState({
+    firstname: "",
+    lastname: "",
+    role: "",
+  });
+
+  const roleStyles = {
+    "Super Admin": "bg-purple-500",
+    "Employment Admin": "bg-blue-500",
+    "Practicum Admin": "bg-green-500",
+    "Research Admin": "bg-gray-500",
+  };
+
+  // Retrieve user data from localStorage
+  useEffect(() => {
+    const firstname = localStorage.getItem("firstname") || "User";
+    const lastname = localStorage.getItem("lastname") || "";
+    const role = localStorage.getItem("role") || "Guest";
+    setUser({ firstname, lastname, role });
+  }, []);
 
   const handleToggleProfile = () => {
     if (!showProfile) {
       setShowProfile(true);
     }
   };
-  
+
   const handleAddAdminButtonClick = () => {
     navigate("/moa-monitoring-admin");
   };
@@ -30,19 +52,23 @@ const Navbar = () => {
       <div className="mb-8">
         <img src="/PUP.png" alt="PUP Logo" className="w-12 h-12" />
       </div>
-      
+
       <div className="flex flex-col space-y-5 flex-grow justify-center w-full">
-        <button className="text-white hover:bg-red w-full flex items-center justify-center p-4 transition-colors duration-200"
-          onClick={handleDashboardButtonClick}>
+        <button
+          className="text-white hover:bg-red w-full flex items-center justify-center p-4 transition-colors duration-200"
+          onClick={handleDashboardButtonClick}
+        >
           <LayoutDashboard size={24} />
         </button>
-        
-        <button className="text-white hover:bg-red w-full flex items-center justify-center p-4 transition-colors duration-200"
-          onClick={handleAddMOAButtonClick}>
+
+        <button
+          className="text-white hover:bg-red w-full flex items-center justify-center p-4 transition-colors duration-200"
+          onClick={handleAddMOAButtonClick}
+        >
           <FileText size={24} />
         </button>
 
-        <button 
+        <button
           className="text-white hover:bg-red w-full flex items-center justify-center p-4 transition-colors duration-200"
           onClick={handleAddAdminButtonClick}
         >
@@ -51,14 +77,19 @@ const Navbar = () => {
       </div>
 
       <div className="relative w-full flex items-center justify-center mt-auto">
-        <button 
-          className={`text-white w-full flex items-center justify-center p-4 transition-colors duration-200 ${
-            showProfile ? "pointer-events-none opacity-70" : "hover:bg-red"
+        <button
+          className={`w-full flex items-center justify-center p-4 transition-colors duration-200 ${
+            showProfile ? "pointer-events-none opacity-50" : "hover:bg-red"
           }`}
           onClick={handleToggleProfile}
           disabled={showProfile}
         >
-          <User size={24} />
+          <InitialsAvatar
+            firstname={user.firstname}
+            lastname={user.lastname}
+            role={user.role}
+            roleStyles={roleStyles}
+          />
         </button>
 
         <ProfilePopover show={showProfile} onClose={() => setShowProfile(false)} />
