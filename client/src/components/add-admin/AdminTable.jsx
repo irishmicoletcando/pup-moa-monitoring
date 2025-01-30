@@ -7,7 +7,7 @@ import Modal from "../layout/Modal";
 import RoleBadge from "../layout/RoleBadge";
 import AdminModal from "./AddAdminModal";
 
-export default function AdminTable({ isModalOpen, setIsModalOpen, refreshTrigger, onRefreshNeeded  }) {
+export default function AdminTable({ isModalOpen, setIsModalOpen, refreshTrigger, setRefreshTrigger  }) {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -49,21 +49,18 @@ export default function AdminTable({ isModalOpen, setIsModalOpen, refreshTrigger
   };
 
   useEffect(() => {
+    setLoading(true); // Show loading spinner immediately when fetching
     fetchUsers();
-  }, [refreshTrigger]);
-
+  }, [refreshTrigger]); // Re-fetch when refreshTrigger changes (after adding new admin)
+  
   const handleRefresh = () => {
     setRefreshing(true);
     fetchUsers();
   };
 
   const handleUserAdded = () => {
-    // Call the parent's refresh function if it exists
-    if (onRefreshNeeded && typeof onRefreshNeeded === 'function') {
-      onRefreshNeeded();
-    }
-    // Also fetch users directly as a fallback
-    fetchUsers();
+    setRefreshTrigger(prev => prev + 1); // Trigger a refresh
+    setLoading(true); // Show the loading spinner while fetching users
   };
 
   const openDeleteModal = (user) => {

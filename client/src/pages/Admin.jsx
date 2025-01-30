@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import AddAdminButton from '../components/add-admin/AddAdminButton.jsx';
 import AdminTable from '../components/add-admin/AdminTable.jsx';
+import AddAdminModal from '../components/add-admin/AddAdminModal.jsx'
 import Navbar from '../components/layout/Navbar.jsx';
 
 export default function Admin() {
@@ -8,9 +9,9 @@ export default function Admin() {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Handle refresh when new admin is added
-  const handleRefresh = useCallback(() => {
-    setRefreshTrigger(prev => prev + 1);
-  }, []);
+  const handleRefreshNeeded = () => {
+    setRefreshTrigger((prev) => prev + 1); 
+  };
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -26,11 +27,17 @@ export default function Admin() {
           </div>
 
           <div className="bg-gray-50 rounded-lg">
-            <AdminTable 
-              isModalOpen={isModalOpen} 
+            <AdminTable
+              isModalOpen={isModalOpen}
               setIsModalOpen={setIsModalOpen}
               refreshTrigger={refreshTrigger}
-              onRefreshNeeded={handleRefresh}
+              setRefreshTrigger={handleRefreshNeeded}
+            />
+
+            <AddAdminModal
+              isOpen={isModalOpen}
+              onClose={() => setIsModalOpen(false)}
+              onUserAdded={handleRefreshNeeded}
             />
           </div>
         </div>
