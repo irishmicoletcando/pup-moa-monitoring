@@ -43,7 +43,7 @@ export default function MOAHeader({ onSort, sortConfig, filters, onFilterChange,
         </button>
         {openFilter === type && (
           <div
-            className="absolute transform translate-y-2 w-48 bg-white rounded-md shadow-lg border border-gray-200"
+            className="fixed transform translate-y-2 w-48 bg-white rounded-md shadow-lg border border-gray-200"
             style={{ zIndex: 1000 }}
             onClick={(e) => e.stopPropagation()} // Prevent event propagation
           >
