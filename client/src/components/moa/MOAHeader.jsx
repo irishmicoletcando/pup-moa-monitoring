@@ -1,8 +1,8 @@
 import { ArrowUpDown, ChevronDown } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 
-export default function MOAHeader({ onSort, sortConfig, filters, onFilterChange }) {
-  const [openFilter, setOpenFilter] = useState(null); // Track which dropdown is open
+export default function MOAHeader({ onSort, sortConfig, filters, onFilterChange, isAllSelected, isSomeSelected, onToggleSelectAll }) {
+  const [openFilter, setOpenFilter] = useState(null);
   const filterRefs = useRef({}); // Store refs for each dropdown
 
   useEffect(() => {
@@ -69,7 +69,7 @@ export default function MOAHeader({ onSort, sortConfig, filters, onFilterChange 
   return (
     <tr className="bg-gray-50">
       <th className="w-12 p-4 text-left">
-        <input type="checkbox" className="h-4 w-4 rounded border-gray-300" />
+        <input type="checkbox" className="h-4 w-4 rounded border-gray-300" onChange={onToggleSelectAll} checked={isAllSelected} ref={el => el && (el.indeterminate = isSomeSelected)}/>
       </th>
       <th className="p-4 text-left text-sm font-medium">Name</th>
       <th className="p-4 text-left text-sm font-medium">
