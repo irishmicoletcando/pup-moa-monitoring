@@ -25,10 +25,8 @@ const ProfilePopover = ({ show, onClose }) => {
     const firstname = localStorage.getItem("firstname") || "User";
     const lastname = localStorage.getItem("lastname") || "";
     const role = localStorage.getItem("role") || "Guest";
-
     setUser({ firstname, lastname, role });
   }, []);
-
 
   const handleUserLogout = () => {
     try {
@@ -62,37 +60,71 @@ const ProfilePopover = ({ show, onClose }) => {
     };
   }, [show, onClose]);
 
-  if (!show) return null; // Don't render if not visible
+  if (!show) return null;
 
   return (
-    <div 
-      ref={popoverRef}
-      className={`absolute z-50 bottom-0 left-full ml-2 w-80 bg-white shadow-xl rounded-lg px-0 pb-5 flex flex-col items-center text-black transition-all duration-200 ease-out transform ${
-        show ? "opacity-100 scale-100" : "opacity-0 scale-95"
-      }`}
-    >
-      <div className="absolute right-full bottom-4 -ml-2 -translate-y-1/2 w-0 h-0 border-y-8 border-l-8 border-l-maroon border-y-transparent"></div>
+    <>
+      {/* Backdrop */}
+      <div 
+        className="fixed inset-0 bg-black bg-opacity-50 z-40" 
+        onClick={onClose}
+      />
 
-      <div className="w-full flex items-center justify-center rounded-t-lg py-3 bg-gray-100 mt-0">
-        <InitialsAvatar 
+      {/* Popover */}
+      <div 
+        ref={popoverRef}
+        className={`
+          fixed
+          z-50
+          md:absolute
+          inset-x-0
+          mx-auto
+          bottom-20
+          md:bottom-0
+          md:left-full
+          md:mx-0
+          md:ml-2
+          w-[90%]
+          max-w-sm
+          md:w-80
+          bg-white 
+          shadow-xl 
+          rounded-lg
+          flex 
+          flex-col 
+          items-center
+          text-black
+          transition-all 
+          duration-200 
+          ease-out
+          ${show ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}
+        `}
+      >
+        {/* Arrow for desktop only */}
+        <div className="hidden md:block absolute right-full bottom-4 -ml-2 -translate-y-1/2 w-0 h-0 border-y-8 border-l-8 border-l-maroon border-y-transparent" />
+
+        <div className="w-full flex items-center justify-center rounded-t-lg py-3 bg-gray-100">
+          <InitialsAvatar 
             firstname={user.firstname}
             lastname={user.lastname}
             role={user.role}
             roleStyles={roleStyles}
-        />
+            size="default"
+          />
+        </div>
+
+        <span className="font-semibold mt-3 text-lg">{user.firstname} {user.lastname}</span>
+        <span className="text-sm text-gray-500 mt-1 mb-6">{user.role}</span>
+
+        <button
+          className="group flex items-center space-x-2 mb-4 w-full justify-center py-2 rounded-md transition-all duration-200 text-black hover:text-red"
+          onClick={handleUserLogout}
+        >
+          <LogOut size={20} className="transition-all duration-200 group-hover:text-red" />
+          <span className="transition-all duration-150 group-hover:text-red">Logout</span>
+        </button>
       </div>
-
-      <span className="font-semibold mt-3 text-lg">{user.firstname} {user.lastname}</span>
-      <span className="text-sm text-gray-500 mt-1 mb-28">{user.role}</span>
-
-      <button
-        className="group flex items-center space-x-2 mt-2 w-full justify-center py-2 rounded-md transition-all duration-200 text-black hover:text-red"
-        onClick={handleUserLogout}
-      >
-        <LogOut size={20} className="transition-all duration-200 group-hover:text-red" />
-        <span className="transition-all duration-150 group-hover:text-red">Logout</span>
-      </button>
-    </div>
+    </>
   );
 };
 
