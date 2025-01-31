@@ -9,15 +9,15 @@ export default function MOA() {
   return (
     <div className="flex h-screen overflow-hidden">
       <Navbar />
-      <div className="flex-1 overflow-x-auto">
-        <div className="p-6">
-          <div className="flex justify-between items-center mb-6">
+      <div className="flex-1 overflow-auto">
+        <div className="p-4 md:p-6">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
             <div className="flex items-center gap-2">
-              <h1 className="text-3xl font-bold">MOAs</h1>
+              <h1 className="text-2xl md:text-3xl font-bold">MOAs</h1>
             </div>
             <AddMOAButton onClick={() => setIsModalOpen(true)} />
           </div>
-          <div className="bg-gray-50 rounded-lg">
+          <div className="bg-gray-50 rounded-lg overflow-x-auto shadow-sm">
             <MOATable 
               isModalOpen={isModalOpen}
               setIsModalOpen={setIsModalOpen}
