@@ -6,9 +6,8 @@ import Modal from "../layout/Modal";
 import MOAHeader from "./MOAHeader";
 import AddMOAModal from "./AddMOAModal";
 import EditMOAModal from "./EditMOAModal";
-import PDFViewer from "./PdfViewer"; 
 
-export default function MOATable({ isModalOpen, setIsModalOpen }) {
+export default function MOATable({ isModalOpen, setIsModalOpen, selectedRows, setSelectedRows }) {
   const [moas, setMoas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -17,7 +16,6 @@ export default function MOATable({ isModalOpen, setIsModalOpen }) {
   const [selectedMOA, setSelectedMOA] = useState(null);
   const [selectedTypes, setSelectedTypes] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState([]);
-  const [selectedRows, setSelectedRows] = useState([]);
   const [showViewer, setShowViewer] = useState(false);
   const [sortConfig, setSortConfig] = useState({
     field: null,
@@ -103,7 +101,6 @@ export default function MOATable({ isModalOpen, setIsModalOpen }) {
     );
   };
 
-  // Handle "select all" checkbox toggle
   const toggleSelectAll = () => {
     if (selectedRows.length === moas.length) {
       setSelectedRows([]); // Deselect all
@@ -112,10 +109,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen }) {
     }
   }; 
   
-  // Check if all rows are selected
   const isAllSelected = moas.length > 0 && selectedRows.length === moas.length;
-
-  // Check if some rows are selected
   const isSomeSelected = selectedRows.length > 0 && selectedRows.length < moas.length;
 
   const handleFilterChange = (filterType, value) => {
