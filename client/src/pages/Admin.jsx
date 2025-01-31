@@ -30,7 +30,7 @@ export default function Admin() {
             <AddAdminButton onClick={() => setIsModalOpen(true)} onUserAdded={handleSoftRefresh} />
           </div>
 
-          <div className="bg-gray-50 rounded-lg">
+          <div className="bg-gray-50 rounded-lg overflow-x-auto shadow-sm pb-16">
             <AdminTable
               isModalOpen={isModalOpen}
               setIsModalOpen={setIsModalOpen}
