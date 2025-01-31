@@ -17,6 +17,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen }) {
   const [selectedMOA, setSelectedMOA] = useState(null);
   const [selectedTypes, setSelectedTypes] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
   const [showViewer, setShowViewer] = useState(false);
   const [sortConfig, setSortConfig] = useState({
     field: null,
@@ -91,6 +92,29 @@ export default function MOATable({ isModalOpen, setIsModalOpen }) {
       setDeleteModal(prev => ({ ...prev, isDeleting: false }));
     }
   };
+
+  const toggleRowSelection = (moaId) => {
+    setSelectedRows((prev) =>
+      prev.includes(moaId)
+        ? prev.filter((id) => id !== moaId)
+        : [...prev, moaId]
+    );
+  };
+
+  // Handle "select all" checkbox toggle
+  const toggleSelectAll = () => {
+    if (selectedRows.length === moas.length) {
+      setSelectedRows([]); // Deselect all
+    } else {
+      setSelectedRows(moas.map((moa) => moa.moa_id)); // Select all
+    }
+  }; 
+  
+  // Check if all rows are selected
+  const isAllSelected = moas.length > 0 && selectedRows.length === moas.length;
+
+  // Check if some rows are selected
+  const isSomeSelected = selectedRows.length > 0 && selectedRows.length < moas.length;
 
   const handleFilterChange = (filterType, value) => {
     setFilters(prev => ({
@@ -180,11 +204,14 @@ export default function MOATable({ isModalOpen, setIsModalOpen }) {
       <div className="relative overflow-x-auto">
         <table className="w-full">
           <thead className="sticky top-0 z-10 bg-gray-50">
-            <MOAHeader 
-              onSort={handleSort} 
-              sortConfig={sortConfig} 
+            <MOAHeader
+              onSort={handleSort}
+              sortConfig={sortConfig}
               filters={filters}
               onFilterChange={handleFilterChange}
+              isAllSelected={isAllSelected}
+              isSomeSelected={isSomeSelected}
+              onToggleSelectAll={toggleSelectAll}
             />
           </thead>
           <tbody>
@@ -195,7 +222,11 @@ export default function MOATable({ isModalOpen, setIsModalOpen }) {
                   className="border-t border-gray-200 hover:bg-gray-50 transition-colors"
                 >
                   <td className="p-4">
-                    <input type="checkbox" className="h-4 w-4 rounded border-gray-300" />
+                    <input type="checkbox" 
+                      className="h-4 w-4 rounded border-gray-300"
+                      checked={selectedRows.includes(moa.moa_id)}
+                      onChange={() => toggleRowSelection(moa.moa_id)}
+                    />
                   </td>
                   <td className="p-4 text-sm text-gray-900">{moa.name}</td>
                   <td className="p-4 text-sm text-gray-900">{moa.type_of_moa}</td>
