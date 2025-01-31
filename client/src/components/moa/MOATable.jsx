@@ -153,14 +153,14 @@ export default function MOATable({ isModalOpen, setIsModalOpen }) {
       <ToastContainer />
       <div className="p-4 border-b border-gray-200">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="relative">
+          <div className="relative w-full sm:w-auto">
             <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               placeholder="Search MOAs..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-20 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-maroon focus:border-maroon outline-none"
+              className="pl-10 pr-20 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-maroon focus:border-maroon outline-none w-full sm:w-auto"
             />
           </div>
 
@@ -176,7 +176,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen }) {
       </div>
 
       <div className="relative overflow-x-auto">
-        <table className="w-full table-fixed">
+        <table className="w-full">
           <thead className="sticky top-0 z-10 bg-gray-50">
             <MOAHeader 
               onSort={handleSort} 
