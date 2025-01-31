@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { Label, Pie, PieChart } from "recharts"
+import { useState, useEffect } from "react";
 
 import {
   Card,
@@ -32,20 +33,32 @@ const chartConfig = {
 }
 
 export function PieGraph({ stats }) {
+    const [radius, setRadius] = useState(80);
+
+    useEffect(() => {
+      function handleResize() {
+        const newRadius = Math.max(30, window.innerWidth / 15);
+        setRadius(newRadius);
+      }
+
+      window.addEventListener("resize", handleResize);
+      handleResize();
+
+      return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
     const chartData = [
       { moaType: "active", moaNumber: stats.Active, fill: "var(--color-active)" },
       { moaType: "expiry", moaNumber: stats.Expiry, fill: "var(--color-expiry)" },
       { moaType: "expired", moaNumber: stats.Expired, fill: "var(--color-expired)" },
     ];
-  
-    const totalMOA = React.useMemo(() => {
-      return chartData.reduce((acc, curr) => acc + curr.moaNumber, 0);
-    }, [chartData]); // Now it updates when chartData changes
+
+    const totalMOA = chartData.reduce((acc, curr) => acc + curr.moaNumber, 0);
   
     return (
       <Card className="flex flex-col justify-between h-full">
         <CardHeader>
-            <CardTitle className="text-md">Validity Distribution</CardTitle>
+          <CardTitle className="text-md">Validity Distribution</CardTitle>
         </CardHeader>
         <CardContent>
           <ChartContainer
@@ -57,7 +70,8 @@ export function PieGraph({ stats }) {
                 data={chartData}
                 dataKey="moaNumber"
                 nameKey="moaType"
-                innerRadius={80}
+                innerRadius={radius}
+                outerRadius={radius * 1.4}
                 strokeWidth={5}
               >
                 <Label
