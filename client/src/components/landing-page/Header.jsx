@@ -1,16 +1,16 @@
-import React from "react";
-
-export default function Header({ logoStyle, websiteNameStyle }) {
+export default function Header() {
   return (
-    <div className="flex flex-col items-center mx-4 sm:flex-row sm:mx-20">
-      <img 
-        src="/PUP.png" 
-        alt="Polytechnic University of the Philippines logo" 
-        className={`mb-5 sm:mb-0 mt-2 sm:mt-0 ${logoStyle}`} 
-      />
-      <p className={`text-center sm:text-left sm:ml-5 text-2xl sm:text-base ${websiteNameStyle}`}>
-        MOA Monitoring System
-      </p>
-    </div>
+    <header className="py-6 px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-4">
+        <img 
+          src="/PUP.png" 
+          alt="Polytechnic University of the Philippines logo" 
+          className="h-16 sm:h-20 w-auto"
+        />
+        <h1 className="text-2xl sm:text-3xl font-semibold text-white">
+          MOA Monitoring System
+        </h1>
+      </div>
+    </header>
   );
 }
