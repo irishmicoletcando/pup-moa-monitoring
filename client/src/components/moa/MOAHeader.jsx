@@ -5,7 +5,6 @@ export default function MOAHeader({ onSort, sortConfig, filters, onFilterChange 
   const [openFilter, setOpenFilter] = useState(null);
   const filterRef = useRef(null);
 
-  // Close filter dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
       if (filterRef.current && !filterRef.current.contains(event.target)) {
@@ -25,7 +24,7 @@ export default function MOAHeader({ onSort, sortConfig, filters, onFilterChange 
   };
 
   const FilterDropdown = ({ type, options, selectedValues, onChange }) => (
-    <div className="relative" ref={filterRef}>
+    <div className="relative inline-block" ref={filterRef}>
       <button
         onClick={() => setOpenFilter(openFilter === type ? null : type)}
         className="flex items-center gap-1 hover:text-maroon"
@@ -34,10 +33,10 @@ export default function MOAHeader({ onSort, sortConfig, filters, onFilterChange 
         <ChevronDown className="w-4 h-4" />
       </button>
       {openFilter === type && (
-        <div className="absolute z-10 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200">
+        <div className="fixed transform translate-y-2 w-48 bg-white rounded-md shadow-lg border border-gray-200" style={{ zIndex: 1000 }}>
           <div className="p-2">
             {options.map((option) => (
-              <label key={option} className="flex items-center px-2 py-1 hover:bg-gray-50">
+              <label key={option} className="flex items-center px-2 py-1 hover:bg-gray-50 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={selectedValues.includes(option)}
@@ -54,7 +53,7 @@ export default function MOAHeader({ onSort, sortConfig, filters, onFilterChange 
   );
 
   return (
-    <tr>
+    <tr className="bg-gray-50">
       <th className="w-12 p-4 text-left">
         <input type="checkbox" className="h-4 w-4 rounded border-gray-300" />
       </th>
@@ -91,7 +90,7 @@ export default function MOAHeader({ onSort, sortConfig, filters, onFilterChange 
         </button>
       </th>
       <th className="p-4 text-left text-sm font-medium">Year Submitted to ARCDO</th>
-      <th className="p-4 text-left text-sm font-medium"></th>
+      <th className="p-4 text-left text-sm font-medium">Actions</th>
     </tr>
   );
 }
