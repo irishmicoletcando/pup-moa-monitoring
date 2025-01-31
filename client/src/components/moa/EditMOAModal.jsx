@@ -78,15 +78,15 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
         </div>
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
           <div>
-            <label htmlFor="moaName" className="block font-bold mb-2">MOA Name</label>
-            <input type="text" id="moaName" name="moaName" className="border-gray-300 border px-3 py-2 w-full rounded-md" value={formData.moaName} onChange={handleChange} required />
+            <label htmlFor="moaName" className="block font-bold mb-2 text-sm sm:text-base">MOA Name</label>
+            <input type="text" id="moaName" name="moaName" className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base" value={formData.moaName} onChange={handleChange} required />
           </div>
 
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="typeOfMoa" className="block font-bold mb-2">Type of MOA</label>
-              <select id="typeOfMoa" name="typeOfMoa" className="border-gray-300 border px-3 py-2 w-full rounded-md" value={formData.typeOfMoa} onChange={handleChange} required>
+              <label htmlFor="typeOfMoa" className="block font-bold mb-2 text-sm sm:text-base">Type of MOA</label>
+              <select id="typeOfMoa" name="typeOfMoa" className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base" value={formData.typeOfMoa} onChange={handleChange} required>
                 <option value="Practicum">Practicum</option>
                 <option value="Employment">Employment</option>
                 <option value="Scholarship">Scholarship</option>
@@ -94,46 +94,46 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
               </select>
             </div>
             <div>
-              <label htmlFor="natureOfBusiness" className="block font-bold mb-2">Nature of Business</label>
+              <label htmlFor="natureOfBusiness" className="block font-bold mb-2 text-sm sm:text-base">Nature of Business</label>
               <input type="text" id="natureOfBusiness" name="natureOfBusiness" className="border-gray-300 border px-3 py-2 w-full rounded-md" value={formData.natureOfBusiness} onChange={handleChange} required />
             </div>
           </div>
 
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="firstName" className="block font-bold mb-2">Contact First Name</label>
-              <input type="text" id="firstName" name="firstName" className="border-gray-300 border px-3 py-2 w-full rounded-md" value={formData.firstName} onChange={handleChange} required />
+              <label htmlFor="firstName" className="block font-bold mb-2 text-sm sm:text-base">Contact First Name</label>
+              <input type="text" id="firstName" name="firstName" className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base" value={formData.firstName} onChange={handleChange} required />
             </div>
             <div>
-              <label htmlFor="lastName" className="block font-bold mb-2">Contact Last Name</label>
-              <input type="text" id="lastName" name="lastName" className="border-gray-300 border px-3 py-2 w-full rounded-md" value={formData.lastName} onChange={handleChange} required />
+              <label htmlFor="lastName" className="block font-bold mb-2 text-sm sm:text-base">Contact Last Name</label>
+              <input type="text" id="lastName" name="lastName" className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base" value={formData.lastName} onChange={handleChange} required />
             </div>
           </div>
 
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="contactNumber" className="block font-bold mb-2">Contact Number</label>
-              <input type="tel" id="contactNumber" name="contactNumber" className="border-gray-300 border px-3 py-2 w-full rounded-md" value={formData.contactNumber} onChange={handleChange} required />
+              <label htmlFor="contactNumber" className="block font-bold mb-2 text-sm sm:text-base">Contact Number</label>
+              <input type="tel" id="contactNumber" name="contactNumber" className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base" value={formData.contactNumber} onChange={handleChange} required />
             </div>
             <div>
-              <label htmlFor="emailAddress" className="block font-bold mb-2">Email Address</label>
-              <input type="email" id="emailAddress" name="emailAddress" className="border-gray-300 border px-3 py-2 w-full rounded-md" value={formData.emailAddress} onChange={handleChange} required />
+              <label htmlFor="emailAddress" className="block font-bold mb-2 text-sm sm:text-base">Email Address</label>
+              <input type="email" id="emailAddress" name="emailAddress" className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base" value={formData.emailAddress} onChange={handleChange} required />
             </div>
           </div>
 
           {/* MOA Status, Validity, and Date Notarized */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="validity" className="block font-bold mb-2">
+              <label htmlFor="validity" className="block font-bold mb-2 text-sm sm:text-base">
                 Validity
               </label>
               <input
                 type="number"
                 id="validity"
                 name="validity"
-                className="border-gray-300 border px-3 py-2 w-full rounded-md"
+                className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base"
                 value={formData.validity}
                 onChange={handleChange}
                 required
@@ -141,14 +141,14 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
             </div>
 
             <div>
-              <label htmlFor="dateNotarized" className="block font-bold mb-2">
+              <label htmlFor="dateNotarized" className="block font-bold mb-2 text-sm sm:text-base">
                 Date Notarized
               </label>
               <input
                 type="date"
                 id="dateNotarized"
                 name="dateNotarized"
-                className="border-gray-300 border px-3 py-2 w-full rounded-md"
+                className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base"
                 value={formData.dateNotarized}
                 onChange={handleChange}
                 required
@@ -157,7 +157,7 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
           </div>
 
           <div>
-            <label className="block font-bold mb-2">Upload New Documents</label>
+            <label className="block font-bold mb-2 text-sm sm:text-base">Upload New Documents</label>
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
               <label className="flex flex-col items-center cursor-pointer">
                 <Upload className="w-8 h-8 text-gray-400" />
@@ -174,7 +174,7 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
               </button>
             </div>
           ))}
-          <button type="submit" disabled={isSubmitting} className="w-full bg-maroon hover:bg-red text-white font-bold py-2 px-4 rounded-md">
+          <button type="submit" disabled={isSubmitting} className="w-full bg-maroon hover:bg-red text-white font-bold py-2 px-4 rounded-md text-sm sm:text-base">
             {isSubmitting ? "Updating..." : "Update MOA"}
           </button>
         </form>
