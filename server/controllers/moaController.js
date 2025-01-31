@@ -23,16 +23,22 @@ const containerClient = blobServiceClient.getContainerClient(CONTAINER_NAME);
 const uploadToBlob = async (file, fileName) => {
   try {
     const blockBlobClient = containerClient.getBlockBlobClient(fileName);
+    
+    // Force the content type to 'application/pdf'
     const uploadOptions = {
-      blobHTTPHeaders: { blobContentType: file.mimetype }
+      blobHTTPHeaders: { blobContentType: 'application/pdf' }
     };
+
+    // Upload the file as a PDF to Azure Blob Storage
     await blockBlobClient.upload(file.buffer, file.size, uploadOptions);
-    return blockBlobClient.url;
+
+    return blockBlobClient.url;  // Return the URL of the uploaded file
   } catch (error) {
     console.error('Error uploading to blob storage:', error);
     throw new Error('Failed to upload file to storage');
   }
 };
+
 
 const addMOA = async (req, res) => {
   const uploadFiles = upload.array('files', 10);
@@ -163,34 +169,82 @@ const addMOA = async (req, res) => {
 
 // Get All MOAs
 const getAllMOAs = async (req, res) => {
-    const query = `
-        SELECT 
-            moa_info.moa_id, 
-            moa_info.name, 
-            moa_type.type_name AS type_of_moa, 
-            moa_info.nature_of_business, 
-            CONCAT(moa_contact.firstname, ' ', moa_contact.lastname) AS contact_person, 
-            moa_contact.contact_number, 
-            moa_contact.email, 
-            moa_info.status AS moa_status, 
-            moa_validity_period.years_validity, 
-            moa_validity_period.date_notarized, 
-            moa_validity_period.expiry_date, 
-            moa_validity_period.year_submitted 
-        FROM moa_info
-        JOIN moa_contact ON moa_info.contact_id = moa_contact.contact_id
-        JOIN moa_validity_period ON moa_info.validity_id = moa_validity_period.validity_id
-        JOIN moa_type ON moa_info.type_id = moa_type.type_id
-        ORDER BY moa_info.moa_id;
-    `;
+  const query = `
+      SELECT 
+          moa_info.moa_id, 
+          moa_info.name, 
+          moa_type.type_name AS type_of_moa, 
+          moa_info.nature_of_business, 
+          CONCAT(moa_contact.firstname, ' ', moa_contact.lastname) AS contact_person, 
+          moa_contact.contact_number, 
+          moa_contact.email, 
+          moa_info.status AS moa_status, 
+          moa_validity_period.years_validity, 
+          moa_validity_period.date_notarized, 
+          moa_validity_period.expiry_date, 
+          moa_validity_period.year_submitted, 
+          moa_documents.file_path -- Now mapping 1 file_path per MOA
+      FROM moa_info
+      JOIN moa_contact ON moa_info.contact_id = moa_contact.contact_id
+      JOIN moa_validity_period ON moa_info.validity_id = moa_validity_period.validity_id
+      JOIN moa_type ON moa_info.type_id = moa_type.type_id
+      LEFT JOIN moa_documents ON moa_info.moa_id = moa_documents.moa_id -- Ensures only one document per MOA
+      ORDER BY moa_info.moa_id;
+  `;
 
-    try {
-        const [results] = await pool.query(query);
-        res.status(200).json({ moas: results });
-    } catch (err) {
-        console.error("Error fetching MOAs:", err);
-        res.status(500).send('Error retrieving MOAs');
+  try {
+      const [results] = await pool.query(query);
+      res.status(200).json({ moas: results });
+  } catch (err) {
+      console.error("Error fetching MOAs:", err);
+      res.status(500).send('Error retrieving MOAs');
+  }
+};
+
+const getMOAById = async (req, res) => {
+  const { id } = req.params;
+  
+  // Convert id to number and validate
+  const moaId = parseInt(id, 10);
+  if (isNaN(moaId)) {
+    return res.status(400).json({ error: 'Invalid MOA ID' });
+  }
+
+  const query = `
+    SELECT 
+      moa_info.moa_id, 
+      moa_info.name, 
+      moa_type.type_name AS type_of_moa, 
+      moa_info.nature_of_business, 
+      CONCAT(moa_contact.firstname, ' ', moa_contact.lastname) AS contact_person, 
+      moa_contact.contact_number, 
+      moa_contact.email, 
+      moa_info.status AS moa_status, 
+      moa_validity_period.years_validity, 
+      moa_validity_period.date_notarized, 
+      moa_validity_period.expiry_date, 
+      moa_validity_period.year_submitted,
+      moa_documents.file_path
+    FROM moa_info
+    JOIN moa_contact ON moa_info.contact_id = moa_contact.contact_id
+    JOIN moa_validity_period ON moa_info.validity_id = moa_validity_period.validity_id
+    JOIN moa_type ON moa_info.type_id = moa_type.type_id
+    LEFT JOIN moa_documents ON moa_info.moa_id = moa_documents.moa_id
+    WHERE moa_info.moa_id = ?
+  `;
+
+  try {
+    const [results] = await pool.query(query, [moaId]);
+    
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'MOA not found' });
     }
+    
+    res.status(200).json({ moa: results[0] });
+  } catch (err) {
+    console.error("Error fetching MOA by ID:", err);
+    res.status(500).json({ error: 'Error retrieving MOA' });
+  }
 };
 
 // Update MOA
@@ -216,27 +270,63 @@ const updateMOA = async (req, res) => {
     }
 };
 
-// Delete MOA
 const deleteMOA = async (req, res) => {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    const query = 'DELETE FROM moa_info WHERE moa_id = ?';
+  console.log("Received ID:", id, "Type:", typeof id);
+  
+  // Convert id to number and validate
+  const moaId = parseInt(id, 10);
+  if (isNaN(moaId)) {
+    console.error("Invalid MOA ID:", id);
+    return res.status(400).json({ error: 'Invalid MOA ID' });
+  }
 
-    try {
-        const [result] = await pool.query(query, [id]);
-        if (result.affectedRows === 0) {
-            return res.status(404).send('MOA not found');
-        }
-        res.status(200).send('MOA deleted successfully');
-    } catch (err) {
-        console.error('Error deleting MOA:', err);
-        res.status(500).send('Error deleting MOA');
+  const querySELECT = `
+    SELECT contact_id, validity_id FROM moa_info WHERE moa_id = ?;
+  `;
+
+  let connection;
+
+  try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+
+    // Use the parsed moaId in queries
+    const [result_contact_id_validity_id] = await connection.query(querySELECT, [moaId]);
+
+    if (result_contact_id_validity_id.length === 0) {
+      return res.status(404).json({ error: 'MOA not found' });
     }
+
+    const { contact_id, validity_id } = result_contact_id_validity_id[0];
+
+    // Delete dependent records
+    await connection.query('DELETE FROM moa_documents WHERE moa_id = ?', [moaId]);
+    await connection.query('DELETE FROM moa_status_history WHERE moa_id = ?', [moaId]);
+    await connection.query('DELETE FROM moa_info WHERE moa_id = ?', [moaId]);
+    await connection.query('DELETE FROM moa_validity_period WHERE moa_id = ?', [moaId]);
+  
+
+    await connection.commit();
+    res.status(200).json({ message: 'MOA deleted successfully' });
+  } catch (err) {
+    if (connection) {
+      await connection.rollback();
+    }
+    console.error('Error deleting MOA:', err);
+    res.status(500).json({ error: 'Error deleting MOA' });
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  }
 };
 
 module.exports = {
-    addMOA,
-    getAllMOAs,
-    updateMOA,
-    deleteMOA,
+  addMOA,
+  getAllMOAs,
+  getMOAById,
+  updateMOA,
+  deleteMOA,
 };

@@ -2,7 +2,7 @@ import { Plus } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import AddAdminModal from './AddAdminModal';
 
-export default function AddAdminButton() {
+export default function AddAdminButton({ onUserAdded }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
 
@@ -59,13 +59,16 @@ export default function AddAdminButton() {
         onClick={() => setIsModalOpen(true)}
         className="flex items-center gap-2 bg-maroon text-white px-4 py-2 rounded-xl hover:bg-red"
       >
+        {/* Icon only on small screens */}
         <Plus className="h-4 w-4" />
-        Add Admin
+        {/* Text and icon on larger screens */}
+        <span className="hidden sm:inline-block ml-2">Add Admin</span> {/* Text only on sm or larger */}
       </button>
 
       <AddAdminModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        onUserAdded={onUserAdded}
       />
     </div>
   );
