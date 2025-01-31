@@ -54,6 +54,9 @@ export default {
   				'5': 'hsl(var(--chart-5))'
   			}
   		},
+		backgroundImage: {
+			'custom-gradient': 'linear-gradient(to bottom, #800000, #e57c7c)',
+		},
   		fontFamily: {
   			'Source-Sans-Pro': [
   				'Source Sans 3',
