@@ -45,7 +45,7 @@ const addUser = async (req, res) => {
 
                     Your credentials for accessing the PUP MOA Monitoring admin account are as follows:
 
-                    Username: ${email}
+                    Email: ${email}
                     Password: ${password}
 
                     Please keep your credentials safe.
@@ -54,7 +54,7 @@ const addUser = async (req, res) => {
                     PUP MOA Monitoring Team`, // plain text body
             html: `<p>Hello,</p>
                             <p>Your credentials for accessing the PUP MOA Monitoring admin account are as follows:</p>
-                            <p><strong>Username:</strong> ${email}</p>
+                            <p><strong>Email:</strong> ${email}</p>
                             <p><strong>Password:</strong> ${password}</p>
                             <p>Please keep your credentials safe.</p>
                             <p>Best regards,<br>
