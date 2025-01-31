@@ -17,7 +17,7 @@ db.connect((err) => {
         console.error('Failed to connect to the database:', err);
         process.exit(1); // Exit the process if the DB connection fails
     } else {
-        console.log('Connected to MySQL database.');
+        // console.log('Connected to MySQL database.');
     }
 });
 
@@ -37,7 +37,7 @@ const pool = mysql.createPool({
 
 // Schedule a job to run every day at midnight
 cron.schedule('* * * * *', async () => {
-    console.log('Running cron job to update MOA statuses...');
+    // console.log('Running cron job to update MOA statuses...');
 
     const query = `
         SELECT v.validity_id, v.moa_id, v.expiry_date, m.status AS current_status
@@ -67,11 +67,11 @@ cron.schedule('* * * * *', async () => {
             if (newStatus !== row.current_status) {
                 const updateQuery = `UPDATE moa_info SET status = ? WHERE moa_id = ?`;
                 await pool.query(updateQuery, [newStatus, row.moa_id]);
-                console.log(`✅ Updated status for MOA ID ${row.moa_id} to ${newStatus}`);
+                // console.log(`✅ Updated status for MOA ID ${row.moa_id} to ${newStatus}`);
             }
         }
     } catch (err) {
-        console.error('❌ Error running cron job:', err);
+        // console.error('❌ Error running cron job:', err);
     }
 }); 
 

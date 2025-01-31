@@ -34,7 +34,6 @@ const uploadToBlob = async (file, fileName) => {
 
     return blockBlobClient.url;  // Return the URL of the uploaded file
   } catch (error) {
-    console.error('Error uploading to blob storage:', error);
     throw new Error('Failed to upload file to storage');
   }
 };
@@ -156,7 +155,6 @@ const addMOA = async (req, res) => {
     } catch (error) {
       // Rollback in case of error
       await connection.rollback();
-      console.error("Error in MOA creation process:", error);
       res.status(500).json({ 
         message: "Error creating MOA",
         error: error.message 
@@ -196,7 +194,6 @@ const getAllMOAs = async (req, res) => {
       const [results] = await pool.query(query);
       res.status(200).json({ moas: results });
   } catch (err) {
-      console.error("Error fetching MOAs:", err);
       res.status(500).send('Error retrieving MOAs');
   }
 };
@@ -242,7 +239,6 @@ const getMOAById = async (req, res) => {
     
     res.status(200).json({ moa: results[0] });
   } catch (err) {
-    console.error("Error fetching MOA by ID:", err);
     res.status(500).json({ error: 'Error retrieving MOA' });
   }
 };
@@ -265,20 +261,16 @@ const updateMOA = async (req, res) => {
         }
         res.status(200).send('MOA updated successfully');
     } catch (err) {
-        console.error('Error updating MOA:', err);
         res.status(500).send('Error updating MOA');
     }
 };
 
 const deleteMOA = async (req, res) => {
   const { id } = req.params;
-
-  console.log("Received ID:", id, "Type:", typeof id);
   
   // Convert id to number and validate
   const moaId = parseInt(id, 10);
   if (isNaN(moaId)) {
-    console.error("Invalid MOA ID:", id);
     return res.status(400).json({ error: 'Invalid MOA ID' });
   }
 
@@ -313,7 +305,6 @@ const deleteMOA = async (req, res) => {
     if (connection) {
       await connection.rollback();
     }
-    console.error('Error deleting MOA:', err);
     res.status(500).json({ error: 'Error deleting MOA' });
   } finally {
     if (connection) {

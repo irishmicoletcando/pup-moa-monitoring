@@ -42,7 +42,6 @@ export default function AdminTable({ isModalOpen, setIsModalOpen, refreshTrigger
         throw new Error("Invalid response format");
       }
     } catch (error) {
-      console.error("Fetch users error:", error);
       toast.error(error.message);
     } finally {
       setLoading(false);
@@ -106,7 +105,6 @@ export default function AdminTable({ isModalOpen, setIsModalOpen, refreshTrigger
       toast.success("User deleted successfully");
       closeDeleteModal();
     } catch (error) {
-      console.error('Delete error:', error);
       toast.error(error.message);
     } finally {
       setDeleteModal(prev => ({ ...prev, isDeleting: false }));

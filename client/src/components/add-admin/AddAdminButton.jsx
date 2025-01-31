@@ -8,14 +8,10 @@ export default function AddAdminButton({ onUserAdded }) {
 
   useEffect(() => {
     const fetchUserRole = async () => {
-      try {
-        console.log('Fetching user data from /api/auth/users...');
-        
+      try {     
         // Retrieve the JWT token and logged-in user email from localStorage
         const token = localStorage.getItem('token');
         const loggedInEmail = localStorage.getItem('userEmail');
-        console.log('Retrieved JWT token:', token);
-        console.log('Retrieved logged-in user email:', loggedInEmail);
 
         if (!token || !loggedInEmail) {
           throw new Error('JWT token or logged-in user email not found');
@@ -34,7 +30,6 @@ export default function AddAdminButton({ onUserAdded }) {
         }
   
         const { users } = await response.json(); // Destructure to get the `users` array
-        console.log('User data fetched:', users);
         
         // Find the logged-in user in the array by email
         const loggedInUser = users.find(user => user.email === loggedInEmail);
@@ -42,7 +37,7 @@ export default function AddAdminButton({ onUserAdded }) {
           setIsSuperAdmin(true);
         } 
       } catch (error) {
-        console.error('Error fetching user role:', error);
+        // console.error('Error fetching user role:', error);
       }
     };
   

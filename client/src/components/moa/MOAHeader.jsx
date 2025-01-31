@@ -7,10 +7,8 @@ export default function MOAHeader({ onSort, sortConfig, filters, onFilterChange,
 
   useEffect(() => {
     function handleClickOutside(event) {
-      console.log("Clicked element:", event.target);
       // Check if the click is outside all dropdowns
       if (openFilter && filterRefs.current[openFilter] && !filterRefs.current[openFilter].contains(event.target)) {
-        console.log("Click outside detected, closing dropdown");
         setOpenFilter(null); // Close the dropdown
       }
     }
@@ -27,13 +25,11 @@ export default function MOAHeader({ onSort, sortConfig, filters, onFilterChange,
   };
 
   const FilterDropdown = ({ type, options, selectedValues, onChange }) => {
-    console.log(`Rendering dropdown for: ${type}, openFilter: ${openFilter}`);
     return (
       <div className="relative inline-block" ref={(el) => (filterRefs.current[type] = el)}>
         <button
           onClick={(e) => {
             e.stopPropagation(); // Prevent event propagation
-            console.log(`Button clicked for: ${type}`);
             setOpenFilter(openFilter === type ? null : type); // Toggle dropdown
           }}
           className="flex items-center gap-1 hover:text-maroon"

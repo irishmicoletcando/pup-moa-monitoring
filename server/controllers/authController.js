@@ -14,7 +14,6 @@ const addUser = async (req, res) => {
         const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
 
         if (rows.length > 0) {
-            console.log(`User with email ${email} already exists.`);
             return res.status(400).send('User with this email already exists');
         }
 
@@ -64,10 +63,9 @@ const addUser = async (req, res) => {
             const sendMail = async (transporter, credEmailTemplate) => {
                 try{
                     await transporter.sendMail(credEmailTemplate)
-                    console.log('Email has been sent!')
                 }     
                 catch (error){
-                    console.error(error)
+                    // console.error(error)
                 }
             }
             
@@ -84,7 +82,7 @@ const addUser = async (req, res) => {
         await pool.query(query, [firstname, lastname, email, role, contactNumber, hashedPassword]);
         res.status(201).send('User registered successfully');
     } catch (err) {
-        console.error(err);
+        // console.error(err);
         res.status(500).send('Error processing user registration');
     }
 };
@@ -101,7 +99,6 @@ const getAllUsers = async (req, res) => {
         const [results] = await pool.query(query);
         res.status(200).json({ users: results });
     } catch (err) {
-        console.error("Error fetching users:", err);
         res.status(500).send('Error retrieving users');
     }
 };
@@ -152,7 +149,6 @@ const deleteUser = async (req, res) => {
             message: 'User deleted successfully'
         });
     } catch (error) {
-        console.error('Error in delete operation:', error);
         res.status(500).json({ 
             message: 'Server error while deleting user'
         });
@@ -182,9 +178,9 @@ const login = async (req, res) => {
         const [updateResult] = await pool.query(updateQuery, [user.user_id]);
 
         if (updateResult.affectedRows === 0) {
-            console.log('No rows were updated for user_id:', user.user_id);
+            // console.log('No rows were updated for user_id:', user.user_id);
         } else {
-            console.log('Last login time updated for user_id:', user.user_id);
+            // console.log('Last login time updated for user_id:', user.user_id);
         }
 
         // Generate JWT token if the passwords match
@@ -201,7 +197,6 @@ const login = async (req, res) => {
             message: 'Login successful'
         });
     } catch (err) {
-        console.error(err);
         res.status(500).send('Error during login');
     }
 };

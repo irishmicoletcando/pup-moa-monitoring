@@ -140,7 +140,6 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
     
       onClose();
     } catch (error) {
-      console.error("Add MOA error:", error);
       toast.error(error.message);
     } finally {
       setIsSubmitting(false);

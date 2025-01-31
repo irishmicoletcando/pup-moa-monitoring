@@ -108,7 +108,6 @@ export default function AdminModal({ isOpen, onClose, onUserAdded }) {
       
       onClose();
     } catch (error) {
-      console.error("Add user error:", error);
       toast.error(error.message);
     } finally {
       setIsSubmitting(false);

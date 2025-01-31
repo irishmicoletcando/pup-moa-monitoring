@@ -27,11 +27,10 @@ export default function DashboardStats() {
         }
 
         const data = await response.json();
-        console.log("Fetched MOA type stats:", data);
 
         setTypeStats(data);
       } catch (error) {
-        console.error('Error fetching MOA stats:', error);
+        // console.error('Error fetching MOA stats:', error);
       } finally {
         setLoading(false); // Set loading to false when fetch is done
       }
@@ -50,11 +49,10 @@ export default function DashboardStats() {
         }
 
         const data = await response.json();
-        console.log("Fetched MOA status stats:", data);
 
         setStatusStats(data);
       } catch (error) {
-        console.error('Error fetching MOA status stats:', error);
+        // console.error('Error fetching MOA status stats:', error);
       }
     };
 

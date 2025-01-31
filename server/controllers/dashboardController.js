@@ -36,7 +36,6 @@ const getMOACountByType = async (req, res) => {
 
         res.status(200).json(stats);
     } catch (err) {
-        console.error("Error fetching MOA statistics:", err);
         res.status(500).send('Error retrieving MOA statistics');
     }
 };
@@ -69,7 +68,6 @@ const getMOACountByStatus = async (req, res) => {
 
         res.status(200).json(stats);
     } catch (err) {
-        console.error("Error fetching MOA statistics by status:", err);
         res.status(500).send('Error retrieving MOA statistics by status');
     }
 };
