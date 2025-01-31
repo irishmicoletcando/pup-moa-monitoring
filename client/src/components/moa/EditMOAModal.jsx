@@ -2,10 +2,9 @@ import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { Upload, X } from "lucide-react";
 
-export default function EditMOAModal({ isOpen, onClose, moa, onMOAUpdated }) {
+export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [files, setFiles] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     moaName: "",
     typeOfMoa: "Practicum",
@@ -18,69 +17,11 @@ export default function EditMOAModal({ isOpen, onClose, moa, onMOAUpdated }) {
     dateNotarized: ""
   });
 
-  const fetchMOAData = async (moaId) => {
-    setIsLoading(true);
-    try {
-      const response = await fetch(`/api/moas/${moaId}`, {
-        method: 'GET',
-        headers: { 
-          'Authorization': `Bearer ${localStorage.getItem("token")}`,
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        }
-      });
-    
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Full error response:', errorText);
-        
-        try {
-          const errorData = JSON.parse(errorText);
-          throw new Error(errorData.message || "Failed to fetch MOA data");
-        } catch {
-          throw new Error(errorText || "Failed to fetch MOA data");
-        }
-      }
-    
-      const data = await response.json();
-      console.log("Fetched MOA Data:", data);
-    
-      // Parse contact person
-      const contactPersonParts = (data.moa.contact_person || '').split(' ');
-      const firstName = contactPersonParts[0] || '';
-      const lastName = contactPersonParts.slice(1).join(' ') || '';
-  
-      setFormData({
-        moaName: data.moa.name || '',
-        typeOfMoa: data.moa.type_of_moa || 'Practicum',
-        natureOfBusiness: data.moa.nature_of_business || '',
-        firstName: firstName,
-        lastName: lastName,
-        contactNumber: data.moa.contact_number || '',
-        emailAddress: data.moa.email || '',
-        validity: data.moa.years_validity || '',
-        dateNotarized: data.moa.date_notarized ? 
-          new Date(data.moa.date_notarized).toISOString().split('T')[0] : '' // Convert to YYYY-MM-DD format
-      });
-  
-      // Optional: Handle file path if needed
-      if (data.moa.file_path) {
-        // You might want to set this in state or do something with the file path
-        console.log("Existing document path:", data.moa.file_path);
-      }
-    } catch (error) {
-      console.error("Error fetching MOA data:", error);
-      toast.error(String(error.message));
-    } finally {
-      setIsLoading(false);
-    }
-  };
-    
   useEffect(() => {
-    if (isOpen && moa?.moa_id) {
-      fetchMOAData(moa.moa_id);
+    if (moaData) {
+      setFormData({ ...moaData });
     }
-  }, [isOpen, moa]);
+  }, [moaData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -101,21 +42,17 @@ export default function EditMOAModal({ isOpen, onClose, moa, onMOAUpdated }) {
     if (isSubmitting) return;
     setIsSubmitting(true);
     try {
-      const updatedData = { 
-        ...formData, 
-        user_id: localStorage.getItem("user_id"),
-        moa_id: moa.moa_id  // Use the correct ID from the selected MOA
-      };
+      const updatedData = { ...formData, user_id: localStorage.getItem("user_id") };
       const formDataToSend = new FormData();
       formDataToSend.append("data", JSON.stringify(updatedData));
       files.forEach((file) => formDataToSend.append("files", file));
-  
-      const response = await fetch(`/api/moas/${moa.moa_id}`, {  // Use moa.moa_id
+
+      const response = await fetch(`/api/moas/${moaData.id}`, {
         method: "PUT",
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: formDataToSend,
       });
-  
+
       if (!response.ok) {
         const data = await response.json();
         throw new Error(data.message || "Failed to update MOA");
@@ -132,14 +69,6 @@ export default function EditMOAModal({ isOpen, onClose, moa, onMOAUpdated }) {
 
   if (!isOpen) return null;
 
-  if (isLoading) {
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-maroon" />
-      </div>
-    );
-  }
-  
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg w-full max-w-4xl mx-auto shadow-lg max-h-[90vh] overflow-y-auto">

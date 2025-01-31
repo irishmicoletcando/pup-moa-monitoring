@@ -36,30 +36,16 @@ export function PieGraph({ stats }) {
     const [radius, setRadius] = useState(80);
 
     useEffect(() => {
-        function handleResize() {
-          // Define different divisors based on screen width
-          let divisor = 15; // Default divisor
-    
-          // Change divisor based on screen size
-          if (window.innerWidth < 480) {
-            divisor = 8; // Very small screens (mobile in portrait)
-          } else if (window.innerWidth < 768) {
-            divisor = 10; // Small screens (mobile in landscape)
-          } else if (window.innerWidth < 1024) {
-            divisor = 18; // Medium screens (tablets or small laptops)
-          } else if (window.innerWidth < 1440) {
-            divisor = 14; // Larger screens (small desktops or large tablets)
-          }
-    
-          const newRadius = Math.max(30, window.innerWidth / divisor);
-          setRadius(newRadius);
-        }
-    
-        window.addEventListener("resize", handleResize);
-        handleResize(); // Initial call to set the radius on load
-    
-        return () => window.removeEventListener("resize", handleResize);
-        }, []);
+      function handleResize() {
+        const newRadius = Math.max(30, window.innerWidth / 15);
+        setRadius(newRadius);
+      }
+
+      window.addEventListener("resize", handleResize);
+      handleResize();
+
+      return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     const chartData = [
       { moaType: "active", moaNumber: stats.Active, fill: "var(--color-active)" },
@@ -93,7 +79,7 @@ export function PieGraph({ stats }) {
                     if (viewBox && "cx" in viewBox && "cy" in viewBox) {
                       return (
                         <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
-                          <tspan x={viewBox.cx} y={viewBox.cy} className="fill-foreground text-xl md:text-3xl font-bold">
+                          <tspan x={viewBox.cx} y={viewBox.cy} className="fill-foreground text-3xl font-bold">
                             {totalMOA.toLocaleString()}
                           </tspan>
                           <tspan x={viewBox.cx} y={(viewBox.cy || 0) + 24} className="fill-muted-foreground">

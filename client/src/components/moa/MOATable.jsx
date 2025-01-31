@@ -66,31 +66,29 @@ export default function MOATable({ isModalOpen, setIsModalOpen }) {
   };
 
   const handleDelete = async (moaId) => {
-    console.log("Deleting MOA with ID:", moaId);
     if (!moaId) {
       toast.error("Invalid MOA ID");
       return;
     }
-  
+
     setDeleteModal(prev => ({ ...prev, isDeleting: true }));
-  
+
     try {
       const response = await fetch(`/api/moas/${moaId}`, {
         method: "DELETE",
       });
-  
+
       if (!response.ok) {
-        const errorData = await response.text();
-        throw new Error(errorData || "Failed to delete MOA");
+        throw new Error("Failed to delete MOA");
       }
-  
-      // Use moa_id for filtering instead of id
-      setMoas(prev => prev.filter(moa => moa.moa_id !== moaId));
+
+      setMoas(prev => prev.filter(moa => moa.id !== moaId));
       toast.success("MOA deleted successfully");
       setDeleteModal({ isOpen: false, moa: null, isDeleting: false });
     } catch (error) {
       console.error('Delete error:', error);
       toast.error(error.message);
+    } finally {
       setDeleteModal(prev => ({ ...prev, isDeleting: false }));
     }
   };
@@ -267,9 +265,10 @@ export default function MOATable({ isModalOpen, setIsModalOpen }) {
                       </button>
                       <button
                         onClick={() => {
-                          setSelectedMOA(moa);  // Pass full MOA object
+                          setSelectedMOA(moa);
                           setIsEditModalOpen(true);
                         }}
+                        className="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-50 transition-colors"
                         title="Edit MOA"
                       >
                         <Edit2 className="w-4 h-4" />
@@ -326,13 +325,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen }) {
             Cancel
           </button>
           <button
-            onClick={() => {
-              if (deleteModal.moa?.moa_id) {
-                handleDelete(deleteModal.moa.moa_id);
-              } else {
-                toast.error("Invalid MOA ID");
-              }
-            }}
+            onClick={() => handleDelete(deleteModal.moa?.id)}
             disabled={deleteModal.isDeleting}
             className="px-4 py-2 text-sm font-medium text-white bg-maroon hover:bg-red-600 disabled:bg-red-300 rounded-md transition-colors flex items-center gap-2"
           >

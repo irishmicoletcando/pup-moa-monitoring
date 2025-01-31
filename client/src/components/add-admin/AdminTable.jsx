@@ -307,7 +307,7 @@ export default function AdminTable({ isModalOpen, setIsModalOpen, refreshTrigger
 
       {/* Users Table - Made Scrollable on Mobile */}
       <div className="overflow-x-auto">
-        <table className="w-full min-w-max">
+        <table className="w-full">
           <thead className="bg-gray-50">
             <AdminHeader />
           </thead>
