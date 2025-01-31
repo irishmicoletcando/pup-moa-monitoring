@@ -15,12 +15,15 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
     emailAddress: "",
     moaStatus: "Active",
     validity: "",
-    dateNotarized: ""
+    dateNotarized: "",
+    hasNDA: false  // Add the NDA field
   });
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    const { name, value, type, checked } = e.target;
+    // Handle checkbox separately
+    const newValue = type === 'checkbox' ? checked : value;
+    setFormData({ ...formData, [name]: newValue });
   };
 
   const handleFileChange = (e) => {
@@ -75,12 +78,13 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
         expiry_date: formatDate(expiryDate),
         year_submitted: year,
         user_id: localStorage.getItem("user_id"),
-        documents: documentsArray // Add the documents array
+        documents: documentsArray,
+        hasNDA: formData.hasNDA  // Add the NDA field to the data being sent
       };
       
       // Validate required fields
       const requiredFields = Object.entries(dataToSend).filter(([key]) => 
-        !['user_id', 'expiry_date', 'documents'].includes(key)
+        !['user_id', 'expiry_date', 'documents', 'hasNDA'].includes(key)
       );
       
       for (const [key, value] of requiredFields) {
@@ -130,6 +134,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
         moaStatus: "Active",
         validity: "",
         dateNotarized: "",
+        hasNDA: false  // Reset the NDA field
       });
       setFiles([]);
     
@@ -356,6 +361,21 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
                   </label>
                 </div>
               </div>
+            </div>
+
+            {/* NDA Checkbox */}
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="hasNDA"
+                name="hasNDA"
+                checked={formData.hasNDA}
+                onChange={handleChange}
+                className="w-4 h-4 text-maroon border-gray-300 rounded focus:ring-maroon"
+              />
+              <label htmlFor="hasNDA" className="font-medium text-gray-700 text-sm sm:text-base">
+                Has Non-Disclosure Agreement (NDA)
+              </label>
             </div>
 
             {/* File List */}
