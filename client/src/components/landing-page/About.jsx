@@ -4,7 +4,7 @@ export default function About() {
   return (
     <div className="flex justify-between items-center min-h-screen px-8"> {/* Added px-8 for padding on the sides */}
       {/* Left Side */}
-      <div className="bg-yellow flex flex-col justify-center w-1/2 h-full space-y-10 ml-12 p-20"> {/* Added h-full for same height */}
+      <div className="flex flex-col justify-center w-1/2 h-full space-y-10 ml-12 p-20"> {/* Added h-full for same height */}
         <h2 className="text-5xl font-bold text-white">
           What does MOA Monitoring System do?
         </h2>
@@ -15,7 +15,7 @@ export default function About() {
       </div>
 
       {/* Right Side */}
-      <div className="bg-white flex justify-center items-center w-1/2 h-full mr-12"> {/* Added h-full for same height */}
+      <div className="flex justify-center items-center w-1/2 h-full mr-12"> {/* Added h-full for same height */}
         <img 
           src="/Landing.png" 
           alt="MOA Monitoring" 
