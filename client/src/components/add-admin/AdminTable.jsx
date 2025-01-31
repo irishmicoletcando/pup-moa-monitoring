@@ -228,7 +228,7 @@ export default function AdminTable({ isModalOpen, setIsModalOpen, refreshTrigger
 
       {/* Users Table */}
       <div className="overflow-x-auto">
-        <table className="w-full">
+        <table className="w-full min-w-max">
           <thead className="bg-gray-50">
             <AdminHeader />
           </thead>
