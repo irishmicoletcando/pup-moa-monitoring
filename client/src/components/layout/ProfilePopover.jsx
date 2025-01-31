@@ -38,7 +38,7 @@ const ProfilePopover = ({ show, onClose }) => {
       localStorage.removeItem("userEmail");
 
       toast.success("Logout successful! Redirecting...", { position: "top-right" });
-      setTimeout(() => navigate("/"), 1000);
+      setTimeout(() => navigate("/"), 2000);
     } catch (err) {
       toast.error(err.message, { position: "top-right" });
     }
@@ -46,15 +46,19 @@ const ProfilePopover = ({ show, onClose }) => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (popoverRef.current && !popoverRef.current.contains(event.target)) {
+      if (
+        popoverRef.current && 
+        !popoverRef.current.contains(event.target) && 
+        !event.target.closest("#logout-button") // Prevent closing when clicking logout
+      ) {
         onClose();
       }
     };
-
+  
     if (show) {
       document.addEventListener("mousedown", handleClickOutside);
     }
-
+  
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -117,6 +121,7 @@ const ProfilePopover = ({ show, onClose }) => {
         <span className="text-sm text-gray-500 mt-1 mb-6">{user.role}</span>
 
         <button
+          id="logout-button"
           className="group flex items-center space-x-2 mb-4 w-full justify-center py-2 rounded-md transition-all duration-200 text-black hover:text-red"
           onClick={handleUserLogout}
         >
