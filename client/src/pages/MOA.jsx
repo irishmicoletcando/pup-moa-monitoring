@@ -12,14 +12,14 @@ export default function MOA() {
       <Navbar />
       <div className="flex-1 overflow-auto">
         <div className="p-4 md:p-6">
-          <div className="flex flex-col md:flex-row justify-between items gap-4 mb-6">
+          <div className="flex flex-col ml-auto">
             <div className="flex items-center gap-2">
               <h1 className="text-2xl md:text-3xl font-bold">MOAs</h1>
-            </div>
             <div className="flex gap-4 ml-auto">
               <AddMOAButton onClick={() => setIsModalOpen(true)} />
               <ExportMOAButton onClick={() => setIsModalOpen(true)} />
             </div>
+          </div>
           </div>
           <div className="bg-gray-50 rounded-lg overflow-x-auto shadow-sm">
             <MOATable 
