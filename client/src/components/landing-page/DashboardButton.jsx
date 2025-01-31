@@ -9,9 +9,11 @@ export default function DashboardButton() {
 
   return (
     <div>
-      <button onClick={handleDashboardButtonClick}>
+      <button 
+        onClick={handleDashboardButtonClick} 
+        className="bg-[#800000] text-white rounded-3xl shadow-lg shadow-[#800000]/40 py-4 px-10 text-lg">
         Dashboard
       </button>
     </div>
-  )
+  );
 }
