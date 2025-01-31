@@ -65,29 +65,31 @@ export default function MOATable({ isModalOpen, setIsModalOpen }) {
   };
 
   const handleDelete = async (moaId) => {
+    console.log("Deleting MOA with ID:", moaId);
     if (!moaId) {
       toast.error("Invalid MOA ID");
       return;
     }
-
+  
     setDeleteModal(prev => ({ ...prev, isDeleting: true }));
-
+  
     try {
       const response = await fetch(`/api/moas/${moaId}`, {
         method: "DELETE",
       });
-
+  
       if (!response.ok) {
-        throw new Error("Failed to delete MOA");
+        const errorData = await response.text();
+        throw new Error(errorData || "Failed to delete MOA");
       }
-
-      setMoas(prev => prev.filter(moa => moa.id !== moaId));
+  
+      // Use moa_id for filtering instead of id
+      setMoas(prev => prev.filter(moa => moa.moa_id !== moaId));
       toast.success("MOA deleted successfully");
       setDeleteModal({ isOpen: false, moa: null, isDeleting: false });
     } catch (error) {
       console.error('Delete error:', error);
       toast.error(error.message);
-    } finally {
       setDeleteModal(prev => ({ ...prev, isDeleting: false }));
     }
   };
@@ -294,7 +296,13 @@ export default function MOATable({ isModalOpen, setIsModalOpen }) {
             Cancel
           </button>
           <button
-            onClick={() => handleDelete(deleteModal.moa?.id)}
+            onClick={() => {
+              if (deleteModal.moa?.moa_id) {
+                handleDelete(deleteModal.moa.moa_id);
+              } else {
+                toast.error("Invalid MOA ID");
+              }
+            }}
             disabled={deleteModal.isDeleting}
             className="px-4 py-2 text-sm font-medium text-white bg-maroon hover:bg-red-600 disabled:bg-red-300 rounded-md transition-colors flex items-center gap-2"
           >
