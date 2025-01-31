@@ -176,7 +176,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
           </div>
 
           {/* Type of MOA and Nature of Business */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="typeOfMoa" className="block font-bold mb-2">
                 Type of MOA
@@ -214,7 +214,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
           </div>
 
           {/* Contact Person - First Name and Last Name */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="firstName" className="block font-bold mb-2">
                 Contact Person First Name
@@ -249,7 +249,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
 
 
           {/* Contact Number and Email */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="contactNumber" className="block font-bold mb-2">
                 Contact Number
@@ -284,7 +284,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
           </div>
 
           {/* MOA Status, Validity, and Date Notarized */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label htmlFor="moaStatus" className="block font-bold mb-2">
                 MOA Status
