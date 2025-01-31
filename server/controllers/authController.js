@@ -1,6 +1,9 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { db, dbPromise, pool } = require('../config/db');
+const nodemailer = require('nodemailer');
+require('dotenv').config({ path: '../../.env' });
+
 
 // Register User
 const addUser = async (req, res) => {
@@ -14,6 +17,61 @@ const addUser = async (req, res) => {
             console.log(`User with email ${email} already exists.`);
             return res.status(400).send('User with this email already exists');
         }
+
+        // Bypass the TLS, remove after development
+        process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
+        // Create a transporter
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            host: 'smtp.gmail.com',
+            port: 587,
+            secure: false, // true for port 465, false for other ports
+            auth: {
+            user: process.env.CRED_USERNM_SENDER, // Gmail Username
+            pass: process.env.CRED_USERPW_SENDER, // Gmail password 
+            },
+        });
+
+        //Create template for sending credentials to admins
+        const credEmailTemplate = {
+            from: {
+                name: 'PUP MOA Monitoring',
+                address: process.env.CRED_USERNM_SENDER
+            }, // sender address
+            to: [email], // list of receivers
+            subject: "PUP MOA Monitoring Admin Credentials", // Subject line
+            text: `Hello,
+
+                    Your credentials for accessing the PUP MOA Monitoring admin account are as follows:
+
+                    Username: ${email}
+                    Password: ${password}
+
+                    Please keep your credentials safe.
+
+                    Best regards,
+                    PUP MOA Monitoring Team`, // plain text body
+            html: `<p>Hello,</p>
+                            <p>Your credentials for accessing the PUP MOA Monitoring admin account are as follows:</p>
+                            <p><strong>Username:</strong> ${email}</p>
+                            <p><strong>Password:</strong> ${password}</p>
+                            <p>Please keep your credentials safe.</p>
+                            <p>Best regards,<br>
+                            PUP MOA Monitoring Team</p>`, // html body
+            };
+
+            const sendMail = async (transporter, credEmailTemplate) => {
+                try{
+                    await transporter.sendMail(credEmailTemplate)
+                    console.log('Email has been sent!')
+                }     
+                catch (error){
+                    console.error(error)
+                }
+            }
+            
+        sendMail(transporter, credEmailTemplate);
 
         // Hash the password if email is unique
         const hashedPassword = await bcrypt.hash(password, 10);
