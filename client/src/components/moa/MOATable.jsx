@@ -13,6 +13,14 @@ export default function MOATable({ isModalOpen, setIsModalOpen }) {
   const [refreshing, setRefreshing] = useState(false);
   const [selectedTypes, setSelectedTypes] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState([]);
+  const [sortConfig, setSortConfig] = useState({
+    field: null,
+    direction: 'asc'
+  });
+  const [filters, setFilters] = useState({
+    moaTypes: [],
+    moaStatus: []
+  });
   const [deleteModal, setDeleteModal] = useState({
     isOpen: false,
     moa: null,
@@ -28,11 +36,9 @@ export default function MOATable({ isModalOpen, setIsModalOpen }) {
       }
       const data = await response.json();
   
-      // Log the fetched data to the console
       console.log("Fetched MOAs:", data);
   
-      // Access the moas array from the response
-      const moasData = data.moas || [];  // In case the moas property is missing, fallback to an empty array
+      const moasData = data.moas || [];
       console.assert(Array.isArray(moasData), "Fetched data is not an array");
       setMoas(moasData);
     } catch (error) {
@@ -81,46 +87,54 @@ export default function MOATable({ isModalOpen, setIsModalOpen }) {
     }
   };
 
-  // Get unique types and statuses for filters
-  const types = Array.isArray(moas) ? [...new Set(moas.map(moa => moa.type))] : [];
-  const statuses = Array.isArray(moas) ? [...new Set(moas.map(moa => moa.status))] : [];
-
-  const toggleType = (type) => {
-    setSelectedTypes(prev =>
-      prev.includes(type)
-        ? prev.filter(t => t !== type)
-        : [...prev, type]
-    );
+  const handleFilterChange = (filterType, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterType]: prev[filterType].includes(value)
+        ? prev[filterType].filter(item => item !== value)
+        : [...prev[filterType], value]
+    }));
   };
 
-  const toggleStatus = (status) => {
-    setSelectedStatus(prev =>
-      prev.includes(status)
-        ? prev.filter(s => s !== status)
-        : [...prev, status]
-    );
+  const handleSort = (field) => {
+    setSortConfig(prevConfig => ({
+      field,
+      direction: 
+        prevConfig.field === field && prevConfig.direction === 'asc' 
+          ? 'desc' 
+          : 'asc'
+    }));
   };
 
-  const clearFilters = () => {
-    setSelectedTypes([]);
-    setSelectedStatus([]);
-    setSearchTerm("");
+  const sortData = (data) => {
+    if (!sortConfig.field) return data;
+
+    return [...data].sort((a, b) => {
+      if (sortConfig.field === 'expiry_date') {
+        const dateA = new Date(a[sortConfig.field]);
+        const dateB = new Date(b[sortConfig.field]);
+        return sortConfig.direction === 'asc' 
+          ? dateA - dateB 
+          : dateB - dateA;
+      }
+    });
   };
 
-  const filteredMOAs = Array.isArray(moas) ? moas.filter(moa => {
-    // Convert all relevant fields to lowercase for case-insensitive comparison
+  const filteredMOAs = Array.isArray(moas) ? sortData(moas.filter(moa => {
     const matchesSearch = (
       moa.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       moa.contactPerson?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       moa.email.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  
-    // Check for type and status filters
-    const matchesType = selectedTypes.length === 0 || selectedTypes.includes(moa.type);
-    const matchesStatus = selectedStatus.length === 0 || selectedStatus.includes(moa.status);
-  
+
+    const matchesType = filters.moaTypes.length === 0 || 
+      filters.moaTypes.includes(moa.type_of_moa);
+
+    const matchesStatus = filters.moaStatus.length === 0 || 
+      filters.moaStatus.includes(moa.moa_status);
+
     return matchesSearch && matchesType && matchesStatus;
-  }) : [];  
+  })) : [];
 
   if (loading) {
     return (
@@ -134,122 +148,39 @@ export default function MOATable({ isModalOpen, setIsModalOpen }) {
   return (
     <div className="bg-white rounded-lg shadow">
       <ToastContainer />
-
-      {/* Search, Filter and Refresh Section */}
       <div className="p-4 border-b border-gray-200">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          {/* Search and Filters */}
-          <div className="flex flex-wrap items-center gap-3">
-            {/* Search Input */}
-            <div className="relative">
-              <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search MOAs..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-20 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-maroon focus:border-maroon outline-none"
-              />
-            </div>
-            
-            {/* Type Filter Buttons */}
-            <div className="flex flex-wrap gap-2">
-              {types.map(type => (
-                <button
-                  key={type}
-                  onClick={() => toggleType(type)}
-                  className={`px-3 py-1.5 text-sm font-medium rounded-full transition-colors ${
-                    selectedTypes.includes(type)
-                      ? "bg-maroon/10 text-maroon hover:bg-maroon/20"
-                      : "bg-light-gray text-gray-600 hover:bg-gray-200"
-                  }`}
-                >
-                  {type}
-                </button>
-              ))}
-            </div>
-
-            {/* Status Filter Buttons */}
-            <div className="flex flex-wrap gap-2">
-              {statuses.map(status => (
-                <button
-                  key={status}
-                  onClick={() => toggleStatus(status)}
-                  className={`px-3 py-1.5 text-sm font-medium rounded-full transition-colors ${
-                    selectedStatus.includes(status)
-                      ? "bg-maroon/10 text-maroon hover:bg-maroon/20"
-                      : "bg-light-gray text-gray-600 hover:bg-gray-200"
-                  }`}
-                >
-                  {status}
-                </button>
-              ))}
-            </div>
+          <div className="relative">
+            <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search MOAs..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 pr-20 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-maroon focus:border-maroon outline-none"
+            />
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex items-center gap-2">
-            {(selectedTypes.length > 0 || selectedStatus.length > 0 || searchTerm) && (
-              <button
-                onClick={clearFilters}
-                className="flex items-center gap-1 px-3 py-2 text-sm text-gray-600 hover:text-maroon hover:bg-light-gray rounded-lg transition-colors"
-              >
-                <X className="w-4 h-4" />
-                Clear filters
-              </button>
-            )}
-            <button
-              onClick={handleRefresh}
-              disabled={refreshing}
-              className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
-              Refresh
-            </button>
-          </div>
+          <button
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
+            Refresh
+          </button>
         </div>
-        
-        {/* Active Filters Summary */}
-        {(selectedTypes.length > 0 || selectedStatus.length > 0) && (
-          <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-gray-600">
-            <span className="font-medium">Active filters:</span>
-            {selectedTypes.map(type => (
-              <span
-                key={type}
-                className="inline-flex items-center gap-1 px-2 py-1 bg-maroon/5 text-maroon rounded-full"
-              >
-                {type}
-                <button
-                  onClick={() => toggleType(type)}
-                  className="hover:text-red"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              </span>
-            ))}
-            {selectedStatus.map(status => (
-              <span
-                key={status}
-                className="inline-flex items-center gap-1 px-2 py-1 bg-maroon/5 text-maroon rounded-full"
-              >
-                {status}
-                <button
-                  onClick={() => toggleStatus(status)}
-                  className="hover:text-red"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              </span>
-            ))}
-          </div>
-        )}
       </div>
 
-      {/* MOAs Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-50">
-            <MOAHeader />
+      <div className="relative overflow-x-auto">
+        <table className="w-full table-fixed">
+          <thead className="sticky top-0 z-10 bg-gray-50">
+            <MOAHeader 
+              onSort={handleSort} 
+              sortConfig={sortConfig} 
+              filters={filters}
+              onFilterChange={handleFilterChange}
+            />
           </thead>
           <tbody>
             {Array.isArray(filteredMOAs) && filteredMOAs.length > 0 ? (
@@ -268,10 +199,10 @@ export default function MOATable({ isModalOpen, setIsModalOpen }) {
                   <td className="p-4 text-sm text-gray-900">{moa.contact_number}</td>
                   <td className="p-4 text-sm text-gray-900">{moa.email}</td>
                   <td className="p-4 text-sm">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      moa.moa_status === 'Active' ? 'bg-green-100 text-green-800' :
-                      moa.moa_status === 'Expired' ? 'bg-red-100 text-red-800' :
-                      'bg-yellow-100 text-yellow-800'
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${ 
+                      moa.moa_status === 'Active' ? 'bg-green-100 text-green-800' : 
+                      moa.moa_status === 'Expired' ? 'bg-red text-white' : 
+                      'bg-yellow text-gray-900' 
                     }`}>
                       {moa.moa_status}
                     </span>
@@ -304,15 +235,9 @@ export default function MOATable({ isModalOpen, setIsModalOpen }) {
               <tr>
                 <td colSpan="13" className="p-8 text-center text-gray-500">
                   {searchTerm || selectedTypes.length > 0 || selectedStatus.length > 0 ? (
-                    <>
-                      <p className="text-lg font-medium">No matching MOAs found</p>
-                      <p className="text-sm mt-1">Try adjusting your search terms or filters</p>
-                    </>
+                    <p className="text-lg font-medium">No matching MOAs found</p>
                   ) : (
-                    <>
-                      <p className="text-lg font-medium">No MOAs found</p>
-                      <p className="text-sm mt-1">Add some MOAs to get started</p>
-                    </>
+                    <p className="text-lg font-medium">No MOAs found</p>
                   )}
                 </td>
               </tr>
@@ -320,6 +245,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen }) {
           </tbody>
         </table>
       </div>
+
 
       {/* Delete Modal */}
       <Modal
@@ -350,10 +276,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen }) {
             className="px-4 py-2 text-sm font-medium text-white bg-maroon hover:bg-red-600 disabled:bg-red-300 rounded-md transition-colors flex items-center gap-2"
           >
             {deleteModal.isDeleting ? (
-              <>
-                <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span>Deleting...</span>
-              </>
+              <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
               "Delete"
             )}
