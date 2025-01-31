@@ -11,7 +11,7 @@ export default function DashboardButton() {
     <div>
       <button 
         onClick={handleDashboardButtonClick} 
-        className="bg-[#800000] text-white rounded-3xl shadow-lg shadow-[#800000]/40 py-4 px-10 text-lg">
+        className="bg-[#800000] text-white rounded-3xl shadow-lg shadow-[#800000]/40 py-3 px-6 text-base md:py-4 md:px-8 md:text-lg lg:py-4 lg:px-10">
         Dashboard
       </button>
     </div>
