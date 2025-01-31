@@ -23,16 +23,22 @@ const containerClient = blobServiceClient.getContainerClient(CONTAINER_NAME);
 const uploadToBlob = async (file, fileName) => {
   try {
     const blockBlobClient = containerClient.getBlockBlobClient(fileName);
+    
+    // Force the content type to 'application/pdf'
     const uploadOptions = {
-      blobHTTPHeaders: { blobContentType: file.mimetype }
+      blobHTTPHeaders: { blobContentType: 'application/pdf' }
     };
+
+    // Upload the file as a PDF to Azure Blob Storage
     await blockBlobClient.upload(file.buffer, file.size, uploadOptions);
-    return blockBlobClient.url;
+
+    return blockBlobClient.url;  // Return the URL of the uploaded file
   } catch (error) {
     console.error('Error uploading to blob storage:', error);
     throw new Error('Failed to upload file to storage');
   }
 };
+
 
 const addMOA = async (req, res) => {
   const uploadFiles = upload.array('files', 10);
@@ -163,34 +169,36 @@ const addMOA = async (req, res) => {
 
 // Get All MOAs
 const getAllMOAs = async (req, res) => {
-    const query = `
-        SELECT 
-            moa_info.moa_id, 
-            moa_info.name, 
-            moa_type.type_name AS type_of_moa, 
-            moa_info.nature_of_business, 
-            CONCAT(moa_contact.firstname, ' ', moa_contact.lastname) AS contact_person, 
-            moa_contact.contact_number, 
-            moa_contact.email, 
-            moa_info.status AS moa_status, 
-            moa_validity_period.years_validity, 
-            moa_validity_period.date_notarized, 
-            moa_validity_period.expiry_date, 
-            moa_validity_period.year_submitted 
-        FROM moa_info
-        JOIN moa_contact ON moa_info.contact_id = moa_contact.contact_id
-        JOIN moa_validity_period ON moa_info.validity_id = moa_validity_period.validity_id
-        JOIN moa_type ON moa_info.type_id = moa_type.type_id
-        ORDER BY moa_info.moa_id;
-    `;
+  const query = `
+      SELECT 
+          moa_info.moa_id, 
+          moa_info.name, 
+          moa_type.type_name AS type_of_moa, 
+          moa_info.nature_of_business, 
+          CONCAT(moa_contact.firstname, ' ', moa_contact.lastname) AS contact_person, 
+          moa_contact.contact_number, 
+          moa_contact.email, 
+          moa_info.status AS moa_status, 
+          moa_validity_period.years_validity, 
+          moa_validity_period.date_notarized, 
+          moa_validity_period.expiry_date, 
+          moa_validity_period.year_submitted, 
+          moa_documents.file_path -- Now mapping 1 file_path per MOA
+      FROM moa_info
+      JOIN moa_contact ON moa_info.contact_id = moa_contact.contact_id
+      JOIN moa_validity_period ON moa_info.validity_id = moa_validity_period.validity_id
+      JOIN moa_type ON moa_info.type_id = moa_type.type_id
+      LEFT JOIN moa_documents ON moa_info.moa_id = moa_documents.moa_id -- Ensures only one document per MOA
+      ORDER BY moa_info.moa_id;
+  `;
 
-    try {
-        const [results] = await pool.query(query);
-        res.status(200).json({ moas: results });
-    } catch (err) {
-        console.error("Error fetching MOAs:", err);
-        res.status(500).send('Error retrieving MOAs');
-    }
+  try {
+      const [results] = await pool.query(query);
+      res.status(200).json({ moas: results });
+  } catch (err) {
+      console.error("Error fetching MOAs:", err);
+      res.status(500).send('Error retrieving MOAs');
+  }
 };
 
 // Update MOA
@@ -321,9 +329,36 @@ const deleteMOA = async (req, res) => {
   }
 };
 
+// const getMOADocument = async (req, res) => {
+//   const { document_id } = req.params;
+  
+//   if (!document_id) {
+//       return res.status(400).json({ message: "Document ID is required" });
+//   }
+  
+//   const query = `
+//       SELECT file_path FROM moa_documents
+//       WHERE document_id = ?
+//       LIMIT 1;
+//   `;
+  
+//   try {
+//       const [results] = await pool.query(query, [document_id]);
+//       if (results.length === 0) {
+//           return res.status(404).json({ message: "Document not found." });
+//       }
+      
+//       res.redirect(results[0].file_path);
+//   } catch (err) {
+//       console.error("Error fetching MOA document:", err);
+//       res.status(500).json({ message: "Error retrieving MOA document" });
+//   }
+// };
+
 module.exports = {
     addMOA,
     getAllMOAs,
     updateMOA,
     deleteMOA,
+    // getMOADocument,
 };
