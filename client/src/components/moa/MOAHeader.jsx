@@ -90,7 +90,7 @@ export default function MOAHeader({ onSort, sortConfig, filters, onFilterChange 
         </button>
       </th>
       <th className="p-4 text-left text-sm font-medium">Year Submitted to ARCDO</th>
-      <th className="p-4 text-left text-sm font-medium">Actions</th>
+      <th className="p-4 text-left text-sm font-medium"></th>
     </tr>
   );
 }

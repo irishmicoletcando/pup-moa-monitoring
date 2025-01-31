@@ -5,12 +5,15 @@ import { Trash2, Search, RefreshCw, X, Edit2 } from "lucide-react";
 import Modal from "../layout/Modal";
 import MOAHeader from "./MOAHeader";
 import AddMOAModal from "./AddMOAModal";
+import EditMOAModal from "./EditMOAModal";
 
 export default function MOATable({ isModalOpen, setIsModalOpen }) {
   const [moas, setMoas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [refreshing, setRefreshing] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedMOA, setSelectedMOA] = useState(null);
   const [selectedTypes, setSelectedTypes] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState([]);
   const [sortConfig, setSortConfig] = useState({
@@ -214,12 +217,16 @@ export default function MOATable({ isModalOpen, setIsModalOpen }) {
                   <td className="p-4 text-sm">
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => {/* Handle edit */}}
+                        onClick={() => {
+                          setSelectedMOA(moa);
+                          setIsEditModalOpen(true);
+                        }}
                         className="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-50 transition-colors"
                         title="Edit MOA"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
+
                       <button
                         onClick={() => setDeleteModal({ isOpen: true, moa, isDeleting: false })}
                         className="text-red-600 hover:text-red-800 p-2 rounded-full hover:bg-red-50 transition-colors"
@@ -292,6 +299,17 @@ export default function MOATable({ isModalOpen, setIsModalOpen }) {
           toast.success("MOA added successfully");
         }}
       />
+
+      <EditMOAModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        moa={selectedMOA}
+        onMOAUpdated={() => {
+          fetchMOAs();
+          toast.success("MOA updated successfully");
+        }}
+      />
+
     </div>
   );
 }
