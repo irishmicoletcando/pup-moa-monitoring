@@ -46,49 +46,61 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="m-20 w-full">
-      <h2 className="text-5xl font-bold mb-4">Login</h2>
-      <p className="mb-7">
+    <div className="m-5 md:m-20 w-full">
+      <h2 className="text-5xl font-bold mb-4 text-white md:text-black text-center md:text-left hidden sm:block">
+        Login
+      </h2>
+
+      <p className="mb-7 text-white md:text-black text-center md:text-left hidden sm:block">
         Stay informed and organized with our MOA Monitoring System. Track agreements, deadlines, and progress effortlessly.
       </p>
-      <form onSubmit={handleLoginButtonClick}>
+
+      <form
+        onSubmit={handleLoginButtonClick}
+        className="bg-white w-full md:bg-transparent md:border-none md:rounded-none p-8 md:p-0 border-2 border-gray-300 rounded-lg md:rounded-none mx-auto w-full max-w-4xl"
+      >
+
         <div className="mb-4">
-          <label htmlFor="email" className="block font-bold mb-2">
+          <label htmlFor="email" className="block font-bold mb-2 text-xl md:text-base">
             PUP Webmail
           </label>
           <input
             type="email"
             id="email"
             placeholder="juandelacruz@pup.edu.ph"
-            className="border-gray-300 border-2 px-3 py-2 w-full"
+            className="border-gray-300 border-2 px-3 py-2 w-full text-lg md:text-base"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
+
         <div className="mb-4">
-          <label htmlFor="password" className="block font-bold mb-2">
+          <label htmlFor="password" className="block font-bold mb-2 text-xl md:text-base">
             Password
           </label>
           <input
             type="password"
             id="password"
             placeholder="********"
-            className="border-gray-300 border-2 px-3 py-2 w-full"
+            className="border-gray-300 border-2 px-3 py-2 w-full text-lg md:text-base"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        <div className="mb-8 flex justify-end">
-          <a href="#" className="text-maroon hover:text-red-700">
+
+        {/* <div className="mb-8 flex justify-end hidden">
+          <a href="#" className="text-maroon hover:text-red-700 text-lg md:text-base">
             Forgot Password?
           </a>
-        </div>
+        </div> */}
+
         <button
           type="submit"
-          className="bg-maroon text-white font-bold py-2 px-4 w-full hover:bg-red-700"
+          className="bg-maroon text-white font-bold mt-5 py-2 px-4 w-full hover:bg-red-700 text-lg md:text-base"
         >
           Login
         </button>
+
         {/* <p className="text-center mt-4">
           Don&lsquo;t have an account yet?{" "}
           <a
@@ -98,8 +110,11 @@ export default function LoginForm() {
             Sign Up
           </a>
         </p> */}
+
       </form>
+
       <ToastContainer />
+
     </div>
-  );
+  );  
 }
