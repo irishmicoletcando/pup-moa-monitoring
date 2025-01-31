@@ -9,7 +9,7 @@ router.get('/moas', moaController.getAllMOAs);
 router.post('/moas', moaController.addMOA);
 
 // Update an existing MOA
-router.put('/moas/:id', moaController.updateMOA);
+router.patch('/moas/:id', moaController.updateMOA);
 
 // Delete an MOA
 router.delete('/moas/:id', moaController.deleteMOA);
