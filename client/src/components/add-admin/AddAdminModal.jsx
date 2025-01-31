@@ -4,6 +4,7 @@ import { Plus } from "lucide-react";
 
 export default function AdminModal({ isOpen, onClose, onUserAdded }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasShownEmailWarning, setHasShownEmailWarning] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -16,6 +17,21 @@ export default function AdminModal({ isOpen, onClose, onUserAdded }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    if (name === "email") {
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@(pup\.edu\.ph|iskolarngbayan\.pup\.edu\.ph)$/;
+  
+      if (!emailRegex.test(value)) {
+        // Only show the toast once per invalid entry
+        if (!hasShownEmailWarning) {
+          toast.warn("Only PUP webmails are allowed.");
+          setHasShownEmailWarning(true); // Prevent multiple toasts
+        }
+      } else {
+        setHasShownEmailWarning(false);
+      }
+    }
+
     setFormData({ ...formData, [name]: value });
   };
 
@@ -25,6 +41,13 @@ export default function AdminModal({ isOpen, onClose, onUserAdded }) {
     if (isSubmitting) return;
 
     const { firstName, lastName, email, role, contact, password, confirmPassword } = formData;
+
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@(pup\.edu\.ph|iskolarngbayan\.pup\.edu\.ph)$/;
+  
+    if (!emailRegex.test(email)) {
+      toast.error("Invalid email! Only PUP webmails are allowed.");
+      return;
+    }
 
     if (password !== confirmPassword) {
       toast.error("Passwords do not match!");
