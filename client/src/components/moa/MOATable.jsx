@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Trash2, Search, RefreshCw, X, Edit2 } from "lucide-react";
+import { Trash2, Search, RefreshCw, X, Edit2, FileText } from "lucide-react";
 import Modal from "../layout/Modal";
 import MOAHeader from "./MOAHeader";
 import AddMOAModal from "./AddMOAModal";
 import EditMOAModal from "./EditMOAModal";
+import PDFViewer from "./PdfViewer"; 
 
 export default function MOATable({ isModalOpen, setIsModalOpen }) {
   const [moas, setMoas] = useState([]);
@@ -16,6 +17,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen }) {
   const [selectedMOA, setSelectedMOA] = useState(null);
   const [selectedTypes, setSelectedTypes] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState([]);
+  const [showViewer, setShowViewer] = useState(false);
   const [sortConfig, setSortConfig] = useState({
     field: null,
     direction: 'asc'
@@ -218,6 +220,20 @@ export default function MOATable({ isModalOpen, setIsModalOpen }) {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => {
+                          if (moa.file_path) {
+                            // Open the PDF in a new tab
+                            window.open(moa.file_path, '_blank');
+                          } else {
+                            toast.error("No file available for this MOA");
+                            console.log(moa.file_path);
+                          }
+                        }}
+                        className="text-slate-600 hover:text-slate-800 p-2 rounded-full hover:bg-slate-50 transition-colors"
+                        title="View Document">
+                        <FileText className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => {
                           setSelectedMOA(moa);
                           setIsEditModalOpen(true);
                         }}
@@ -229,7 +245,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen }) {
 
                       <button
                         onClick={() => setDeleteModal({ isOpen: true, moa, isDeleting: false })}
-                        className="text-red-600 hover:text-red-800 p-2 rounded-full hover:bg-red-50 transition-colors"
+                        className="text-rose-600 hover:text-rose-800 p-2 rounded-full hover:bg-rose-50 transition-colors"
                         title="Delete MOA"
                       >
                         <Trash2 className="w-4 h-4" />
