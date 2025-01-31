@@ -160,7 +160,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
           {/* MOA Name - Full width */}
           <div>
-            <label htmlFor="moaName" className="block font-bold mb-2">
+            <label htmlFor="moaName" className="block font-bold mb-2 text-sm sm:text-base">
               MOA Name
             </label>
             <input
@@ -168,7 +168,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
               id="moaName"
               name="moaName"
               placeholder="Enter MOA name"
-              className="border-gray-300 border px-3 py-2 w-full rounded-md"
+              className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base"
               value={formData.moaName}
               onChange={handleChange}
               required
@@ -178,13 +178,13 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
           {/* Type of MOA and Nature of Business */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="typeOfMoa" className="block font-bold mb-2">
+              <label htmlFor="typeOfMoa" className="block font-bold mb-2 text-sm sm:text-base">
                 Type of MOA
               </label>
               <select
                 id="typeOfMoa"
                 name="typeOfMoa"
-                className="border-gray-300 border px-3 py-2 w-full rounded-md"
+                className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base"
                 value={formData.typeOfMoa}
                 onChange={handleChange}
                 required
@@ -197,7 +197,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
             </div>
 
             <div>
-              <label htmlFor="natureOfBusiness" className="block font-bold mb-2">
+              <label htmlFor="natureOfBusiness" className="block font-bold mb-2 text-sm sm:text-base">
                 Nature of Business
               </label>
               <input
@@ -205,7 +205,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
                 id="natureOfBusiness"
                 name="natureOfBusiness"
                 placeholder="Enter nature of business"
-                className="border-gray-300 border px-3 py-2 w-full rounded-md"
+                className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base"
                 value={formData.natureOfBusiness}
                 onChange={handleChange}
                 required
@@ -216,7 +216,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
           {/* Contact Person - First Name and Last Name */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="firstName" className="block font-bold mb-2">
+              <label htmlFor="firstName" className="block font-bold mb-2 text-sm sm:text-base">
                 Contact Person First Name
               </label>
               <input
@@ -224,14 +224,14 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
                 id="firstName"
                 name="firstName"
                 placeholder="Enter first name"
-                className="border-gray-300 border px-3 py-2 w-full rounded-md"
+                className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base"
                 value={formData.firstName}
                 onChange={handleChange}
                 required
               />
             </div>
             <div>
-              <label htmlFor="lastName" className="block font-bold mb-2">
+              <label htmlFor="lastName" className="block font-bold mb-2 text-sm sm:text-base">
                 Contact Person Last Name
               </label>
               <input
@@ -239,7 +239,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
                 id="lastName"
                 name="lastName"
                 placeholder="Enter last name"
-                className="border-gray-300 border px-3 py-2 w-full rounded-md"
+                className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base"
                 value={formData.lastName}
                 onChange={handleChange}
                 required
@@ -251,7 +251,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
           {/* Contact Number and Email */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="contactNumber" className="block font-bold mb-2">
+              <label htmlFor="contactNumber" className="block font-bold mb-2 text-sm sm:text-base">
                 Contact Number
               </label>
               <input
@@ -259,7 +259,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
                 id="contactNumber"
                 name="contactNumber"
                 placeholder="Enter contact number"
-                className="border-gray-300 border px-3 py-2 w-full rounded-md"
+                className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base"
                 value={formData.contactNumber}
                 onChange={handleChange}
                 required
@@ -267,7 +267,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
             </div>
 
             <div>
-              <label htmlFor="emailAddress" className="block font-bold mb-2">
+              <label htmlFor="emailAddress" className="block font-bold mb-2 text-sm sm:text-base">
                 Email Address
               </label>
               <input
@@ -275,7 +275,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
                 id="emailAddress"
                 name="emailAddress"
                 placeholder="Enter email address"
-                className="border-gray-300 border px-3 py-2 w-full rounded-md"
+                className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base"
                 value={formData.emailAddress}
                 onChange={handleChange}
                 required
@@ -286,13 +286,13 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
           {/* MOA Status, Validity, and Date Notarized */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label htmlFor="moaStatus" className="block font-bold mb-2">
+              <label htmlFor="moaStatus" className="block font-bold mb-2 text-sm sm:text-base">
                 MOA Status
               </label>
               <select
                 id="moaStatus"
                 name="moaStatus"
-                className="border-gray-300 border px-3 py-2 w-full rounded-md"
+                className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base"
                 value={formData.moaStatus}
                 onChange={handleChange}
                 required
@@ -304,7 +304,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
             </div>
 
             <div>
-              <label htmlFor="validity" className="block font-bold mb-2">
+              <label htmlFor="validity" className="block font-bold mb-2 text-sm sm:text-base">
                 Validity
               </label>
               <input
@@ -312,7 +312,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
                 id="validity"
                 name="validity"
                 placeholder="Enter validity period"
-                className="border-gray-300 border px-3 py-2 w-full rounded-md"
+                className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base"
                 value={formData.validity}
                 onChange={handleChange}
                 required
@@ -320,14 +320,14 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
             </div>
 
             <div>
-              <label htmlFor="dateNotarized" className="block font-bold mb-2">
+              <label htmlFor="dateNotarized" className="block font-bold mb-2 text-sm sm:text-base">
                 Date Notarized
               </label>
               <input
                 type="date"
                 id="dateNotarized"
                 name="dateNotarized"
-                className="border-gray-300 border px-3 py-2 w-full rounded-md"
+                className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base"
                 value={formData.dateNotarized}
                 onChange={handleChange}
                 required
@@ -338,10 +338,10 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
           {/* New Document Upload Section */}
           <div className="space-y-4">
             <div>
-              <label className="block font-bold mb-2">
+              <label className="block font-bold mb-2 text-sm sm:text-base">
                 Upload Documents
               </label>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-sm sm:text-base">
                 <div className="flex items-center justify-center">
                   <label className="flex flex-col items-center cursor-pointer">
                     <Upload className="w-8 h-8 text-gray-400" />
@@ -384,7 +384,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`w-full bg-maroon hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md flex items-center justify-center gap-2 ${
+              className={`w-full bg-maroon hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md flex items-center justify-center gap-2 text-sm sm:text-base${
                 isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
               }`}
             >
