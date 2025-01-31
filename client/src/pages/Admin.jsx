@@ -7,10 +7,14 @@ import Navbar from '../components/layout/Navbar.jsx';
 export default function Admin() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [softRefreshTrigger, setSoftRefreshTrigger] = useState(0);
 
   // Handle refresh when new admin is added
   const handleRefreshNeeded = () => {
     setRefreshTrigger((prev) => prev + 1); 
+  };
+  const handleSoftRefresh = () => {
+    setSoftRefreshTrigger((prev) => prev + 1); 
   };
 
   return (
@@ -23,7 +27,7 @@ export default function Admin() {
             <div className="flex items-center gap-2">
               <h1 className="text-3xl font-bold">Admins</h1>
             </div>
-            <AddAdminButton onClick={() => setIsModalOpen(true)} />
+            <AddAdminButton onClick={() => setIsModalOpen(true)} onUserAdded={handleSoftRefresh} />
           </div>
 
           <div className="bg-gray-50 rounded-lg">
@@ -31,7 +35,7 @@ export default function Admin() {
               isModalOpen={isModalOpen}
               setIsModalOpen={setIsModalOpen}
               refreshTrigger={refreshTrigger}
-              setRefreshTrigger={handleRefreshNeeded}
+              softRefreshTrigger={softRefreshTrigger}
             />
 
             <AddAdminModal

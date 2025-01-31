@@ -7,7 +7,7 @@ import Modal from "../layout/Modal";
 import RoleBadge from "../layout/RoleBadge";
 import AdminModal from "./AddAdminModal";
 
-export default function AdminTable({ isModalOpen, setIsModalOpen, refreshTrigger, setRefreshTrigger  }) {
+export default function AdminTable({ isModalOpen, setIsModalOpen, refreshTrigger, setRefreshTrigger, softRefreshTrigger  }) {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -19,7 +19,8 @@ export default function AdminTable({ isModalOpen, setIsModalOpen, refreshTrigger
     isDeleting: false 
   });
 
-  const fetchUsers = async () => {
+  const fetchUsers = async (showLoading = true) => {
+    if (showLoading) setLoading(true);
     try {
       const token = localStorage.getItem("token");
       const response = await fetch("/api/auth/users", {
@@ -53,14 +54,19 @@ export default function AdminTable({ isModalOpen, setIsModalOpen, refreshTrigger
     fetchUsers();
   }, [refreshTrigger]); // Re-fetch when refreshTrigger changes (after adding new admin)
   
+  useEffect(() => {
+    fetchUsers(false);
+  }, [softRefreshTrigger]);
+
   const handleRefresh = () => {
     setRefreshing(true);
-    fetchUsers();
+    fetchUsers(true);
   };
 
   const handleUserAdded = () => {
-    setRefreshTrigger(prev => prev + 1); // Trigger a refresh
-    setLoading(true); // Show the loading spinner while fetching users
+    setTimeout(() => {
+      fetchUsers(false);
+    }, 500); 
   };
 
   const openDeleteModal = (user) => {
