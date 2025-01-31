@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import AdminHeader from "./AdminHeader";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Trash2, Search, RefreshCw, X } from "lucide-react";
+import { Trash2, Search, RefreshCw, X, Filter } from "lucide-react";
 import Modal from "../layout/Modal";
 import RoleBadge from "../layout/RoleBadge";
 import AdminModal from "./AddAdminModal";
@@ -13,6 +13,7 @@ export default function AdminTable({ isModalOpen, setIsModalOpen, refreshTrigger
   const [searchTerm, setSearchTerm] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const [selectedRoles, setSelectedRoles] = useState([]);
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [deleteModal, setDeleteModal] = useState({ 
     isOpen: false, 
     user: null,
@@ -120,11 +121,14 @@ export default function AdminTable({ isModalOpen, setIsModalOpen, refreshTrigger
         ? prev.filter(r => r !== role)
         : [...prev, role]
     );
+    // Close filter modal on mobile after selection
+    setIsFilterModalOpen(false);
   };
 
   const clearFilters = () => {
     setSelectedRoles([]);
     setSearchTerm("");
+    setIsFilterModalOpen(false);
   };
 
   const filteredUsers = users.filter(user => {
@@ -155,22 +159,49 @@ export default function AdminTable({ isModalOpen, setIsModalOpen, refreshTrigger
 
       {/* Search, Filter and Refresh Section */}
       <div className="p-4 border-b border-gray-200">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          {/* Search and Role Filters */}
-          <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-col gap-4">
+          {/* Mobile-First Search and Filter Row */}
+          <div className="flex flex-row gap-3 items-center">
             {/* Search Input */}
-            <div className="relative">
+            <div className="relative flex-grow">
               <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search admins..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-20 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-maroon focus:border-maroon outline-none"
+                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-maroon focus:border-maroon outline-none"
               />
             </div>
-            
-            {/* Role Filter Buttons */}
+
+            <div className="flex items-center gap-2">
+              {/* Mobile Filter Button */}
+              <button 
+                onClick={() => setIsFilterModalOpen(true)}
+                className="sm:hidden flex items-center gap-2 px-3 py-2 bg-light-gray text-gray-600 rounded-lg"
+              >
+                <Filter className="w-5 h-5" />
+                {selectedRoles.length > 0 && (
+                  <span className="ml-1 bg-maroon text-white text-xs rounded-full px-2 py-0.5">
+                    {selectedRoles.length}
+                  </span>
+                )}
+              </button>
+
+              {/* Refresh Button */}
+              <button
+                onClick={handleRefresh}
+                disabled={refreshing}
+                className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
+                <span className="hidden sm:inline">Refresh</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Desktop Role Filters */}
+          <div className="hidden sm:flex flex-wrap items-center gap-3">
             <div className="flex flex-wrap gap-4">
               {roles.map(role => (
                 <button
@@ -186,10 +217,8 @@ export default function AdminTable({ isModalOpen, setIsModalOpen, refreshTrigger
                 </button>
               ))}
             </div>
-          </div>
 
-          {/* Action Buttons */}
-          <div className="flex items-center gap-2">
+            {/* Clear Filters on Desktop */}
             {(selectedRoles.length > 0 || searchTerm) && (
               <button
                 onClick={clearFilters}
@@ -199,40 +228,84 @@ export default function AdminTable({ isModalOpen, setIsModalOpen, refreshTrigger
                 Clear filters
               </button>
             )}
-            <button
-              onClick={handleRefresh}
-              disabled={refreshing}
-              className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
-              Refresh
-            </button>
           </div>
-        </div>
-        
-        {/* Active Filters Summary */}
-        {selectedRoles.length > 0 && (
-          <div className="mt-3 flex items-center gap-2 text-sm text-gray-600">
-            <span className="font-medium">Active filters:</span>
-            {selectedRoles.map(role => (
-              <span
-                key={role}
-                className="inline-flex items-center gap-1 px-2 py-1 bg-maroon/5 text-maroon rounded-full"
-              >
-                {role}
-                <button
-                  onClick={() => toggleRole(role)}
-                  className="hover:text-red"
+
+          {/* Active Filters Summary */}
+          {selectedRoles.length > 0 && (
+            <div className="hidden sm:flex items-center gap-2 text-sm text-gray-600">
+              <span className="font-medium">Active filters:</span>
+              {selectedRoles.map(role => (
+                <span
+                  key={role}
+                  className="inline-flex items-center gap-1 px-2 py-1 bg-maroon/5 text-maroon rounded-full"
                 >
-                  <X className="w-3 h-3" />
-                </button>
-              </span>
-            ))}
-          </div>
-        )}
+                  {role}
+                  <button
+                    onClick={() => toggleRole(role)}
+                    className="hover:text-red"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Users Table */}
+      {/* Mobile Filter Modal */}
+      {isFilterModalOpen && (
+        <div className="fixed inset-0 z-50 sm:hidden bg-black/50 flex items-end">
+          <div className="bg-white w-full rounded-t-2xl p-6 max-h-[80vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold">Filter Admins</h2>
+              <button 
+                onClick={() => setIsFilterModalOpen(false)}
+                className="text-gray-600 hover:text-gray-900"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            {/* Role Filters in Mobile Modal */}
+            <div className="space-y-4">
+              <div className="flex flex-wrap gap-2">
+                {roles.map(role => (
+                  <button
+                    key={role}
+                    onClick={() => toggleRole(role)}
+                    className={`px-5 py-2 text-sm font-medium rounded-full transition-colors w-full ${
+                      selectedRoles.includes(role)
+                        ? "bg-maroon/10 text-maroon hover:bg-maroon/20"
+                        : "bg-light-gray text-gray-600 hover:bg-gray-200"
+                    }`}
+                  >
+                    {role}
+                  </button>
+                ))}
+              </div>
+
+              {/* Clear Filters in Mobile Modal */}
+              <button
+                onClick={clearFilters}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-maroon hover:bg-light-gray rounded-lg transition-colors"
+              >
+                <X className="w-4 h-4" />
+                Clear all filters
+              </button>
+
+              <button
+                onClick={() => setIsFilterModalOpen(false)}
+                className="w-full px-4 py-2 bg-maroon text-white rounded-lg hover:bg-red"
+              >
+                Apply Filters
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Users Table - Made Scrollable on Mobile */}
       <div className="overflow-x-auto">
         <table className="w-full min-w-max">
           <thead className="bg-gray-50">

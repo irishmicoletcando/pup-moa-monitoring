@@ -3,18 +3,21 @@ import { useState, useRef, useEffect } from "react";
 
 export default function MOAHeader({ onSort, sortConfig, filters, onFilterChange, isAllSelected, isSomeSelected, onToggleSelectAll }) {
   const [openFilter, setOpenFilter] = useState(null);
-  const filterRef = useRef(null);
+  const filterRefs = useRef({}); // Store refs for each dropdown
 
   useEffect(() => {
     function handleClickOutside(event) {
-      if (filterRef.current && !filterRef.current.contains(event.target)) {
-        setOpenFilter(null);
+      console.log("Clicked element:", event.target);
+      // Check if the click is outside all dropdowns
+      if (openFilter && filterRefs.current[openFilter] && !filterRefs.current[openFilter].contains(event.target)) {
+        console.log("Click outside detected, closing dropdown");
+        setOpenFilter(null); // Close the dropdown
       }
     }
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [openFilter]); // Re-run effect when openFilter changes
 
   const getSortIcon = (field) => {
     if (sortConfig.field === field) {
@@ -23,34 +26,45 @@ export default function MOAHeader({ onSort, sortConfig, filters, onFilterChange,
     return <ArrowUpDown className="w-4 h-4 ml-1 text-gray-300" />;
   };
 
-  const FilterDropdown = ({ type, options, selectedValues, onChange }) => (
-    <div className="relative inline-block" ref={filterRef}>
-      <button
-        onClick={() => setOpenFilter(openFilter === type ? null : type)}
-        className="flex items-center gap-1 hover:text-maroon"
-      >
-        {type}
-        <ChevronDown className="w-4 h-4" />
-      </button>
-      {openFilter === type && (
-        <div className="fixed transform translate-y-2 w-48 bg-white rounded-md shadow-lg border border-gray-200" style={{ zIndex: 1000 }}>
-          <div className="p-2">
-            {options.map((option) => (
-              <label key={option} className="flex items-center px-2 py-1 hover:bg-gray-50 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={selectedValues.includes(option)}
-                  onChange={() => onChange(option)}
-                  className="mr-2 h-4 w-4 rounded border-gray-300"
-                />
-                <span className="text-sm text-gray-700">{option}</span>
-              </label>
-            ))}
+  const FilterDropdown = ({ type, options, selectedValues, onChange }) => {
+    console.log(`Rendering dropdown for: ${type}, openFilter: ${openFilter}`);
+    return (
+      <div className="relative inline-block" ref={(el) => (filterRefs.current[type] = el)}>
+        <button
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent event propagation
+            console.log(`Button clicked for: ${type}`);
+            setOpenFilter(openFilter === type ? null : type); // Toggle dropdown
+          }}
+          className="flex items-center gap-1 hover:text-maroon"
+        >
+          {type}
+          <ChevronDown className="w-4 h-4" />
+        </button>
+        {openFilter === type && (
+          <div
+            className="absolute transform translate-y-2 w-48 bg-white rounded-md shadow-lg border border-gray-200"
+            style={{ zIndex: 1000 }}
+            onClick={(e) => e.stopPropagation()} // Prevent event propagation
+          >
+            <div className="p-2">
+              {options.map((option) => (
+                <label key={option} className="flex items-center px-2 py-1 hover:bg-gray-50 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedValues.includes(option)}
+                    onChange={() => onChange(option)}
+                    className="mr-2 h-4 w-4 rounded border-gray-300"
+                  />
+                  <span className="text-sm text-gray-700">{option}</span>
+                </label>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
-    </div>
-  );
+        )}
+      </div>
+    );
+  };
 
   return (
     <tr className="bg-gray-50">

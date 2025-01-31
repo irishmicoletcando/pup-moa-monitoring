@@ -17,11 +17,11 @@ export default function MOA() {
               <h1 className="text-2xl md:text-3xl font-bold">MOAs</h1>
             <div className="flex gap-4 ml-auto">
               <AddMOAButton onClick={() => setIsModalOpen(true)} />
-              <ExportMOAButton onClick={() => setIsModalOpen(true)} />
+              <ExportMOAButton />
             </div>
           </div>
           </div>
-          <div className="bg-gray-50 rounded-lg overflow-x-auto shadow-sm">
+          <div className="bg-gray-50 rounded-lg overflow-x-auto shadow-sm pb-16">
             <MOATable 
               isModalOpen={isModalOpen}
               setIsModalOpen={setIsModalOpen}
