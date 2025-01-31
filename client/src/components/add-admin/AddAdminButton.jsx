@@ -2,7 +2,7 @@ import { Plus } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import AddAdminModal from './AddAdminModal';
 
-export default function AddAdminButton() {
+export default function AddAdminButton({ onUserAdded }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
 
@@ -68,6 +68,7 @@ export default function AddAdminButton() {
       <AddAdminModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        onUserAdded={onUserAdded}
       />
     </div>
   );
