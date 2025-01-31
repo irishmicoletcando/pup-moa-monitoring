@@ -218,20 +218,107 @@ const updateMOA = async (req, res) => {
 
 // Delete MOA
 const deleteMOA = async (req, res) => {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    const query = 'DELETE FROM moa_info WHERE moa_id = ?';
+  // Define the queries for altering foreign key constraints
+  const dropForeignKey_moa_info_contact_id = `
+    ALTER TABLE moa_info
+    DROP FOREIGN KEY fk_moa_info_contact_id;
+  `;
 
-    try {
-        const [result] = await pool.query(query, [id]);
-        if (result.affectedRows === 0) {
-            return res.status(404).send('MOA not found');
-        }
-        res.status(200).send('MOA deleted successfully');
-    } catch (err) {
-        console.error('Error deleting MOA:', err);
-        res.status(500).send('Error deleting MOA');
+  const addForeignKey_moa_info_contact_id = `
+    ALTER TABLE moa_info
+    ADD CONSTRAINT fk_moa_info_contact_id
+    FOREIGN KEY (contact_id) REFERENCES moa_contact(contact_id)
+    ON DELETE CASCADE;
+  `;
+
+  const alterForeignKey_moa_validity_period_drop = `
+    ALTER TABLE moa_validity_period
+    DROP FOREIGN KEY fk_moa_validity_period_moa_id;
+  `;
+
+  const alterForeignKey_moa_validity_period_add = `
+    ALTER TABLE moa_validity_period
+    ADD CONSTRAINT fk_moa_validity_period_moa_id
+    FOREIGN KEY (moa_id) REFERENCES moa_info(moa_id)
+    ON DELETE CASCADE;
+  `;
+
+  // Alter the foreign key for validity_id in moa_info, referencing moa_validity_period
+  const alterForeignKey_validity_id_moa_info = `
+    ALTER TABLE moa_info
+    DROP FOREIGN KEY fk_moa_info_validity_id;
+  `;
+  
+  const addForeignKey_validity_id_moa_info = `
+    ALTER TABLE moa_info
+    ADD CONSTRAINT fk_moa_info_validity_id
+    FOREIGN KEY (validity_id) REFERENCES moa_validity_period(validity_id)
+    ON DELETE CASCADE;
+  `;
+
+  const querySELECT = `
+    SELECT contact_id, validity_id FROM moa_info WHERE moa_id = ?;
+  `;
+
+  let connection;
+
+  try {
+    // Get a connection from the pool
+    connection = await pool.getConnection();
+
+    // Start the transaction
+    await connection.beginTransaction();
+
+    // Drop and add the foreign key for moa_info to moa_contact (with CASCADE)
+    await connection.query(dropForeignKey_moa_info_contact_id);
+    await connection.query(addForeignKey_moa_info_contact_id);
+
+    // Alter foreign key for moa_validity_period (separate commands for DROP and ADD)
+    await connection.query(alterForeignKey_moa_validity_period_drop);
+    await connection.query(alterForeignKey_moa_validity_period_add);
+
+    // Alter foreign key for validity_id in moa_info
+    await connection.query(alterForeignKey_validity_id_moa_info);
+    await connection.query(addForeignKey_validity_id_moa_info);
+
+    // Get the contact_id and validity_id from the moa_info table
+    const [result_contact_id_validity_id] = await connection.query(querySELECT, [id]);
+
+    // If no record is found, return 404
+    if (result_contact_id_validity_id.length === 0) {
+      return res.status(404).send('MOA not found');
     }
+
+    // Extract contact_id and validity_id from the result
+    const { contact_id, validity_id } = result_contact_id_validity_id[0];
+
+    // Delete dependent records from other tables first
+    await connection.query('DELETE FROM moa_documents WHERE moa_id = ?', [id]);
+    await connection.query('DELETE FROM moa_status_history WHERE moa_id = ?', [id]);
+
+    // Now you can delete the moa_info record (it will automatically delete related rows in moa_contact and moa_validity_period due to CASCADE)
+    await connection.query('DELETE FROM moa_info WHERE moa_id = ?', [id]);
+
+    // Commit the transaction
+    await connection.commit();
+
+    // Return success message
+    res.status(200).send('MOA deleted successfully');
+  } catch (err) {
+    // Rollback the transaction if an error occurs
+    if (connection) {
+      await connection.rollback();
+    }
+    console.error('Error deleting MOA:', err);
+    res.status(500).send('Error deleting MOA');
+  } finally {
+    // Release the connection back to the pool
+    if (connection) {
+      connection.release();
+    }
+  }
 };
 
 module.exports = {
