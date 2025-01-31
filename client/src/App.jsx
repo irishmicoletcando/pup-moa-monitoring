@@ -5,12 +5,14 @@ import AddAdmin from "./components/add-admin/AddAdminModal";
 import MOA from "./pages/MOA";
 import Admin from "./pages/Admin";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import LandingPage from "./pages/LandingPage";
 
 export default function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<LoginPage />} />
+        <Route path="/landing-page" element={<LandingPage />} />
         <Route path="/moa-dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/moa-monitoring" element={<ProtectedRoute><MOA /></ProtectedRoute>} />
         <Route path="/moa-monitoring-admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
