@@ -236,10 +236,9 @@ export default function MOATable({ isModalOpen, setIsModalOpen }) {
                       </button>
                       <button
                         onClick={() => {
-                          setSelectedMOA(moa);
+                          setSelectedMOA(moa);  // Pass full MOA object
                           setIsEditModalOpen(true);
                         }}
-                        className="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-50 transition-colors"
                         title="Edit MOA"
                       >
                         <Edit2 className="w-4 h-4" />
