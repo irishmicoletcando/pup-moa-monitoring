@@ -1,12 +1,11 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
-import { Bar, BarChart, CartesianGrid, Rectangle, XAxis } from "recharts";
+import { useState } from "react";
+import { Bar, BarChart, CartesianGrid, Rectangle, XAxis, LabelList } from "recharts";
 
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -18,39 +17,26 @@ import {
 } from "@/components/ui/chart";
 
 export function BarGraph({ stats }) {
+  const [activeIndex, setActiveIndex] = useState(null); // Track active bar index
+
   const chartConfig = {
-    employment: {
-      label: "Employment",
-      color: "hsla(52, 100%, 53%, 1)",
-    },
-    research: {
-      label: "Research",
-      color: "hsla(43, 74%, 49%, 1)",
-    },
-    practicum: {
-      label: "Practicum",
-      color: "hsla(0, 100%, 25%, 1)",
-    },
-    scholarship: {
-      label: "Scholarship",
-      color: "hsl(var(--chart-4))",
-    },
+    employment: { label: "Employment", color: "hsla(52, 100%, 53%, 1)" },
+    research: { label: "Research", color: "hsla(43, 74%, 49%, 1)" },
+    practicum: { label: "Practicum", color: "hsla(0, 100%, 25%, 1)" },
+    scholarship: { label: "Scholarship", color: "hsl(var(--chart-4))" },
   };
 
-  // Create chart data and sort it by moaNumber in descending order
   const chartData = [
     { moaType: "employment", moaNumber: stats.employment, fill: "var(--color-employment)" },
     { moaType: "research", moaNumber: stats.research, fill: "var(--color-research)" },
     { moaType: "practicum", moaNumber: stats.practicum, fill: "var(--color-practicum)" },
     { moaType: "scholarship", moaNumber: stats.scholarship, fill: "var(--color-scholarship)" },
-  ]
-  .sort((a, b) => b.moaNumber - a.moaNumber);  // Sorting in descending order by moaNumber
+  ].sort((a, b) => b.moaNumber - a.moaNumber);
 
   return (
     <Card className="flex flex-col justify-between h-full">
       <CardHeader>
         <CardTitle className="text-md">MOA Types Count</CardTitle>
-        {/* <CardDescription>January - June 2024</CardDescription> */}
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -74,7 +60,7 @@ export function BarGraph({ stats }) {
               dataKey="moaNumber"
               strokeWidth={2}
               radius={8}
-              activeIndex={2}
+              activeIndex={activeIndex}
               activeBar={({ ...props }) => (
                 <Rectangle
                   {...props}
@@ -84,7 +70,19 @@ export function BarGraph({ stats }) {
                   strokeDashoffset={4}
                 />
               )}
-            />
+              onMouseMove={(_, index) => setActiveIndex(index)} // Set active bar on click
+            >
+              <LabelList
+                dataKey="moaNumber"
+                position="top"
+                fill="black"
+                fontSize={12}
+                fontWeight="bold"
+                formatter={(value, entry, index) =>
+                  index === activeIndex ? value : ""
+                }
+              />
+            </Bar>
           </BarChart>
         </ChartContainer>
       </CardContent>
