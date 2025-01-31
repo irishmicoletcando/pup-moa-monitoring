@@ -305,6 +305,8 @@ const deleteMOA = async (req, res) => {
     await connection.query('DELETE FROM moa_documents WHERE moa_id = ?', [moaId]);
     await connection.query('DELETE FROM moa_status_history WHERE moa_id = ?', [moaId]);
     await connection.query('DELETE FROM moa_info WHERE moa_id = ?', [moaId]);
+    await connection.query('DELETE FROM moa_validity_period WHERE moa_id = ?', [moaId]);
+  
 
     await connection.commit();
     res.status(200).json({ message: 'MOA deleted successfully' });
