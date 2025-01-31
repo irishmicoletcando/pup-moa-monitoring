@@ -1,6 +1,6 @@
-const db = require('../config/db');
+const { pool } = require('../config/db');
 
-const getMOACOuntByType = (req, res) => {
+const getMOACountByType = async (req, res) => {
     const query = `
         SELECT 
             type_id, 
@@ -9,11 +9,8 @@ const getMOACOuntByType = (req, res) => {
         GROUP BY type_id
     `;
 
-    db.query(query, (err, results) => {
-        if (err) {
-            console.error("Error fetching MOA statistics:", err);
-            return res.status(500).send('Error retrieving MOA statistics');
-        }
+    try {
+        const [results] = await pool.query(query);
 
         // Map type_id values to their corresponding MOA type names
         const moaTypes = {
@@ -38,10 +35,13 @@ const getMOACOuntByType = (req, res) => {
         });
 
         res.status(200).json(stats);
-    });
+    } catch (err) {
+        console.error("Error fetching MOA statistics:", err);
+        res.status(500).send('Error retrieving MOA statistics');
+    }
 };
 
-const getMOACountByStatus = (req, res) => {
+const getMOACountByStatus = async (req, res) => {
     const query = `
         SELECT 
             status, 
@@ -50,11 +50,8 @@ const getMOACountByStatus = (req, res) => {
         GROUP BY status
     `;
 
-    db.query(query, (err, results) => {
-        if (err) {
-            console.error("Error fetching MOA statistics by status:", err);
-            return res.status(500).send('Error retrieving MOA statistics by status');
-        }
+    try {
+        const [results] = await pool.query(query);
 
         // Convert results into a dictionary
         const stats = {};
@@ -71,9 +68,10 @@ const getMOACountByStatus = (req, res) => {
         });
 
         res.status(200).json(stats);
-    });
+    } catch (err) {
+        console.error("Error fetching MOA statistics by status:", err);
+        res.status(500).send('Error retrieving MOA statistics by status');
+    }
 };
 
-
-
-module.exports = { getMOACOuntByType, getMOACountByStatus };
+module.exports = { getMOACountByType, getMOACountByStatus };
