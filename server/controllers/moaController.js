@@ -1,6 +1,6 @@
 const multer = require('multer');
 const { BlobServiceClient } = require('@azure/storage-blob');
-const db = require('../config/db');
+const { pool } = require('../config/db');
 
 // Configure multer to use memory storage instead of disk
 const storage = multer.memoryStorage();
@@ -34,7 +34,7 @@ const uploadToBlob = async (file, fileName) => {
   }
 };
 
-const addMOA = (req, res) => {
+const addMOA = async (req, res) => {
   const uploadFiles = upload.array('files', 10);
 
   uploadFiles(req, res, async function (err) {
@@ -50,8 +50,7 @@ const addMOA = (req, res) => {
       });
     }
 
-    // Get a connection from the pool
-    const connection = await db.promise().getConnection();
+    const connection = await pool.getConnection();
 
     try {
       // Start transaction
@@ -163,7 +162,7 @@ const addMOA = (req, res) => {
 };
 
 // Get All MOAs
-const getAllMOAs = (req, res) => {
+const getAllMOAs = async (req, res) => {
     const query = `
         SELECT 
             moa_info.moa_id, 
@@ -185,17 +184,17 @@ const getAllMOAs = (req, res) => {
         ORDER BY moa_info.moa_id;
     `;
 
-    db.query(query, (err, results) => {
-        if (err) {
-            console.error("Error fetching MOAs:", err);
-            return res.status(500).send('Error retrieving MOAs');
-        }
+    try {
+        const [results] = await pool.query(query);
         res.status(200).json({ moas: results });
-    });
+    } catch (err) {
+        console.error("Error fetching MOAs:", err);
+        res.status(500).send('Error retrieving MOAs');
+    }
 };
 
 // Update MOA
-const updateMOA = (req, res) => {
+const updateMOA = async (req, res) => {
     const { id } = req.params;
     const { name, type_id, nature_of_business, contact_id, status, validity_id, user_id } = req.body;
 
@@ -205,36 +204,34 @@ const updateMOA = (req, res) => {
         WHERE moa_id = ?
     `;
     
-    db.query(query, [name, type_id, nature_of_business, contact_id, status, validity_id, user_id, id], (err, result) => {
-        if (err) {
-            console.error('Error updating MOA:', err);
-            return res.status(500).send('Error updating MOA');
-        }
+    try {
+        const [result] = await pool.query(query, [name, type_id, nature_of_business, contact_id, status, validity_id, user_id, id]);
         if (result.affectedRows === 0) {
             return res.status(404).send('MOA not found');
         }
         res.status(200).send('MOA updated successfully');
-    });
+    } catch (err) {
+        console.error('Error updating MOA:', err);
+        res.status(500).send('Error updating MOA');
+    }
 };
 
 // Delete MOA
-const deleteMOA = (req, res) => {
+const deleteMOA = async (req, res) => {
     const { id } = req.params;
 
     const query = 'DELETE FROM moa_info WHERE moa_id = ?';
 
-    db.query(query, [id], (err, result) => {
-        if (err) {
-            console.error('Error deleting MOA:', err);
-            return res.status(500).send('Error deleting MOA');
-        }
-
+    try {
+        const [result] = await pool.query(query, [id]);
         if (result.affectedRows === 0) {
             return res.status(404).send('MOA not found');
         }
-
         res.status(200).send('MOA deleted successfully');
-    });
+    } catch (err) {
+        console.error('Error deleting MOA:', err);
+        res.status(500).send('Error deleting MOA');
+    }
 };
 
 module.exports = {
