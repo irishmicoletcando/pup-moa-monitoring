@@ -174,25 +174,25 @@ export default function MOATable({ isModalOpen, setIsModalOpen, selectedRows, se
     <div className="bg-white rounded-lg shadow">
       <ToastContainer />
       <div className="p-4 border-b border-gray-200">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="relative w-full sm:w-auto">
+        <div className="flex flex-row items-center gap-3">
+          <div className="relative flex-grow">
             <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               placeholder="Search MOAs..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-20 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-maroon focus:border-maroon outline-none w-full sm:w-auto"
+              className="pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-maroon focus:border-maroon outline-none w-full"
             />
           </div>
 
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+            className="flex-shrink-0 flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
           >
             <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
-            Refresh
+            <span className="hidden sm:inline">Refresh</span>
           </button>
         </div>
       </div>
@@ -259,7 +259,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen, selectedRows, se
                         title="View Document">
                         <FileText className="w-4 h-4" />
                       </button>
-                      <button
+                      {/* <button
                         onClick={() => {
                           setSelectedMOA(moa);
                           setIsEditModalOpen(true);
@@ -268,7 +268,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen, selectedRows, se
                         title="Edit MOA"
                       >
                         <Edit2 className="w-4 h-4" />
-                      </button>
+                      </button> */}
 
                       <button
                         onClick={() => setDeleteModal({ isOpen: true, moa, isDeleting: false })}
@@ -348,7 +348,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen, selectedRows, se
         }}
       />
 
-      <EditMOAModal
+      {/* <EditMOAModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         moa={selectedMOA}
@@ -356,7 +356,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen, selectedRows, se
           fetchMOAs();
           toast.success("MOA updated successfully");
         }}
-      />
+      /> */}
 
     </div>
   );
