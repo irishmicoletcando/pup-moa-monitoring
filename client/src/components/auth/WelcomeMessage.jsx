@@ -11,7 +11,7 @@ export default function WelcomeMessage() {
             : 'Welcome back PUPian!'}
       </h1>
       <p className="text-white">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam imperdiet quam a orci aliquam tincidunt. Nullam eget lacinia est, quis iaculis risus.
+        Access your MOA monitoring system to track agreements, review statuses, and manage documents efficiently.
       </p>
     </div>
   )

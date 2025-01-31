@@ -1,5 +1,4 @@
-// src/components/Navbar.jsx
-import { User, LayoutDashboard, FileText } from "lucide-react";
+import { User, LayoutDashboard, FileText, Menu } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import ProfilePopover from "./ProfilePopover";
@@ -34,7 +33,6 @@ const Navbar = () => {
     }
   }, [location.pathname]);
 
-  // Retrieve user data from localStorage
   useEffect(() => {
     const firstname = localStorage.getItem("firstname") || "User";
     const lastname = localStorage.getItem("lastname") || "";
@@ -43,74 +41,118 @@ const Navbar = () => {
   }, []);
 
   const handleToggleProfile = () => {
-    if (!showProfile) {
-      setShowProfile(true);
+    setShowProfile(!showProfile);
+  };
+
+  const handleNavigation = (route, tab) => {
+    setAsActive(tab);
+    navigate(route);
+  };
+
+  const navItems = [
+    {
+      icon: <LayoutDashboard size={24} />,
+      label: "Dashboard",
+      route: "/moa-dashboard",
+      tab: "dashboard"
+    },
+    {
+      icon: <FileText size={24} />,
+      label: "MOA",
+      route: "/moa-monitoring",
+      tab: "addMOA"
+    },
+    {
+      icon: <User size={24} />,
+      label: "Admin",
+      route: "/moa-monitoring-admin",
+      tab: "addAdmin"
     }
-  };
-
-  const handleAddAdminButtonClick = () => {
-    setAsActive('addAdmin');
-    navigate("/moa-monitoring-admin");
-  };
-
-  const handleAddMOAButtonClick = () => {
-    setAsActive('addMOA');
-    navigate("/moa-monitoring");
-  };
-
-  const handleDashboardButtonClick = () => {
-    setAsActive('dashboard');
-    navigate("/moa-dashboard");
-  };
+  ];
 
   return (
-    <nav className="w-20 m-3 rounded-lg bg-maroon max-h-screen flex flex-col items-center py-4">
-      <div className="mb-8">
-        <img src="/PUP.png" alt="PUP Logo" className="w-12 h-12" />
-      </div>
+    <>
+      {/* Desktop Sidebar */}
+      <nav className="hidden md:flex w-20 m-3 rounded-lg bg-maroon max-h-screen flex-col items-center py-4">
+        <div className="mb-8">
+          <img src="/PUP.png" alt="PUP Logo" className="w-12 h-12" />
+        </div>
 
-      <div className="flex flex-col space-y-5 flex-grow justify-center w-full">
-        <button 
-          className= {`text-white w-full flex items-center justify-center p-4 transition-colors duration-200 ${ activeTab === 'dashboard' ? 'bg-red' : 'hover:bg-red' }`}
-          onClick={ handleDashboardButtonClick }
-        >
-          <LayoutDashboard size={24} />
-        </button>
-        
-        <button 
-          className= {`text-white w-full flex items-center justify-center p-4 transition-colors duration-200 ${ activeTab === 'addMOA' ? 'bg-red' : 'hover:bg-red' }`}
-          onClick={ handleAddMOAButtonClick }
+        <div className="flex flex-col space-y-5 flex-grow justify-center w-full">
+          {navItems.map((item) => (
+            <button
+              key={item.tab}
+              className={`text-white w-full flex items-center justify-center p-4 transition-colors duration-200 ${
+                activeTab === item.tab ? 'bg-red' : 'hover:bg-red'
+              }`}
+              onClick={() => handleNavigation(item.route, item.tab)}
+            >
+              {item.icon}
+            </button>
+          ))}
+        </div>
+
+        <div className="relative w-full flex items-center justify-center mt-auto">
+          <button
+            className="w-full flex items-center justify-center p-4 transition-colors duration-200 hover:bg-red"
+            onClick={handleToggleProfile}
           >
-          <FileText size={24} />
-        </button>
-
-        <button 
-          className= {`text-white w-full flex items-center justify-center p-4 transition-colors duration-200 ${ activeTab === 'addAdmin' ? 'bg-red' : 'hover:bg-red' }`}
-          onClick={ handleAddAdminButtonClick }
-        >
-          <User size={24} />
-        </button>
-      </div>
-
-      <div className="relative w-full flex items-center justify-center mt-auto">
-        <button
-          className={`w-full flex items-center justify-center p-4 transition-colors duration-200 ${
-            showProfile ? "pointer-events-none opacity-50" : "hover:bg-red"
-          }`}
-          onClick={handleToggleProfile}
-          disabled={showProfile}
-        >
-          <InitialsAvatar
-            firstname={user.firstname}
-            lastname={user.lastname}
-            role={user.role}
-            roleStyles={roleStyles}
+            <InitialsAvatar
+              firstname={user.firstname}
+              lastname={user.lastname}
+              role={user.role}
+              roleStyles={roleStyles}
+            />
+          </button>
+          
+          <ProfilePopover 
+            show={showProfile} 
+            onClose={() => setShowProfile(false)} 
           />
-        </button>
+        </div>
+      </nav>
 
-        <ProfilePopover show={showProfile} onClose={() => setShowProfile(false)} />
+      {/* Mobile Bottom Navigation */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-maroon text-white z-10">
+        <div className="flex justify-around items-center h-16">
+          {navItems.map((item) => (
+            <button
+              key={item.tab}
+              className={`flex flex-col items-center justify-center p-2 flex-1 ${
+                activeTab === item.tab ? 'bg-red' : 'hover:bg-red'
+              }`}
+              onClick={() => handleNavigation(item.route, item.tab)}
+            >
+              <div className="mb-1">{item.icon}</div>
+              <span className="text-xs">{item.label}</span>
+            </button>
+          ))}
+          <button
+            className="flex flex-col items-center justify-center p-2 flex-1"
+            onClick={handleToggleProfile}
+          >
+            <div className="mb-1">
+              <InitialsAvatar
+                firstname={user.firstname}
+                lastname={user.lastname}
+                role={user.role}
+                roleStyles={roleStyles}
+                size="small"
+              />
+            </div>
+            <span className="text-xs">Profile</span>
+          </button>
+        </div>
+      </nav>
+
+      {/* Render ProfilePopover for mobile */}
+      <div className="md:hidden">
+        <ProfilePopover 
+          show={showProfile} 
+          onClose={() => setShowProfile(false)} 
+        />
       </div>
-    </nav>
+    </>
   );
 };
 

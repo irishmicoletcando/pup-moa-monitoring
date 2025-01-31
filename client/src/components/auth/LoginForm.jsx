@@ -49,8 +49,7 @@ export default function LoginForm() {
     <div className="m-20 w-full">
       <h2 className="text-5xl font-bold mb-4">Login</h2>
       <p className="mb-7">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam imperdiet quam a orci aliquam tincidunt.
-        Nullam eget lacinia est, quis iaculis risus.
+        Stay informed and organized with our MOA Monitoring System. Track agreements, deadlines, and progress effortlessly.
       </p>
       <form onSubmit={handleLoginButtonClick}>
         <div className="mb-4">
@@ -90,7 +89,7 @@ export default function LoginForm() {
         >
           Login
         </button>
-        <p className="text-center mt-4">
+        {/* <p className="text-center mt-4">
           Don&lsquo;t have an account yet?{" "}
           <a
             onClick={handleSignUpButtonClick}
@@ -98,7 +97,7 @@ export default function LoginForm() {
           >
             Sign Up
           </a>
-        </p>
+        </p> */}
       </form>
       <ToastContainer />
     </div>
