@@ -21,7 +21,9 @@ export default function AdminModal({ isOpen, onClose, onUserAdded }) {
     if (name === "email") {
       const emailRegex = /^[a-zA-Z0-9._%+-]+@(pup\.edu\.ph|iskolarngbayan\.pup\.edu\.ph)$/;
   
-      if (!emailRegex.test(value)) {
+      if (value === "") {
+        setHasShownEmailWarning(false);
+      } else if (!emailRegex.test(value)) {
         // Only show the toast once per invalid entry
         if (!hasShownEmailWarning) {
           toast.warn("Only PUP webmails are allowed.");
