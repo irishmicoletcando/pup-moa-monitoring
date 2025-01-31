@@ -5,6 +5,9 @@ const moaController = require('../controllers/moaController');
 // Fetch all MOAs
 router.get('/moas', moaController.getAllMOAs);
 
+// Fetch a specific MOA by ID
+router.get('/moas/:id', moaController.getMOAById);
+
 // Add a new MOA
 router.post('/moas', moaController.addMOA);
 
