@@ -19,32 +19,20 @@ export default function MOA() {
     }
   
     try {
-      const fileData = await Promise.all(
-        selectedRows.map(async (moaId) => {
-          try {
-            const response = await fetch(`/api/moas/${moaId}`);
-            if (!response.ok) throw new Error(`Failed to fetch MOA ID: ${moaId}`);
+      const fetchResponse = await fetch("/api/moas");
+      if (!fetchResponse.ok) throw new Error("Failed to refetch MOAs");
+      const { moas } = await fetchResponse.json(); // Assuming API returns { moas: [...] }
   
-            const { moa } = await response.json(); // Extract the MOA object
-            // console.log("MOA Data:", moa); // Debugging
+      // Filter selected MOAs based on `selectedRows`
+      const selectedMOAs = selectedRows.map((id) => moas.find((moa) => moa.moa_id === id));
   
-            const filePath = moa?.file_path?.trim();
-            if (!filePath || typeof filePath !== "string") {
-              throw new Error(`No file for MOA ID: ${moaId}`);
-            }
+      // Validate file paths
+      const validFiles = selectedMOAs
+        .filter((moa) => moa?.file_path && typeof moa.file_path === "string")
+        .map((moa) => ({ fileUrl: moa.file_path.trim(), fileName: moa.name }));
   
-            return { fileUrl: filePath, fileName: moa.name }; // Store file details
-          } catch (error) {
-            console.error(error);
-            return null; // Skip failed files
-          }
-        })
-      );
-  
-      // Filter out failed file fetches
-      const validFiles = fileData.filter((file) => file !== null);
       if (validFiles.length === 0) {
-        toast.error("Failed to download selected MOAs.");
+        toast.error("No valid files to export.");
         return;
       }
   
