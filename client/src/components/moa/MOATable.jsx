@@ -31,6 +31,8 @@ export default function MOATable({ isModalOpen, setIsModalOpen, selectedRows, se
     isDeleting: false
   });
 
+  const userRole = "practicum_admin"; // For example, fetched or passed as prop
+
   const fetchMOAs = async () => {
     try {
       setLoading(true);
@@ -39,12 +41,28 @@ export default function MOATable({ isModalOpen, setIsModalOpen, selectedRows, se
         throw new Error("Failed to fetch MOAs");
       }
       const data = await response.json();
-  
+    
       console.log("Fetched MOAs:", data);
-  
+    
       const moasData = data.moas || [];
       console.assert(Array.isArray(moasData), "Fetched data is not an array");
-      setMoas(moasData);
+  
+      // Retrieve role from localStorage
+      const userRole = localStorage.getItem("role");
+    
+      // Role-based filtering
+      let filteredMOAs;
+      if (userRole === "Practicum Admin") {
+        filteredMOAs = moasData.filter(moa => moa.type_of_moa === "Practicum");
+      } else if (userRole === "Research Admin") {
+        filteredMOAs = moasData.filter(moa => moa.type_of_moa === "Research" || moa.type_of_moa === "Scholarship");
+      } else if (userRole === "Employment Admin") {
+        filteredMOAs = moasData.filter(moa => moa.type_of_moa === "Employment");
+      } else {
+        filteredMOAs = moasData; // If no role matches, show all
+      }
+  
+      setMoas(filteredMOAs);
     } catch (error) {
       console.error("Fetch MOAs error:", error);
       toast.error(error.message);
