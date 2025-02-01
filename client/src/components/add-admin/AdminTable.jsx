@@ -14,6 +14,7 @@ export default function AdminTable({ isModalOpen, setIsModalOpen, refreshTrigger
   const [refreshing, setRefreshing] = useState(false);
   const [selectedRoles, setSelectedRoles] = useState([]);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const userRole = localStorage.getItem("role"); // Get the role from localStorage
   const [deleteModal, setDeleteModal] = useState({ 
     isOpen: false, 
     user: null,
@@ -343,13 +344,16 @@ export default function AdminTable({ isModalOpen, setIsModalOpen, refreshTrigger
                     )}
                   </td>
                   <td className="p-4 text-sm">
-                    <button
-                      onClick={() => openDeleteModal(user)}
-                      className="text-red-600 hover:text-red-800 p-2 rounded-full hover:bg-red-50 transition-colors"
-                      title="Delete admin"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
+                    {/* Only show delete button if role is "Super Admin" */}
+                    {userRole === "Super Admin" && (
+                      <button
+                        onClick={() => openDeleteModal(user)}
+                        className="text-red-600 hover:text-red-800 p-2 rounded-full hover:bg-red-50 transition-colors"
+                        title="Delete admin"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))
