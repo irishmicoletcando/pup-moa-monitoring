@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
+import * as XLSX from "xlsx";
 
-const ExportExcelModal = ({ isOpen, onClose, onExport }) => {
+const ExportExcelModal = ({ isOpen, onClose, filteredMOAs }) => {
   const [selectedColumns, setSelectedColumns] = useState([]);
   
   const columns = [
@@ -10,11 +11,25 @@ const ExportExcelModal = ({ isOpen, onClose, onExport }) => {
     "MOA Status", "Validity", "Date Notarized", "Expiry Date", "Year Submitted to ARCDO"
   ];
 
+  const columnMapping = {
+    "Name": "name",
+    "Type of MOA": "type_of_moa",
+    "Nature of Business": "nature_of_business",
+    "Company Address": "address",
+    "Contact Person": "contact_person",
+    "Contact Position": "position",
+    "Contact Number": "contact_number",
+    "Email Address": "email",
+    "MOA Status": "moa_status",
+    "Validity": "years_validity",
+    "Date Notarized": "date_notarized",
+    "Expiry Date": "expiry_date",
+    "Year Submitted to ARCDO": "year_submitted",
+  };
+
   const handleColumnChange = (column) => {
     setSelectedColumns((prev) =>
-      prev.includes(column)
-        ? prev.filter((col) => col !== column)
-        : [...prev, column]
+      prev.includes(column) ? prev.filter((col) => col !== column) : [...prev, column]
     );
   };
 
@@ -23,7 +38,22 @@ const ExportExcelModal = ({ isOpen, onClose, onExport }) => {
       toast.error("Please select at least one column to export.");
       return;
     }
-    onExport(selectedColumns);
+
+    const exportData = filteredMOAs.map((moa) => {
+      let row = {};
+      selectedColumns.forEach((col) => {
+        const key = columnMapping[col];
+        row[col] = moa[key] || "N/A";
+      });
+      return row;
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "MOA Export");
+    XLSX.writeFile(workbook, "MOAs.xlsx");
+    
+    toast.success("Excel file exported successfully");
     onClose();
   };
 
@@ -58,7 +88,7 @@ const ExportExcelModal = ({ isOpen, onClose, onExport }) => {
           </button>
           <button
             onClick={handleExport}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="px-4 py-2 bg-maroon text-white rounded-md hover:bg-rose-900"
           >
             Export
           </button>

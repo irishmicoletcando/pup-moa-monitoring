@@ -183,6 +183,10 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
     );
   }
 
+  // const exportExcelForFilteredMOAs = ( filteredMOAs )=> {
+  //   // TODOs
+  // }
+
   return (
     <div className="bg-white rounded-lg shadow">
       <ToastContainer />
@@ -366,11 +370,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
       <ExportExcelModal 
         isOpen={isExportExcelModalOpen}
         onClose={() => setIsExportExcelModalOpen(false)}
-        onMOAAdded={() => {
-          // fetchMOAs();
-          // TODO: Add functionality to export MOAs to Excel
-          toast.success("Excel file exported successfully");
-        }}
+        filteredMOAs={filteredMOAs}
       />
 
       {/* <EditMOAModal
