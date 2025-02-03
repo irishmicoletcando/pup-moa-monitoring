@@ -5,8 +5,9 @@ import { Trash2, Search, RefreshCw, X, Edit2, FileText } from "lucide-react";
 import Modal from "../layout/Modal";
 import MOAHeader from "./MOAHeader";
 import AddMOAModal from "./AddMOAModal";
+import ExportExcelModal from "./ExportExcelModal";
 
-export default function MOATable({ isModalOpen, setIsModalOpen, selectedRows, setSelectedRows }) {
+export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelModalOpen, setIsExportExcelModalOpen, selectedRows, setSelectedRows }) {
   const [moas, setMoas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -183,6 +184,10 @@ export default function MOATable({ isModalOpen, setIsModalOpen, selectedRows, se
       </div>
     );
   }
+
+  // const exportExcelForFilteredMOAs = ( filteredMOAs )=> {
+  //   // TODOs
+  // }
 
   return (
     <div className="bg-white rounded-lg shadow">
@@ -363,6 +368,12 @@ export default function MOATable({ isModalOpen, setIsModalOpen, selectedRows, se
           fetchMOAs();
           toast.success("MOA added successfully");
         }}
+      />
+
+      <ExportExcelModal 
+        isOpen={isExportExcelModalOpen}
+        onClose={() => setIsExportExcelModalOpen(false)}
+        filteredMOAs={filteredMOAs}
       />
 
       {/* <EditMOAModal
