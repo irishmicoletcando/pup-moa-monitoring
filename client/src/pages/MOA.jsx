@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 
 export default function MOA() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isExportExcelModalOpen, setIsExportExcelModalOpen] = useState(false);
   const [selectedRows, setSelectedRows] = useState([]); // Manage selected rows across components
 
   // Export logic
@@ -103,9 +104,8 @@ export default function MOA() {
               <h1 className="text-2xl md:text-3xl font-bold">MOAs</h1>
             <div className="flex gap-4 ml-auto">
               <AddMOAButton onClick={() => setIsModalOpen(true)} />
-              <ExportMOAButton onClick={exportSelectedFiles}/>
-              {/* TODO FUNCTION FOR EXPORT EXCEL */}
-              <ExportExcelButton onClick={()=> {}}/>
+              <ExportMOAButton onClick={() => exportSelectedFiles}/>
+              <ExportExcelButton onClick={()=> setIsExportExcelModalOpen(true)}/>
             </div>
           </div>
           </div>
@@ -113,6 +113,8 @@ export default function MOA() {
             <MOATable 
               isModalOpen={isModalOpen}
               setIsModalOpen={setIsModalOpen}
+              isExportExcelModalOpen={isExportExcelModalOpen}
+              setIsExportExcelModalOpen={setIsExportExcelModalOpen}
               selectedRows={selectedRows}
               setSelectedRows={setSelectedRows}
             />
