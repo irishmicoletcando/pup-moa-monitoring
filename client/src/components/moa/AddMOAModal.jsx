@@ -13,6 +13,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
     firstName: "",
     lastName: "",
     position: "",
+    branch: "",
     contactNumber: "",
     emailAddress: "",
     moaStatus: "Active",
@@ -74,6 +75,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
         contactFirstName: formData.firstName,
         contactLastName: formData.lastName,
         position: formData.position,
+        branch: formData.branch,
         contactNumber: formData.contactNumber,
         emailAddress: formData.emailAddress,
         status: formData.moaStatus,
@@ -135,6 +137,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
         firstName: "",
         lastName: "",
         position: "",
+        branch: "",
         contactNumber: "",
         emailAddress: "",
         moaStatus: "Active",
@@ -360,6 +363,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
               />
             </div>
 
+            {/* Branch and Course */}
             <div>
               <label htmlFor="dateNotarized" className="block font-bold mb-2 text-sm sm:text-base">
                 Date Notarized
@@ -373,6 +377,48 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
                 onChange={handleChange}
                 required
               />
+            </div>
+          </div>
+
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="branch" className="block font-bold mb-2 text-sm sm:text-base">
+                Branch
+              </label>
+              <select
+                id="branch"
+                name="branch"
+                className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base"
+                value={formData.branch}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select Branch</option>
+                <option value="Sta. Mesa, Manila">Sta. Mesa, Manila</option>
+                <option value="Quezon City">Quezon City</option>
+                <option value="San Juan City">San Juan City</option>
+                <option value="Taguig City">Taguig City</option>
+                <option value="Parañaque City">Parañaque City</option>
+                <option value="Mariveles, Bataan">Mariveles, Bataan</option>
+                <option value="Sta. Maria, Bulacan">Sta. Maria, Bulacan</option>
+                <option value="Pulilan, Bulacan">Pulilan, Bulacan</option>
+                <option value="Cabiao, Nueva Ecija">Cabiao, Nueva Ecija</option>
+                <option value="Biñan, Laguna">Biñan, Laguna</option>
+                <option value="Calauan, Laguna">Calauan, Laguna</option>
+                <option value="San Pedro, Laguna">San Pedro, Laguna</option>
+                <option value="Sta. Rosa, Laguna">Sta. Rosa, Laguna</option>
+                <option value="Sto. Tomas, Batangas">Sto. Tomas, Batangas</option>
+                <option value="Maragondon, Cavite">Maragondon, Cavite</option>
+                <option value="Alfonso, Cavite (Maragondon Annex)">Alfonso, Cavite (Maragondon Annex)</option>
+                <option value="Lopez, Quezon">Lopez, Quezon</option>
+                <option value="Mulanay, Quezon">Mulanay, Quezon</option>
+                <option value="General Luna, Quezon (Mulanay Annex)">General Luna, Quezon (Mulanay Annex)</option>
+                <option value="Unisan, Quezon">Unisan, Quezon</option>
+                <option value="Ragay, Camarines Sur">Ragay, Camarines Sur</option>
+                <option value="Bansud, Oriental Mindoro">Bansud, Oriental Mindoro</option>
+                <option value="Sablayan, Occidental Mindoro">Sablayan, Occidental Mindoro</option>
+              </select>
             </div>
           </div>
 
