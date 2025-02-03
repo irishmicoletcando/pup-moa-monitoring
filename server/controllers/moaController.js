@@ -67,6 +67,7 @@ const addMOA = async (req, res) => {
         name,
         typeOfMoa,
         nature_of_business,
+        address,
         contactFirstName,
         contactLastName,
         contactNumber,
@@ -111,8 +112,8 @@ const addMOA = async (req, res) => {
 
       // Insert MOA
       const [moaInsertResult] = await connection.query(
-        "INSERT INTO moa_info (name, type_id, nature_of_business, contact_id, status, user_id) VALUES (?, ?, ?, ?, ?, ?)",
-        [name, type_id, nature_of_business, contact_id, status, user_id]
+        "INSERT INTO moa_info (name, type_id, nature_of_business, address, contact_id, status, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        [name, type_id, nature_of_business, address, contact_id, status, user_id]
       );
       
       const moa_id = moaInsertResult.insertId;
@@ -173,6 +174,7 @@ const getAllMOAs = async (req, res) => {
           moa_info.name, 
           moa_type.type_name AS type_of_moa, 
           moa_info.nature_of_business, 
+          moa_info.address,
           CONCAT(moa_contact.firstname, ' ', moa_contact.lastname) AS contact_person, 
           moa_contact.contact_number, 
           moa_contact.email, 
@@ -213,6 +215,7 @@ const getMOAById = async (req, res) => {
       moa_info.name, 
       moa_type.type_name AS type_of_moa, 
       moa_info.nature_of_business, 
+      moa_info.address,
       CONCAT(moa_contact.firstname, ' ', moa_contact.lastname) AS contact_person, 
       moa_contact.contact_number, 
       moa_contact.email, 
@@ -243,27 +246,27 @@ const getMOAById = async (req, res) => {
   }
 };
 
-// Update MOA
-const updateMOA = async (req, res) => {
-    const { id } = req.params;
-    const { name, type_id, nature_of_business, contact_id, status, validity_id, user_id } = req.body;
+// // Update MOA
+// const updateMOA = async (req, res) => {
+//     const { id } = req.params;
+//     const { name, type_id, nature_of_business, contact_id, status, validity_id, user_id } = req.body;
 
-    const query = `
-        UPDATE moa_info
-        SET name = ?, type_id = ?, nature_of_business = ?, contact_id = ?, status = ?, validity_id = ?, user_id = ?
-        WHERE moa_id = ?
-    `;
+//     const query = `
+//         UPDATE moa_info
+//         SET name = ?, type_id = ?, nature_of_business = ?, contact_id = ?, status = ?, validity_id = ?, user_id = ?
+//         WHERE moa_id = ?
+//     `;
     
-    try {
-        const [result] = await pool.query(query, [name, type_id, nature_of_business, contact_id, status, validity_id, user_id, id]);
-        if (result.affectedRows === 0) {
-            return res.status(404).send('MOA not found');
-        }
-        res.status(200).send('MOA updated successfully');
-    } catch (err) {
-        res.status(500).send('Error updating MOA');
-    }
-};
+//     try {
+//         const [result] = await pool.query(query, [name, type_id, nature_of_business, contact_id, status, validity_id, user_id, id]);
+//         if (result.affectedRows === 0) {
+//             return res.status(404).send('MOA not found');
+//         }
+//         res.status(200).send('MOA updated successfully');
+//     } catch (err) {
+//         res.status(500).send('Error updating MOA');
+//     }
+// };
 
 const deleteMOA = async (req, res) => {
   const { id } = req.params;

@@ -27,8 +27,6 @@ export default function MOATable({ isModalOpen, setIsModalOpen, selectedRows, se
     isDeleting: false
   });
 
-  const userRole = "practicum_admin"; // For example, fetched or passed as prop
-
   const fetchMOAs = async () => {
     try {
       setLoading(true);
