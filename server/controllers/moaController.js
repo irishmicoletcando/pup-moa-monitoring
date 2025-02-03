@@ -70,6 +70,7 @@ const addMOA = async (req, res) => {
         address,
         contactFirstName,
         contactLastName,
+        position,
         contactNumber,
         emailAddress,
         status,
@@ -104,8 +105,8 @@ const addMOA = async (req, res) => {
         contact_id = contactResults[0].contact_id;
       } else {
         const [contactInsertResult] = await connection.query(
-          "INSERT INTO moa_contact (firstname, lastname, contact_number, email) VALUES (?, ?, ?, ?)",
-          [contactFirstName, contactLastName, contactNumber, emailAddress]
+          "INSERT INTO moa_contact (firstname, lastname, position, contact_number, email) VALUES (?, ?, ?, ?, ?)",
+          [contactFirstName, contactLastName, position, contactNumber, emailAddress]
         );
         contact_id = contactInsertResult.insertId;
       }
@@ -178,6 +179,7 @@ const getAllMOAs = async (req, res) => {
           CONCAT(moa_contact.firstname, ' ', moa_contact.lastname) AS contact_person, 
           moa_contact.contact_number, 
           moa_contact.email, 
+          moa_contact.position,
           moa_info.status AS moa_status, 
           moa_validity_period.years_validity, 
           moa_validity_period.date_notarized, 
@@ -218,6 +220,7 @@ const getMOAById = async (req, res) => {
       moa_info.address,
       CONCAT(moa_contact.firstname, ' ', moa_contact.lastname) AS contact_person, 
       moa_contact.contact_number, 
+      moa_contact.position,
       moa_contact.email, 
       moa_info.status AS moa_status, 
       moa_validity_period.years_validity, 
