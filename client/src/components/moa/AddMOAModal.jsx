@@ -9,6 +9,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
     moaName: "",
     typeOfMoa: "Practicum",
     natureOfBusiness: "",
+    address: "",
     firstName: "",
     lastName: "",
     contactNumber: "",
@@ -68,6 +69,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
         name: formData.moaName,
         typeOfMoa: formData.typeOfMoa.trim(),
         nature_of_business: formData.natureOfBusiness,
+        address: formData.address,
         contactFirstName: formData.firstName,
         contactLastName: formData.lastName,
         contactNumber: formData.contactNumber,
@@ -127,6 +129,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
         moaName: "",
         typeOfMoa: "Practicum",
         natureOfBusiness: "",
+        address: "",
         firstName: "",
         lastName: "",
         contactNumber: "",
@@ -215,6 +218,23 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
                 required
               />
             </div>
+          </div>
+
+          {/* Company address - Full width */}
+          <div>
+            <label htmlFor="address" className="block font-bold mb-2 text-sm sm:text-base">
+              Company Address
+            </label>
+            <input
+              type="text"
+              id="address"
+              name="address"
+              placeholder="Enter company address"
+              className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base"
+              value={formData.address}
+              onChange={handleChange}
+              required
+            />
           </div>
 
           {/* Contact Person - First Name and Last Name */}

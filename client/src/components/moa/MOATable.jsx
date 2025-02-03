@@ -5,18 +5,14 @@ import { Trash2, Search, RefreshCw, X, Edit2, FileText } from "lucide-react";
 import Modal from "../layout/Modal";
 import MOAHeader from "./MOAHeader";
 import AddMOAModal from "./AddMOAModal";
-import EditMOAModal from "./EditMOAModal";
 
 export default function MOATable({ isModalOpen, setIsModalOpen, selectedRows, setSelectedRows }) {
   const [moas, setMoas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [refreshing, setRefreshing] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedMOA, setSelectedMOA] = useState(null);
   const [selectedTypes, setSelectedTypes] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState([]);
-  const [showViewer, setShowViewer] = useState(false);
   const [sortConfig, setSortConfig] = useState({
     field: null,
     direction: 'asc'
@@ -30,8 +26,6 @@ export default function MOATable({ isModalOpen, setIsModalOpen, selectedRows, se
     moa: null,
     isDeleting: false
   });
-
-  const userRole = "practicum_admin"; // For example, fetched or passed as prop
 
   const fetchMOAs = async () => {
     try {
@@ -245,6 +239,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen, selectedRows, se
                   <td className="p-4 text-sm text-gray-900">{moa.name}</td>
                   <td className="p-4 text-sm text-gray-900">{moa.type_of_moa}</td>
                   <td className="p-4 text-sm text-gray-900">{moa.nature_of_business}</td>
+                  <td className="p-4 text-sm text-gray-900">{moa.address}</td>
                   <td className="p-4 text-sm text-gray-900">{moa.contact_person || "N/A"}</td>
                   <td className="p-4 text-sm text-gray-900">{moa.contact_number}</td>
                   <td className="p-4 text-sm text-gray-900">{moa.email}</td>

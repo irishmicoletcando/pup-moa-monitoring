@@ -6,7 +6,7 @@ export default function Logo({ logoStyle, websiteNameStyle }) {
         alt="Polytechnic University of the Philippines logo" 
         className={`mb-5 sm:mb-0 mt-2 sm:mt-0 ${logoStyle}`} 
       />
-      <p className={`text-center sm:text-left sm:ml-5 text-3xl sm:text-base ${websiteNameStyle}`}>
+      <p className={`text-center sm:text-left sm:ml-5 text-2xl ${websiteNameStyle}`}>
         MOA Monitoring System
       </p>
     </div>
