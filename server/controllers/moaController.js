@@ -246,27 +246,27 @@ const getMOAById = async (req, res) => {
   }
 };
 
-// // Update MOA
-// const updateMOA = async (req, res) => {
-//     const { id } = req.params;
-//     const { name, type_id, nature_of_business, contact_id, status, validity_id, user_id } = req.body;
+// Update MOA
+const updateMOA = async (req, res) => {
+    const { id } = req.params;
+    const { name, type_id, nature_of_business, contact_id, status, validity_id, user_id } = req.body;
 
-//     const query = `
-//         UPDATE moa_info
-//         SET name = ?, type_id = ?, nature_of_business = ?, contact_id = ?, status = ?, validity_id = ?, user_id = ?
-//         WHERE moa_id = ?
-//     `;
+    const query = `
+        UPDATE moa_info
+        SET name = ?, type_id = ?, nature_of_business = ?, contact_id = ?, status = ?, validity_id = ?, user_id = ?
+        WHERE moa_id = ?
+    `;
     
-//     try {
-//         const [result] = await pool.query(query, [name, type_id, nature_of_business, contact_id, status, validity_id, user_id, id]);
-//         if (result.affectedRows === 0) {
-//             return res.status(404).send('MOA not found');
-//         }
-//         res.status(200).send('MOA updated successfully');
-//     } catch (err) {
-//         res.status(500).send('Error updating MOA');
-//     }
-// };
+    try {
+        const [result] = await pool.query(query, [name, type_id, nature_of_business, contact_id, status, validity_id, user_id, id]);
+        if (result.affectedRows === 0) {
+            return res.status(404).send('MOA not found');
+        }
+        res.status(200).send('MOA updated successfully');
+    } catch (err) {
+        res.status(500).send('Error updating MOA');
+    }
+};
 
 const deleteMOA = async (req, res) => {
   const { id } = req.params;
