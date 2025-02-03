@@ -12,6 +12,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
     address: "",
     firstName: "",
     lastName: "",
+    position: "",
     contactNumber: "",
     emailAddress: "",
     moaStatus: "Active",
@@ -72,6 +73,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
         address: formData.address,
         contactFirstName: formData.firstName,
         contactLastName: formData.lastName,
+        position: formData.position,
         contactNumber: formData.contactNumber,
         emailAddress: formData.emailAddress,
         status: formData.moaStatus,
@@ -132,6 +134,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
         address: "",
         firstName: "",
         lastName: "",
+        position: "",
         contactNumber: "",
         emailAddress: "",
         moaStatus: "Active",
@@ -237,8 +240,8 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
             />
           </div>
 
-          {/* Contact Person - First Name and Last Name */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Contact Person - First Name, Last Name, and Position */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label htmlFor="firstName" className="block font-bold mb-2 text-sm sm:text-base">
                 Contact Person First Name
@@ -269,8 +272,22 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
                 required
               />
             </div>
+            <div>
+              <label htmlFor="position" className="block font-bold mb-2 text-sm sm:text-base">
+                Contact Person Position
+              </label>
+              <input
+                type="text"
+                id="position"
+                name="position"
+                placeholder="Enter position"
+                className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base"
+                value={formData.position}
+                onChange={handleChange}
+                required
+              />
+            </div>
           </div>
-
 
           {/* Contact Number and Email */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

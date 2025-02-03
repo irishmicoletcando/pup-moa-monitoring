@@ -241,6 +241,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen, selectedRows, se
                   <td className="p-4 text-sm text-gray-900">{moa.nature_of_business}</td>
                   <td className="p-4 text-sm text-gray-900">{moa.address}</td>
                   <td className="p-4 text-sm text-gray-900">{moa.contact_person || "N/A"}</td>
+                  <td className="p-4 text-sm text-gray-900">{moa.position}</td>
                   <td className="p-4 text-sm text-gray-900">{moa.contact_number}</td>
                   <td className="p-4 text-sm text-gray-900">{moa.email}</td>
                   <td className="p-4 text-sm">
