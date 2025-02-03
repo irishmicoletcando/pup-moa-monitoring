@@ -3,6 +3,7 @@ import Navbar from '../components/layout/Navbar.jsx';
 import AddMOAButton from '../components/moa/AddMOAButton.jsx';
 import ExportMOAButton from '../components/moa/ExportButton.jsx';
 import ExportExcelButton from '@/components/moa/ExportExcelButton.jsx';
+import ImportExcelButton from '@/components/moa/ImportExcelButton.jsx';
 import MOATable from '../components/moa/MOATable';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
@@ -106,6 +107,7 @@ export default function MOA() {
               <AddMOAButton onClick={() => setIsModalOpen(true)} />
               <ExportMOAButton onClick={() => exportSelectedFiles}/>
               <ExportExcelButton onClick={()=> setIsExportExcelModalOpen(true)}/>
+              <ImportExcelButton />
             </div>
           </div>
           </div>
