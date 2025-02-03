@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Navbar from '../components/layout/Navbar.jsx';
 import AddMOAButton from '../components/moa/AddMOAButton.jsx';
 import ExportMOAButton from '../components/moa/ExportButton.jsx';
+import ExportExcelButton from '@/components/moa/ExportExcelButton.jsx';
 import MOATable from '../components/moa/MOATable';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
@@ -103,6 +104,8 @@ export default function MOA() {
             <div className="flex gap-4 ml-auto">
               <AddMOAButton onClick={() => setIsModalOpen(true)} />
               <ExportMOAButton onClick={exportSelectedFiles}/>
+              {/* TODO FUNCTION FOR EXPORT EXCEL */}
+              <ExportExcelButton onClick={()=> {}}/>
             </div>
           </div>
           </div>
