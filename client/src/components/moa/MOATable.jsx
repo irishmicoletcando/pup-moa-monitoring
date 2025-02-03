@@ -11,15 +11,14 @@ export default function MOATable({ isModalOpen, setIsModalOpen, selectedRows, se
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedTypes, setSelectedTypes] = useState([]);
-  const [selectedStatus, setSelectedStatus] = useState([]);
   const [sortConfig, setSortConfig] = useState({
     field: null,
     direction: 'asc'
   });
   const [filters, setFilters] = useState({
     moaTypes: [],
-    moaStatus: []
+    moaStatus: [],
+    branch: []
   });
   const [deleteModal, setDeleteModal] = useState({
     isOpen: false,
@@ -170,7 +169,10 @@ export default function MOATable({ isModalOpen, setIsModalOpen, selectedRows, se
     const matchesStatus = filters.moaStatus.length === 0 || 
       filters.moaStatus.includes(moa.moa_status);
 
-    return matchesSearch && matchesType && matchesStatus;
+    const matchesBranches = filters.branch.length === 0 || 
+      filters.branch.includes(moa.branch);
+
+    return matchesSearch && matchesType && matchesStatus && matchesBranches;
   })) : [];
 
   if (loading) {
@@ -253,6 +255,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen, selectedRows, se
                       {moa.moa_status}
                     </span>
                   </td>
+                  <td className="p-4 text-sm text-gray-900">{moa.branch}</td>
                   <td className="p-4 text-sm text-gray-900">{moa.years_validity}</td>
                   <td className="p-4 text-sm text-gray-900">{new Date(moa.date_notarized).toLocaleDateString()}</td>
                   <td className="p-4 text-sm text-gray-900">{new Date(moa.expiry_date).toLocaleDateString()}</td>
@@ -298,11 +301,11 @@ export default function MOATable({ isModalOpen, setIsModalOpen, selectedRows, se
             ) : (
               <tr>
                 <td colSpan="13" className="p-8 text-center text-gray-500">
-                  {searchTerm || selectedTypes.length > 0 || selectedStatus.length > 0 ? (
-                    <p className="text-lg font-medium">No matching MOAs found</p>
-                  ) : (
-                    <p className="text-lg font-medium">No MOAs found</p>
-                  )}
+                {searchTerm || filters.moaTypes.length > 0 || filters.moaStatus.length > 0 || filters.branch.length > 0 ? (
+                  <p className="text-lg font-medium">No matching MOAs found</p>
+                ) : (
+                  <p className="text-lg font-medium">No MOAs found</p>
+                )}
                 </td>
               </tr>
             )}
