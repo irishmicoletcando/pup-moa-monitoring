@@ -1,10 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
 
 const ExportExcelModal = ({ isOpen, onClose, filteredMOAs }) => {
-  const [selectedColumns, setSelectedColumns] = useState([]);
-  
   const columns = [
     "Name", "Type of MOA", "Nature of Business", "Company Address", 
     "Contact Person", "Contact Position", "Contact Number", "Email Address", 
@@ -27,9 +25,22 @@ const ExportExcelModal = ({ isOpen, onClose, filteredMOAs }) => {
     "Year Submitted to ARCDO": "year_submitted",
   };
 
+  const [selectedColumns, setSelectedColumns] = useState(["Name"]);
+  const [selectAll, setSelectAll] = useState(false);
+
+  useEffect(() => {
+    if (selectAll) {
+      setSelectedColumns([...columns]);
+    } else if (selectedColumns.length === columns.length) {
+      setSelectedColumns(["Name"]);
+    }
+  }, [selectAll]);
+
   const handleColumnChange = (column) => {
     setSelectedColumns((prev) =>
-      prev.includes(column) ? prev.filter((col) => col !== column) : [...prev, column]
+      prev.includes(column)
+        ? prev.filter((col) => col !== column)
+        : [...prev, column]
     );
   };
 
@@ -66,7 +77,18 @@ const ExportExcelModal = ({ isOpen, onClose, filteredMOAs }) => {
         <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
           Select the columns you want to export:
         </p>
+        < br />
+        <i className="text-sm text-gray-600 dark:text-gray-300 mt-2">NOTE: The data exported will be based on filters selected on the dropdowns in the column header (e.g., type or status). To export all MOAs, remove the filters.</i>
         <div className="mt-4 max-h-48 overflow-y-auto border p-2 rounded-md">
+          <label className="flex items-center space-x-2 mb-2 text-gray-900 dark:text-white">
+            <input
+              type="checkbox"
+              checked={selectedColumns.length === columns.length}
+              onChange={() => setSelectAll(!selectAll)}
+              className="form-checkbox h-4 w-4 text-blue-600"
+            />
+            <span>Select All</span>
+          </label>
           {columns.map((column) => (
             <label key={column} className="flex items-center space-x-2 mb-2 text-gray-900 dark:text-white">
               <input
