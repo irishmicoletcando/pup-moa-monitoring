@@ -77,6 +77,7 @@ export default function MOAHeader({ onSort, sortConfig, filters, onFilterChange,
         />
       </th>
       <th className="p-4 text-left text-sm font-medium">Nature of Business</th>
+      <th className="p-4 text-left text-sm font-medium">Company Address</th>
       <th className="p-4 text-left text-sm font-medium">Contact Person</th>
       <th className="p-4 text-left text-sm font-medium">Contact Number</th>
       <th className="p-4 text-left text-sm font-medium">Email Address</th>
