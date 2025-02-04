@@ -1,25 +1,54 @@
 import { ArrowUpDown, ChevronDown } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
+import { useMoaFilterContext } from "../context/MoaFilterContext";
 
-export default function MOAHeader({ onSort, sortConfig, filters, onFilterChange, isAllSelected, isSomeSelected, onToggleSelectAll }) {
+export default function MOAHeader({
+  onSort,
+  sortConfig,
+  filters,
+  onFilterChange,
+  isAllSelected,
+  isSomeSelected,
+  onToggleSelectAll,
+}) {
   const [openFilter, setOpenFilter] = useState(null);
   const filterRefs = useRef({}); // Store refs for each dropdown
+  const { moaFilters, onMoaFilterChange } = useMoaFilterContext(); // Filter from dashboard context
+
+  // Sync moaFilters with local filters when moaFilters changes
+  useEffect(() => {
+    // Directly set the filters' values to moaFilters without calling onFilterChange
+    filters.moaTypes = [...new Set(moaFilters.moaTypes)];
+    filters.moaStatus = [...new Set(moaFilters.moaStatus)];
+    filters.branch = [...new Set(moaFilters.branch)];
+    filters.course = [...new Set(moaFilters.course)];
+  }, [moaFilters]); // Re-run effect when moaFilters changes
 
   useEffect(() => {
     function handleClickOutside(event) {
       // Check if the click is outside all dropdowns
-      if (openFilter && filterRefs.current[openFilter] && !filterRefs.current[openFilter].contains(event.target)) {
+      if (
+        openFilter &&
+        filterRefs.current[openFilter] &&
+        !filterRefs.current[openFilter].contains(event.target)
+      ) {
         setOpenFilter(null); // Close the dropdown
       }
     }
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openFilter]); // Re-run effect when openFilter changes
 
   const getSortIcon = (field) => {
     if (sortConfig.field === field) {
-      return <ArrowUpDown className={`w-4 h-4 ml-1 ${sortConfig.direction === 'asc' ? 'rotate-180' : ''}`} />;
+      return (
+        <ArrowUpDown
+          className={`w-4 h-4 ml-1 ${
+            sortConfig.direction === "asc" ? "rotate-180" : ""
+          }`}
+        />
+      );
     }
     return <ArrowUpDown className="w-4 h-4 ml-1 text-gray-300" />;
   };
@@ -61,12 +90,18 @@ export default function MOAHeader({ onSort, sortConfig, filters, onFilterChange,
         )}
       </div>
     );
-  };  
+  };
 
   return (
     <tr className="bg-gray-50">
       <th className="w-12 p-4 text-left">
-        <input type="checkbox" className="h-4 w-4 rounded border-gray-300" onChange={onToggleSelectAll} checked={isAllSelected} ref={el => el && (el.indeterminate = isSomeSelected)}/>
+        <input
+          type="checkbox"
+          className="h-4 w-4 rounded border-gray-300"
+          onChange={onToggleSelectAll}
+          checked={isAllSelected}
+          ref={(el) => el && (el.indeterminate = isSomeSelected)}
+        />
       </th>
       <th className="p-4 text-left text-sm font-medium">Name</th>
       <th className="p-4 text-left text-sm font-medium">
@@ -74,7 +109,7 @@ export default function MOAHeader({ onSort, sortConfig, filters, onFilterChange,
           type="Type of MOA"
           options={["Practicum", "Research", "Employment", "Scholarship"]}
           selectedValues={filters.moaTypes}
-          onChange={(value) => onFilterChange('moaTypes', value)}
+          onChange={(value) => onFilterChange("moaTypes", value)}
         />
       </th>
       <th className="p-4 text-left text-sm font-medium">Nature of Business</th>
@@ -88,23 +123,125 @@ export default function MOAHeader({ onSort, sortConfig, filters, onFilterChange,
           type="MOA Status"
           options={["Active", "Expired", "Expiry"]}
           selectedValues={filters.moaStatus}
-          onChange={(value) => onFilterChange('moaStatus', value)}
+          onChange={(value) => onFilterChange("moaStatus", value)}
         />
       </th>
       <th className="p-4 text-left text-sm font-medium">
         <FilterDropdown
           type="Branch"
-          options={['Sta. Mesa, Manila', 'Quezon City', 'San Juan City', 'Taguig City', 'Parañaque City', 'Mariveles, Bataan', 'Sta. Maria, Bulacan', 'Pulilan, Bulacan', 'Cabiao, Nueva Ecija', 'Biñan, Laguna', 'Calauan, Laguna', 'San Pedro, Laguna', 'Sta. Rosa, Laguna', 'Sto. Tomas, Batangas', 'Maragondon, Cavite', 'Alfonso, Cavite (Maragondon Annex)', 'Lopez, Quezon', 'Mulanay, Quezon', 'General Luna, Quezon (Mulanay Annex)', 'Unisan, Quezon', 'Ragay, Camarines Sur', 'Bansud, Oriental Mindoro', 'Sablayan, Occidental Mindoro']}
+          options={[
+            "Sta. Mesa, Manila",
+            "Quezon City",
+            "San Juan City",
+            "Taguig City",
+            "Parañaque City",
+            "Mariveles, Bataan",
+            "Sta. Maria, Bulacan",
+            "Pulilan, Bulacan",
+            "Cabiao, Nueva Ecija",
+            "Biñan, Laguna",
+            "Calauan, Laguna",
+            "San Pedro, Laguna",
+            "Sta. Rosa, Laguna",
+            "Sto. Tomas, Batangas",
+            "Maragondon, Cavite",
+            "Alfonso, Cavite (Maragondon Annex)",
+            "Lopez, Quezon",
+            "Mulanay, Quezon",
+            "General Luna, Quezon (Mulanay Annex)",
+            "Unisan, Quezon",
+            "Ragay, Camarines Sur",
+            "Bansud, Oriental Mindoro",
+            "Sablayan, Occidental Mindoro",
+          ]}
           selectedValues={filters.branch}
-          onChange={(value) => onFilterChange('branch', value)}
+          onChange={(value) => onFilterChange("branch", value)}
         />
       </th>
       <th className="p-4 text-left text-sm font-medium">
         <FilterDropdown
           type="Origin Course"
-          options={["ABF", "ABELS", "ABLCS", "AB-PHILO", "ATM", "BA Broadcasting", "BACR", "BADPR", "BAH", "BAIS", "BAJ", "BAPS", "BAPE", "BAS", "BPA", "BPE", "BPEA", "BPAPFM", "BSA", "BSABFM", "BSAM", "BSAPMATH", "BSARCHI", "BS-ARCH", "BSBAFM", "BSBA-HRM", "BSBAHRM", "BSBA-MM", "BSBIO", "BSC", "BSCE", "BSCHEM", "BSCS", "BSCpE", "BS-ENTREP", "BSENTREP", "BSENTREP-UN", "BSEE", "BSECE", "BSE", "BSEd", "BSEDEN", "BSEDFL", "BSEDMT", "BSEDSS", "BSEP", "BSESS", "BSFT", "BSHM", "BSID", "BSIE", "BSIT", "BSMA", "BSMATH", "BSME", "BSND", "BSOALT", "BSOA", "BSPHY", "BSPYS", "BSRE", "BSSTAT", "BSTM", "BSTRM", "BTLE", "BTLEd", "BBTLEDHE", "BBTLEDHE-CL", "BCOOP", "DCET", "DEET", "DECET", "DICT", "DMET", "DOMT", "DOMTLOM", "DOMTMOM"]}
+          options={[
+            "ABF",
+            "ABELS",
+            "ABLCS",
+            "AB-PHILO",
+            "ATM",
+            "BA Broadcasting",
+            "BACR",
+            "BADPR",
+            "BAH",
+            "BAIS",
+            "BAJ",
+            "BAPS",
+            "BAPE",
+            "BAS",
+            "BPA",
+            "BPE",
+            "BPEA",
+            "BPAPFM",
+            "BSA",
+            "BSABFM",
+            "BSAM",
+            "BSAPMATH",
+            "BSARCHI",
+            "BS-ARCH",
+            "BSBAFM",
+            "BSBA-HRM",
+            "BSBAHRM",
+            "BSBA-MM",
+            "BSBIO",
+            "BSC",
+            "BSCE",
+            "BSCHEM",
+            "BSCS",
+            "BSCpE",
+            "BS-ENTREP",
+            "BSENTREP",
+            "BSENTREP-UN",
+            "BSEE",
+            "BSECE",
+            "BSE",
+            "BSEd",
+            "BSEDEN",
+            "BSEDFL",
+            "BSEDMT",
+            "BSEDSS",
+            "BSEP",
+            "BSESS",
+            "BSFT",
+            "BSHM",
+            "BSID",
+            "BSIE",
+            "BSIT",
+            "BSMA",
+            "BSMATH",
+            "BSME",
+            "BSND",
+            "BSOALT",
+            "BSOA",
+            "BSPHY",
+            "BSPYS",
+            "BSRE",
+            "BSSTAT",
+            "BSTM",
+            "BSTRM",
+            "BTLE",
+            "BTLEd",
+            "BBTLEDHE",
+            "BBTLEDHE-CL",
+            "BCOOP",
+            "DCET",
+            "DEET",
+            "DECET",
+            "DICT",
+            "DMET",
+            "DOMT",
+            "DOMTLOM",
+            "DOMTMOM",
+          ]}
           selectedValues={filters.course}
-          onChange={(value) => onFilterChange('course', value)}
+          onChange={(value) => onFilterChange("course", value)}
         />
       </th>
       <th className="p-4 text-left text-sm font-medium">Validity</th>
@@ -112,10 +249,10 @@ export default function MOAHeader({ onSort, sortConfig, filters, onFilterChange,
       <th className="p-4 text-left text-sm font-medium">
         <button
           className="flex items-center hover:text-maroon"
-          onClick={() => onSort('expiry_date')}
+          onClick={() => onSort("expiry_date")}
         >
           Expiry Date
-          {getSortIcon('expiry_date')}
+          {getSortIcon("expiry_date")}
         </button>
       </th>
       <th className="p-4 text-left text-sm font-medium">Year Submitted to ARCDO</th>
