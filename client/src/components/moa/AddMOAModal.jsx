@@ -1,10 +1,103 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { Plus, Upload, X } from "lucide-react";
 
 export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
+  const branchToCourses = {
+    "Sta. Mesa, Manila": ["ABELS", "ABF", "ABLCS", "AB-PHILO", "BADPR", "BA Broadcasting", "BACR", "BAJ", "BLIS", "BPA", "BPEA", "BSA", "BSBAFM", "BSBA-HRM", "BSBA-MM", "BSBIO", "BSCE", "BSCpE", "BSCS", "BSECE", "BSEE", "BSENTREP", "BSFT", "BSHM", "BSIE", "BSIT", "BSMA", "BSME", "BSOA", "BSRE", "BSTM", "BTLEd", "DCET", "DEET", "DECET", "DICT", "DMET", "DOMT"],
+    "Quezon City": ["BBTLEDHE", "BSBAHRM", "BSBA-MM", "BSENTREP", "BSIT", "BPAPFM", "DOMTMOM"],
+    "San Juan City": ["BSA", "BSBAFM", "BSENTREP", "BSHM", "BSIT", "BSEDEN", "BSEDMT"],
+    "Taguig City": ["BSBA-HRM", "BSBA-MM", "BSECE", "BSIT", "BSME", "BSOALT", "BSEDEN", "BSEDMT", "DICT", "DMET", "DOMTLOM"],
+    "Parañaque City": ["BSCpE", "BSHM", "BSIT", "BSOA", "DOMTLOM"],
+    "Mariveles, Bataan": ["BEED", "BSA", "BSBA-HRM", "BSENTREP", "BSIE", "BSIT", "DCET", "DICT", "DOMTLOM"],
+    "Sta. Maria, Bulacan": ["BSA", "BSCpE", "BSENTREP", "BSHM", "BSIT", "BSEDEN", "BSEDMT", "DOMTLOM"],
+    "Pulilan, Bulacan": ["BSENTREP", "BPAPFM"],
+    "Cabiao, Nueva Ecija": ["BEED", "BSBA-MM"],
+    "Biñan, Laguna": ["BEED", "BSA", "BSBA-HRM", "BSCpE", "BSIE", "BSIT", "BSEDEN", "BSEDSS", "DCET", "DICT"],
+    "Calauan, Laguna": ["BBTLEDHE-CL", "BSENTREP-UN", "BSIT"],
+    "San Pedro, Laguna": ["BSA", "BSBA-HRM", "BSBA-MM", "BSENTREP", "BSIT", "BSEDEN", "BSEDMT"],
+    "Sta. Rosa, Laguna": ["BBTLE", "BSA", "BSBA-HRM", "BSBA-MM", "BSECE", "BSIE", "BSIT", "BSPSY", "BSEDEN", "BSEDFL", "BSEDMT"],
+    "Sto. Tomas, Batangas": ["BBTLE", "BSA", "BSEE", "BSECE", "BSENTREP", "BSIE", "BSIT", "BPAPFM", "BSPSY", "DICT", "DOMTLOM"],
+    "Maragondon, Cavite": ["BSA", "BSBA-HRM", "BSEDEN", "BSEE", "BSECE", "BSENTREP", "BSME", "DICT", "DOMTLOM", "DOMTMOM"],
+    "Alfonso, Cavite (Maragondon Annex)": ["BSA", "BSME", "BSEDEN", "BSEDMT"],
+    "Lopez, Quezon": ["BPA", "BSA", "BSAM", "BS-ARCHI", "BSBA-MM", "BSCE", "BSEE", "BSHM", "BSIT", "BSOA", "BPAPFM", "BSEDMT", "DEET", "DICT", "DOMT"],
+    "Mulanay, Quezon": ["BEED", "BSAM", "BSENTREP", "BSOA", "BPAPFM", "DICT", "DOMTMOM"],
+    "General Luna, Quezon (Mulanay Annex)": ["BPA", "BSBA-MM"],
+    "Unisan, Quezon": ["BEED", "BSENTREP", "BSIT", "DICT", "DOMT"],
+    "Ragay, Camarines Sur": ["BEED", "BSBA-HRM", "BSBA-MM", "BSIT", "BSOA", "BSEDEN"],
+    "Bansud Oriental Mindoro": ["BSIT", "BPAPFM", "BSEDEN", "BSEDMT"],
+    "Sablayan, Occidental Mindoro": ["BCOOP", "BSEDMT", "BSENTREP", "ATM"]
+  };
+  
+  const courseNames = {
+    "ABELS": "Bachelor of Arts in English Language Studies",
+    "ABF": "Bachelor of Arts in Filipinology",
+    "ABLCS": "Bachelor of Arts in Literary and Cultural Studies",
+    "AB-PHILO": "Bachelor of Arts in Philosophy",
+    "ATM": "Associate Degree Associate in Tourism Management",
+    "BA Broadcasting": "Bachelor of Arts in Broadcasting",
+    "BACR": "Bachelor of Arts in Communication Research",
+    "BADPR": "Bachelor in Advertising and Public Relations",
+    "BAH": "Bachelor of Arts in History",
+    "BAIS": "Bachelor of Arts in International Studies",
+    "BAJ": "Bachelor of Arts in Journalism",
+    "BAPE": "Bachelor of Arts in Political Economy",
+    "BAPS": "Bachelor of Arts in Political Science",
+    "BAS": "Bachelor of Arts in Sociology",
+    "BBTLE": "Bachelor of Business Technology and Livelihood Education",
+    "BBTLEDHE": "Bachelor of Business Technology and Livelihood Education major in Home Economics",
+    "BBTLEDHE-CL": "Bachelor of Business Technology and Livelihood Education major in Home Economics",
+    "BCOOP": "Bachelor in Cooperatives",
+    "BEED": "Bachelor in Elementary Education",
+    "BLIS": "Bachelor of Library and Information Science",
+    "BPA": "Bachelor of Public Administration",
+    "BPAPFM": "Bachelor of Public Administration major in Public Financial Management",
+    "BPEA": "Bachelor of Performing Arts major in Theater Arts",
+    "BSA": "Bachelor of Science in Accountancy",
+    "BSAM": "Bachelor of Science in Agricultural Business Management",
+    "BS-ARCHI": "Bachelor of Science in Architecture",
+    "BSBAFM": "Bachelor of Science in Business Administration Major in Financial Management",
+    "BSBA-HRM": "Bachelor of Science in Business Administration major in Human Resource Management",
+    "BSBA-MM": "Bachelor of Science in Business Administration major in Marketing Management",
+    "BSBIO": "Bachelor of Science in Biology",
+    "BSCE": "Bachelor of Science in Civil Engineering",
+    "BSCpE": "Bachelor of Science in Computer Engineering",
+    "BSCS": "Bachelor of Science in Computer Science",
+    "BSECE": "Bachelor of Science in Electronics Engineering",
+    "BSEDEN": "Bachelor of Secondary Education major in English",
+    "BSEDFL": "Bachelor of Secondary Education major in Filipino",
+    "BSEDMT": "Bachelor of Secondary Education major in Mathematics",
+    "BSEDSS": "Bachelor of Secondary Education major in Social Studies",
+    "BSEE": "Bachelor of Science in Electrical Engineering",
+    "BSENTREP": "Bachelor of Science in Entrepreneurship",
+    "BSENTREP-UN": "Bachelor of Science in Entrepreneurship",
+    "BSFT": "Bachelor of Science Food Technology",
+    "BSHM": "Bachelor of Science in Hospitality Management",
+    "BSIE": "Bachelor of Science in Industrial Engineering",
+    "BSIT": "Bachelor of Science in Information Technology",
+    "BSMA": "Bachelor of Science in Management Accounting",
+    "BSME": "Bachelor of Science in Mechanical Engineering",
+    "BSOA": "Bachelor of Science in Office Administration",
+    "BSOALT": "Bachelor of Science in Office Administration major in Legal Transcription",
+    "BSPSY": "Bachelor of Science in Psychology",
+    "BSRE": "Bachelor of Science in Railway Engineering",
+    "BSTM": "Bachelor of Science in Tourism Management",
+    "BTLEd": "Bachelor of Technology and Livelihood Education",
+    "DCET": "Diploma in Computer Engineering Technology",
+    "DEET": "Diploma in Electrical Engineering Technology",
+    "DECET": "Diploma in Electronics Engineering Technology",
+    "DICT": "Diploma in Information Communication Technology",
+    "DMET": "Diploma in Mechanical Engineering Technology",
+    "DOMT": "Diploma in Office Management",
+    "DOMTLOM": "Diploma in Office Management Technology- Legal Office Management",
+    "DOMTMOM": "Diploma in Office Management Technology Medical Office Management",
+  };
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [files, setFiles] = useState([]);
+  const [selectedBranch, setSelectedBranch] = useState("");
+  const [selectedCourse, setSelectedCourse] = useState("");
+  const [availableCourses, setAvailableCourses] = useState([]);
   const [formData, setFormData] = useState({
     moaName: "",
     typeOfMoa: "Practicum",
@@ -14,6 +107,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
     lastName: "",
     position: "",
     branch: "",
+    course: "",
     contactNumber: "",
     emailAddress: "",
     moaStatus: "Active",
@@ -76,6 +170,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
         contactLastName: formData.lastName,
         position: formData.position,
         branch: formData.branch,
+        course: formData.course,
         contactNumber: formData.contactNumber,
         emailAddress: formData.emailAddress,
         status: formData.moaStatus,
@@ -138,6 +233,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
         lastName: "",
         position: "",
         branch: "",
+        course: "",
         contactNumber: "",
         emailAddress: "",
         moaStatus: "Active",
@@ -154,6 +250,15 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
       setIsSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    if (selectedBranch) {
+      setAvailableCourses(branchToCourses[selectedBranch] || []);
+      setSelectedCourse(""); // Reset course when branch changes
+    } else {
+      setAvailableCourses([]);
+    }
+  }, [selectedBranch]);
 
   if (!isOpen) return null;
 
@@ -363,7 +468,6 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
               />
             </div>
 
-            {/* Branch and Course */}
             <div>
               <label htmlFor="dateNotarized" className="block font-bold mb-2 text-sm sm:text-base">
                 Date Notarized
@@ -380,7 +484,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
             </div>
           </div>
 
-
+          {/* Branch & Course */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="branch" className="block font-bold mb-2 text-sm sm:text-base">
@@ -388,36 +492,44 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
               </label>
               <select
                 id="branch"
-                name="branch"
                 className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base"
-                value={formData.branch}
-                onChange={handleChange}
+                value={selectedBranch}
+                onChange={(e) => {
+                  setSelectedBranch(e.target.value);
+                  setFormData(prev => ({ ...prev, branch: e.target.value }));
+                }}
                 required
               >
                 <option value="">Select Branch</option>
-                <option value="Sta. Mesa, Manila">Sta. Mesa, Manila</option>
-                <option value="Quezon City">Quezon City</option>
-                <option value="San Juan City">San Juan City</option>
-                <option value="Taguig City">Taguig City</option>
-                <option value="Parañaque City">Parañaque City</option>
-                <option value="Mariveles, Bataan">Mariveles, Bataan</option>
-                <option value="Sta. Maria, Bulacan">Sta. Maria, Bulacan</option>
-                <option value="Pulilan, Bulacan">Pulilan, Bulacan</option>
-                <option value="Cabiao, Nueva Ecija">Cabiao, Nueva Ecija</option>
-                <option value="Biñan, Laguna">Biñan, Laguna</option>
-                <option value="Calauan, Laguna">Calauan, Laguna</option>
-                <option value="San Pedro, Laguna">San Pedro, Laguna</option>
-                <option value="Sta. Rosa, Laguna">Sta. Rosa, Laguna</option>
-                <option value="Sto. Tomas, Batangas">Sto. Tomas, Batangas</option>
-                <option value="Maragondon, Cavite">Maragondon, Cavite</option>
-                <option value="Alfonso, Cavite (Maragondon Annex)">Alfonso, Cavite (Maragondon Annex)</option>
-                <option value="Lopez, Quezon">Lopez, Quezon</option>
-                <option value="Mulanay, Quezon">Mulanay, Quezon</option>
-                <option value="General Luna, Quezon (Mulanay Annex)">General Luna, Quezon (Mulanay Annex)</option>
-                <option value="Unisan, Quezon">Unisan, Quezon</option>
-                <option value="Ragay, Camarines Sur">Ragay, Camarines Sur</option>
-                <option value="Bansud, Oriental Mindoro">Bansud, Oriental Mindoro</option>
-                <option value="Sablayan, Occidental Mindoro">Sablayan, Occidental Mindoro</option>
+                {Object.keys(branchToCourses).map((branch) => (
+                  <option key={branch} value={branch}>
+                    {branch}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="course" className="block font-bold mb-2 text-sm sm:text-base">
+                Course
+              </label>
+              <select
+                id="course"
+                className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base"
+                value={selectedCourse}
+                onChange={(e) => {
+                  setSelectedCourse(e.target.value);
+                  setFormData(prev => ({ ...prev, course: e.target.value }));
+                }}
+                required
+                disabled={!selectedBranch}
+              >
+                <option value="">Select Course</option>
+                {availableCourses.map((courseCode) => (
+                  <option key={courseCode} value={courseCode}>
+                    {courseCode} - {courseNames[courseCode] || courseCode}
+                  </option>
+                ))}
               </select>
             </div>
           </div>

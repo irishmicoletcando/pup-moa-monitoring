@@ -99,6 +99,7 @@ export default function MOAHeader({ onSort, sortConfig, filters, onFilterChange,
           onChange={(value) => onFilterChange('branch', value)}
         />
       </th>
+      <th className="p-4 text-left text-sm font-medium">Origin Course</th>
       <th className="p-4 text-left text-sm font-medium">Validity</th>
       <th className="p-4 text-left text-sm font-medium">Date Notarized</th>
       <th className="p-4 text-left text-sm font-medium">

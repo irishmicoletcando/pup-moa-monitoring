@@ -261,6 +261,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
                     </span>
                   </td>
                   <td className="p-4 text-sm text-gray-900">{moa.branch}</td>
+                  <td className="p-4 text-sm text-gray-900">{moa.course}</td>
                   <td className="p-4 text-sm text-gray-900">{moa.years_validity}</td>
                   <td className="p-4 text-sm text-gray-900">{new Date(moa.date_notarized).toLocaleDateString()}</td>
                   <td className="p-4 text-sm text-gray-900">{new Date(moa.expiry_date).toLocaleDateString()}</td>
