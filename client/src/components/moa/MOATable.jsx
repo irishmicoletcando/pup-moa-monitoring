@@ -6,6 +6,7 @@ import Modal from "../layout/Modal";
 import MOAHeader from "./MOAHeader";
 import AddMOAModal from "./AddMOAModal";
 import ExportExcelModal from "./ExportExcelModal";
+import { useMoaFilterContext } from "../context/MoaFilterContext";
 
 export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelModalOpen, setIsExportExcelModalOpen, selectedRows, setSelectedRows }) {
   const [moas, setMoas] = useState([]);
@@ -16,12 +17,13 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
     field: null,
     direction: 'asc'
   });
-  const [filters, setFilters] = useState({
-    moaTypes: [],
-    moaStatus: [],
-    branch: [],
-    course: []
-  });
+  // const [filters, setFilters] = useState({
+  //   moaTypes: [],
+  //   moaStatus: [],
+  //   branch: [],
+  //   course: []
+  // });
+  const { moaFilters, onMoaFilterChange } = useMoaFilterContext();
   const [deleteModal, setDeleteModal] = useState({
     isOpen: false,
     moa: null,
@@ -126,7 +128,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
   const isSomeSelected = selectedRows.length > 0 && selectedRows.length < moas.length;
 
   const handleFilterChange = (filterType, value) => {
-    setFilters(prev => ({
+    onMoaFilterChange(prev => ({
       ...prev,
       [filterType]: prev[filterType].includes(value)
         ? prev[filterType].filter(item => item !== value)
@@ -165,17 +167,17 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
       moa.email.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const matchesType = filters.moaTypes.length === 0 || 
-      filters.moaTypes.includes(moa.type_of_moa);
+    const matchesType = moaFilters.moaTypes.length === 0 || 
+    moaFilters.moaTypes.includes(moa.type_of_moa);
 
-    const matchesStatus = filters.moaStatus.length === 0 || 
-      filters.moaStatus.includes(moa.moa_status);
+    const matchesStatus = moaFilters.moaStatus.length === 0 || 
+    moaFilters.moaStatus.includes(moa.moa_status);
 
-    const matchesBranches = filters.branch.length === 0 || 
-      filters.branch.includes(moa.branch);
+    const matchesBranches = moaFilters.branch.length === 0 || 
+    moaFilters.branch.includes(moa.branch);
 
-    const matchesCourses = filters.course.length === 0 || 
-      filters.course.includes(moa.course);
+    const matchesCourses = moaFilters.course.length === 0 || 
+    moaFilters.course.includes(moa.course);
 
     return matchesSearch && matchesType && matchesStatus && matchesBranches && matchesCourses;
   })) : [];
@@ -226,8 +228,8 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
             <MOAHeader
               onSort={handleSort}
               sortConfig={sortConfig}
-              filters={filters}
-              onFilterChange={handleFilterChange}
+              filters={moaFilters}
+              onFilterChange={onMoaFilterChange}
               isAllSelected={isAllSelected}
               isSomeSelected={isSomeSelected}
               onToggleSelectAll={toggleSelectAll}
@@ -311,7 +313,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
             ) : (
               <tr>
                 <td colSpan="13" className="p-8 text-center text-gray-500">
-                {searchTerm || filters.moaTypes.length > 0 || filters.moaStatus.length > 0 || filters.branch.length > 0 || filters.course.length > 0 ? (
+                {searchTerm || moaFilters.moaTypes.length > 0 || moaFilters.moaStatus.length > 0 || moaFilters.branch.length > 0 || moaFilters.course.length > 0 ? (
                   <p className="text-lg font-medium">No matching MOAs found</p>
                 ) : (
                   <p className="text-lg font-medium">No MOAs found</p>

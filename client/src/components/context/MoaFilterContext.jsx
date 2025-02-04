@@ -13,9 +13,16 @@ export const MoaFilterProvider = ({ children }) => {
   const onMoaFilterChange = (filterType, value) => {
     setMoaFilters((prevFilters) => {
       const updatedFilters = { ...prevFilters };
-
-      // Set the filter to a list with just the selected value
-      updatedFilters[filterType] = [value];
+      
+      // If the value is already in the filter array, remove it
+      if (updatedFilters[filterType].includes(value)) {
+        updatedFilters[filterType] = updatedFilters[filterType].filter(
+          (item) => item !== value
+        );
+      } else {
+        // Otherwise, add the value to the filter array
+        updatedFilters[filterType] = [...updatedFilters[filterType], value];
+      }
 
       return updatedFilters;
     });

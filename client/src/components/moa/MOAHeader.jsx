@@ -15,15 +15,6 @@ export default function MOAHeader({
   const filterRefs = useRef({}); // Store refs for each dropdown
   const { moaFilters, onMoaFilterChange } = useMoaFilterContext(); // Filter from dashboard context
 
-  // Sync moaFilters with local filters when moaFilters changes
-  useEffect(() => {
-    // Directly set the filters' values to moaFilters without calling onFilterChange
-    filters.moaTypes = [...new Set(moaFilters.moaTypes)];
-    filters.moaStatus = [...new Set(moaFilters.moaStatus)];
-    filters.branch = [...new Set(moaFilters.branch)];
-    filters.course = [...new Set(moaFilters.course)];
-  }, [moaFilters]); // Re-run effect when moaFilters changes
-
   useEffect(() => {
     function handleClickOutside(event) {
       // Check if the click is outside all dropdowns
