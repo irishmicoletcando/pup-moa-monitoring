@@ -79,6 +79,7 @@ const addMOA = async (req, res) => {
         expiry_date,
         year_submitted,
         branch,
+        course,
         user_id,
       } = formData;
 
@@ -114,8 +115,8 @@ const addMOA = async (req, res) => {
 
       // Insert MOA
       const [moaInsertResult] = await connection.query(
-        "INSERT INTO moa_info (name, type_id, nature_of_business, address, contact_id, status, branch, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-        [name, type_id, nature_of_business, address, contact_id, status, branch, user_id]
+        "INSERT INTO moa_info (name, type_id, nature_of_business, address, contact_id, status, branch, course, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        [name, type_id, nature_of_business, address, contact_id, status, branch, course, user_id]
       );
       
       const moa_id = moaInsertResult.insertId;
@@ -178,6 +179,7 @@ const getAllMOAs = async (req, res) => {
           moa_info.nature_of_business, 
           moa_info.address,
           moa_info.branch,
+          moa_info.course,
           CONCAT(moa_contact.firstname, ' ', moa_contact.lastname) AS contact_person, 
           moa_contact.contact_number, 
           moa_contact.email, 
@@ -221,6 +223,7 @@ const getMOAById = async (req, res) => {
       moa_info.nature_of_business, 
       moa_info.address,
       moa_info.branch,
+      moa_info.course,
       CONCAT(moa_contact.firstname, ' ', moa_contact.lastname) AS contact_person, 
       moa_contact.contact_number, 
       moa_contact.position,

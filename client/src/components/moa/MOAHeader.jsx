@@ -99,6 +99,14 @@ export default function MOAHeader({ onSort, sortConfig, filters, onFilterChange,
           onChange={(value) => onFilterChange('branch', value)}
         />
       </th>
+      <th className="p-4 text-left text-sm font-medium">
+        <FilterDropdown
+          type="Origin Course"
+          options={["ABF", "ABELS", "ABLCS", "AB-PHILO", "ATM", "BA Broadcasting", "BACR", "BADPR", "BAH", "BAIS", "BAJ", "BAPS", "BAPE", "BAS", "BPA", "BPE", "BPEA", "BPAPFM", "BSA", "BSABFM", "BSAM", "BSAPMATH", "BSARCHI", "BS-ARCH", "BSBAFM", "BSBA-HRM", "BSBAHRM", "BSBA-MM", "BSBIO", "BSC", "BSCE", "BSCHEM", "BSCS", "BSCpE", "BS-ENTREP", "BSENTREP", "BSENTREP-UN", "BSEE", "BSECE", "BSE", "BSEd", "BSEDEN", "BSEDFL", "BSEDMT", "BSEDSS", "BSEP", "BSESS", "BSFT", "BSHM", "BSID", "BSIE", "BSIT", "BSMA", "BSMATH", "BSME", "BSND", "BSOALT", "BSOA", "BSPHY", "BSPYS", "BSRE", "BSSTAT", "BSTM", "BSTRM", "BTLE", "BTLEd", "BBTLEDHE", "BBTLEDHE-CL", "BCOOP", "DCET", "DEET", "DECET", "DICT", "DMET", "DOMT", "DOMTLOM", "DOMTMOM"]}
+          selectedValues={filters.course}
+          onChange={(value) => onFilterChange('course', value)}
+        />
+      </th>
       <th className="p-4 text-left text-sm font-medium">Validity</th>
       <th className="p-4 text-left text-sm font-medium">Date Notarized</th>
       <th className="p-4 text-left text-sm font-medium">
