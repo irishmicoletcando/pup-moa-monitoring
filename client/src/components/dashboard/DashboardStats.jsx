@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { PieGraph } from './PieGraph';
 import { BarGraph } from './BarGraph';
 import { Briefcase, Building2, GraduationCap, FileText } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useMoaFilterContext, MoaFilterProvider } from "../context/MoaFilterContext";
 
 export default function DashboardStats() {
   const [typeStats, setTypeStats] = useState({
@@ -100,18 +102,32 @@ const iconMap = {
 };
 
 
-const MoaCard = ({ title, count, description }) => (
-  <div className="p-4 rounded-xl shadow-md hover:shadow-lg transition bg-white border-2 border-gray-200 dark:bg-gray-800 flex flex-col">
-    <div className="flex items-center space-x-2 mb-2">
-      <div className="p-2 rounded-lg bg-gradient-to-tl from-maroon to-rose-900 flex items-center justify-center">
-        {iconMap[title] || <FileText className="text-white" size={20} />}
+const MoaCard = ({ title, count, description }) => {
+  const navigate = useNavigate();
+  const { onMoaFilterChange } = useMoaFilterContext();
+
+  const handleClick = () => {
+    onMoaFilterChange("moaTypes", title); // Update filter
+    navigate("/moa-monitoring"); // Navigate to monitoring page
+  };
+
+  return (
+    <div
+      className="p-4 rounded-xl shadow-md hover:shadow-lg transition bg-white border-2 border-gray-200 dark:bg-gray-800 flex flex-col cursor-pointer"
+      onClick={handleClick}
+    >
+      <div className="flex items-center space-x-2 mb-2">
+        <div className="p-2 rounded-lg bg-gradient-to-tl from-maroon to-rose-900 flex items-center justify-center">
+          {iconMap[title] || <FileText className="text-white" size={20} />}
+        </div>
+        <p className="text-md font-bold text-gray-900 dark:text-white">{title}</p>
       </div>
-      <p className="text-md font-bold text-gray-900 dark:text-white">{title}</p>
+      <div className="p-2 rounded-lg flex flex-row justify-center items-center space-x-4">
+        <p className="text-4xl font-bold text-gray-900 dark:text-white">{count}</p>
+      </div>
+      <p className="text-sm text-gray-600 dark:text-gray-300 font-semibold">{description}</p>
     </div>
-    <div className="p-2 rounded-lg flex flex-row justify-center items-center space-x-4">
-      <p className="text-4xl font-bold text-gray-900 dark:text-white">{count}</p>
-    </div>
-    <p className="text-sm text-gray-600 dark:text-gray-300 font-semibold">{description}</p>
-  </div>
-);
+  );
+};
+
 
