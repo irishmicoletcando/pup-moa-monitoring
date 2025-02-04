@@ -19,7 +19,8 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
   const [filters, setFilters] = useState({
     moaTypes: [],
     moaStatus: [],
-    branch: []
+    branch: [],
+    course: []
   });
   const [deleteModal, setDeleteModal] = useState({
     isOpen: false,
@@ -173,7 +174,10 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
     const matchesBranches = filters.branch.length === 0 || 
       filters.branch.includes(moa.branch);
 
-    return matchesSearch && matchesType && matchesStatus && matchesBranches;
+    const matchesCourses = filters.course.length === 0 || 
+      filters.course.includes(moa.course);
+
+    return matchesSearch && matchesType && matchesStatus && matchesBranches && matchesCourses;
   })) : [];
 
   if (loading) {
@@ -307,7 +311,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
             ) : (
               <tr>
                 <td colSpan="13" className="p-8 text-center text-gray-500">
-                {searchTerm || filters.moaTypes.length > 0 || filters.moaStatus.length > 0 || filters.branch.length > 0 ? (
+                {searchTerm || filters.moaTypes.length > 0 || filters.moaStatus.length > 0 || filters.branch.length > 0 || filters.course.length > 0 ? (
                   <p className="text-lg font-medium">No matching MOAs found</p>
                 ) : (
                   <p className="text-lg font-medium">No MOAs found</p>
