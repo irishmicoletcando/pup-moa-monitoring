@@ -6,9 +6,10 @@ import Modal from "../layout/Modal";
 import MOAHeader from "./MOAHeader";
 import AddMOAModal from "./AddMOAModal";
 import ExportExcelModal from "./ExportExcelModal";
+import ImportExcelModal from "./ImportExcelModal";
 import { useMoaFilterContext } from "../context/MoaFilterContext";
 
-export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelModalOpen, setIsExportExcelModalOpen, selectedRows, setSelectedRows }) {
+export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelModalOpen, setIsExportExcelModalOpen, isImportExcelModalOpen, setIsImportExcelModalOpen, selectedRows, setSelectedRows }) {
   const [moas, setMoas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -380,6 +381,12 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
       <ExportExcelModal 
         isOpen={isExportExcelModalOpen}
         onClose={() => setIsExportExcelModalOpen(false)}
+        filteredMOAs={filteredMOAs}
+      />
+
+      <ImportExcelModal 
+        isOpen={isImportExcelModalOpen}
+        onClose={() => setIsImportExcelModalOpen(false)}
         filteredMOAs={filteredMOAs}
       />
 
