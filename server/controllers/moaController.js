@@ -44,15 +44,9 @@ const addMOA = async (req, res) => {
 
   uploadFiles(req, res, async function (err) {
     if (err instanceof multer.MulterError) {
-      return res.status(400).json({ 
-        message: "File upload error", 
-        error: err.message 
-      });
+      return res.status(400).json({ message: "File upload error", error: err.message });
     } else if (err) {
-      return res.status(500).json({ 
-        message: "Server error during upload",
-        error: err.message 
-      });
+      return res.status(500).json({ message: "Server error during upload", error: err.message });
     }
 
     const connection = await pool.getConnection();
@@ -61,113 +55,120 @@ const addMOA = async (req, res) => {
       // Start transaction
       await connection.beginTransaction();
 
-      // Parse the JSON data from the FormData
       const formData = JSON.parse(req.body.data);
-      const {
-        name,
-        typeOfMoa,
-        nature_of_business,
-        address,
-        contactFirstName,
-        contactLastName,
-        position,
-        contactNumber,
-        emailAddress,
-        status,
-        years_validity,
-        date_notarized,
-        expiry_date,
-        year_submitted,
-        branch,
-        course,
-        user_id,
-      } = formData;
 
-      // Convert typeOfMoa string to corresponding type_id
-      const type_id = {
-        Practicum: 1,
-        Employment: 2,
-        Scholarship: 3,
-        Research: 4,
-      }[typeOfMoa];
+      // Check if formData contains multiple MOAs
+      const moas = formData.moas || [formData];
 
-      if (!type_id) {
-        await connection.rollback();
-        return res.status(400).json({ message: "Invalid MOA type selected." });
-      }
+      const insertedMOAs = [];
 
-      // Check for existing contact
-      const [contactResults] = await connection.query(
-        "SELECT contact_id FROM moa_contact WHERE contact_number = ? AND email = ?",
-        [contactNumber, emailAddress]
-      );
+      for (const moa of moas) {
+        const {
+          name,
+          typeOfMoa,
+          natureOfBusiness,
+          address,
+          contactFirstName,
+          contactLastName,
+          position,
+          contactNumber,
+          emailAddress,
+          status,
+          years_validity,
+          date_notarized,
+          expiry_date,
+          year_submitted,
+          branch,
+          course,
+          user_id
+        } = moa;
 
-      let contact_id;
-      if (contactResults.length > 0) {
-        contact_id = contactResults[0].contact_id;
-      } else {
-        const [contactInsertResult] = await connection.query(
-          "INSERT INTO moa_contact (firstname, lastname, position, contact_number, email) VALUES (?, ?, ?, ?, ?)",
-          [contactFirstName, contactLastName, position, contactNumber, emailAddress]
+        const type_id = {
+          Practicum: 1,
+          Employment: 2,
+          Scholarship: 3,
+          Research: 4,
+        }[typeOfMoa];
+
+        
+
+        if (!type_id) {
+          await connection.rollback();
+          return res.status(400).json({ message: "Invalid MOA type selected." });
+        }
+
+        // Check for existing contact
+        const [contactResults] = await connection.query(
+          "SELECT contact_id FROM moa_contact WHERE contact_number = ? AND email = ?",
+          [contactNumber, emailAddress]
         );
-        contact_id = contactInsertResult.insertId;
-      }
 
-      // Insert MOA
-      const [moaInsertResult] = await connection.query(
-        "INSERT INTO moa_info (name, type_id, nature_of_business, address, contact_id, status, branch, course, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        [name, type_id, nature_of_business, address, contact_id, status, branch, course, user_id]
-      );
-      
-      const moa_id = moaInsertResult.insertId;
+        let contact_id;
+        if (contactResults.length > 0) {
+          contact_id = contactResults[0].contact_id;
+        } else {
+          const [contactInsertResult] = await connection.query(
+            "INSERT INTO moa_contact (firstname, lastname, position, contact_number, email) VALUES (?, ?, ?, ?, ?)",
+            [contactFirstName, contactLastName, position, contactNumber, emailAddress]
+          );
+          contact_id = contactInsertResult.insertId;
+        }
 
-      // Insert validity period
-      const [validityInsertResult] = await connection.query(
-        "INSERT INTO moa_validity_period (moa_id, years_validity, date_notarized, expiry_date, year_submitted) VALUES (?, ?, ?, ?, ?)",
-        [moa_id, years_validity, date_notarized, expiry_date, year_submitted]
-      );      
+        // Insert MOA
+        const [moaInsertResult] = await connection.query(
+          "INSERT INTO moa_info (name, type_id, nature_of_business, address, contact_id, status, branch, course, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+          [name, type_id, natureOfBusiness, address, contact_id, status, branch, course, user_id]
+        );
 
-      const validity_id = validityInsertResult.insertId;
+        const moa_id = moaInsertResult.insertId;
 
-      // Update MOA with validity_id
-      await connection.query(
-        "UPDATE moa_info SET validity_id = ? WHERE moa_id = ?",
-        [validity_id, moa_id]
-      );
+        // Insert validity period if provided
+        if (years_validity && date_notarized && expiry_date) {
+          const [validityInsertResult] = await connection.query(
+            "INSERT INTO moa_validity_period (moa_id, years_validity, date_notarized, expiry_date, year_submitted) VALUES (?, ?, ?, ?, ?)",
+            [moa_id, years_validity, date_notarized, expiry_date, year_submitted]
+          );
 
-      // Upload files to Azure Blob Storage and save references in database
-      if (req.files && req.files.length > 0) {
-        for (const file of req.files) {
-          const fileName = `${Date.now()}-${file.originalname}`;
-          const blobUrl = await uploadToBlob(file, fileName);
-          
+          const validity_id = validityInsertResult.insertId;
+
+          // Update MOA with validity_id
           await connection.query(
-            "INSERT INTO moa_documents (moa_id, document_name, file_path, uploaded_at, uploaded_by) VALUES (?, ?, ?, NOW(), ?)",
-            [moa_id, file.originalname, blobUrl, user_id]
+            "UPDATE moa_info SET validity_id = ? WHERE moa_id = ?",
+            [validity_id, moa_id]
           );
         }
+
+        // Handle file uploads for the current MOA
+        if (req.files && req.files.length > 0) {
+          for (const file of req.files) {
+            const fileName = `${Date.now()}-${file.originalname}`;
+            const blobUrl = await uploadToBlob(file, fileName);
+
+            await connection.query(
+              "INSERT INTO moa_documents (moa_id, document_name, file_path, uploaded_at, uploaded_by) VALUES (?, ?, ?, NOW(), ?)",
+              [moa_id, file.originalname, blobUrl, user_id]
+            );
+          }
+        }
+
+        insertedMOAs.push({ moa_id, name });
       }
 
       // Commit the transaction
       await connection.commit();
-      
-      res.status(201).json({ 
-        message: "MOA added successfully", 
-        moa_id 
-      });
-      
+
+      res.status(201).json({ message: "MOAs added successfully", insertedMOAs });
+
     } catch (error) {
-      // Rollback in case of error
       await connection.rollback();
-      res.status(500).json({ 
-        message: "Error creating MOA",
-        error: error.message 
-      });
+      res.status(500).json({ message: "Error creating MOAs", error: error.message });
     } finally {
-      connection.release(); // Always release the connection
+      connection.release();
     }
   });
 };
+
+
 
 // Get All MOAs
 const getAllMOAs = async (req, res) => {
