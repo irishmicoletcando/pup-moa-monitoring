@@ -19,7 +19,7 @@ export default function ImportExcelModal({ isOpen, onClose, onMOAAdded }) {
       return;
     }
 
-    setFiles(validFiles);
+    // setFiles(validFiles);
     parseExcel(validFiles[0]);
   };
 
@@ -88,7 +88,6 @@ export default function ImportExcelModal({ isOpen, onClose, onMOAAdded }) {
           expiry_date: row.expiry_date || new Date().toISOString().split("T")[0],
           year_submitted: row.year_submitted || new Date().getFullYear(),
           user_id: localStorage.getItem("user_id"),
-          documents: row.documents || "",
           hasNDA: row.hasNDA || "FALSE",
         }))
       }));
