@@ -359,12 +359,12 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
-            className="px-4 py-2 border border-gray-300 rounded disabled:opacity-50"
+            className="bg-maroon text-white px-4 py-2 border border-gray-300 rounded disabled:opacity-50"
           >
             Previous
           </button>
           <span>
-            Page {currentPage} of {Math.ceil(filteredMOAs.length / itemsPerPage)}
+             Page {currentPage} of {Math.ceil(filteredMOAs.length / itemsPerPage)} 
           </span>
           <button
             onClick={() =>
@@ -373,7 +373,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
               )
             }
             disabled={currentPage === Math.ceil(filteredMOAs.length / itemsPerPage)}
-            className="px-4 py-2 border border-gray-300 rounded disabled:opacity-50"
+            className="bg-maroon text-white px-4 py-2 border border-gray-300 rounded disabled:opacity-50"
           >
             Next
           </button>
