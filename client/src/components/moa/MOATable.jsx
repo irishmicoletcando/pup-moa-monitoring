@@ -7,6 +7,7 @@ import MOAHeader from "./MOAHeader";
 import AddMOAModal from "./AddMOAModal";
 import ExportExcelModal from "./ExportExcelModal";
 import ImportExcelModal from "./ImportExcelModal";
+import EditMOAModal from "./EditMOAModal";
 import { useMoaFilterContext } from "../context/MoaFilterContext";
 
 export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelModalOpen, setIsExportExcelModalOpen, isImportExcelModalOpen, setIsImportExcelModalOpen, selectedRows, setSelectedRows }) {
@@ -14,6 +15,8 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [refreshing, setRefreshing] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedMOA, setSelectedMOA] = useState(null);
   const [sortConfig, setSortConfig] = useState({
     field: null,
     direction: 'asc'
@@ -31,10 +34,16 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
     isDeleting: false
   });
 
+  // Fetch MOAs when component mounts
+  useEffect(() => {
+    fetchMOAs();
+  }, []);
+
   const fetchMOAs = async () => {
     try {
       setLoading(true);
       const response = await fetch("/api/moas");
+
       if (!response.ok) {
         throw new Error("Failed to fetch MOAs");
       }
@@ -70,9 +79,10 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
     }
   };
 
-  useEffect(() => {
-    fetchMOAs();
-  }, []);
+  const handleEditClick = (moa) => {
+    setSelectedMOA(moa);
+    setIsEditModalOpen(true);
+  };
 
   const handleRefresh = () => {
     setRefreshing(true);
@@ -192,10 +202,6 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
     );
   }
 
-  // const exportExcelForFilteredMOAs = ( filteredMOAs )=> {
-  //   // TODOs
-  // }
-
   return (
     <div className="bg-white rounded-lg shadow">
       <ToastContainer />
@@ -289,16 +295,13 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
                         title="View Document">
                         <FileText className="w-4 h-4" />
                       </button>
-                      {/* <button
-                        onClick={() => {
-                          setSelectedMOA(moa);
-                          setIsEditModalOpen(true);
-                        }}
+                      <button
+                        onClick={() => handleEditClick(moa)} // Pass the entire moa object
                         className="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-50 transition-colors"
                         title="Edit MOA"
                       >
                         <Edit2 className="w-4 h-4" />
-                      </button> */}
+                      </button>
 
                       <button
                         onClick={() => setDeleteModal({ isOpen: true, moa, isDeleting: false })}
@@ -390,16 +393,21 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
         filteredMOAs={filteredMOAs}
       />
 
-      {/* <EditMOAModal
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        moa={selectedMOA}
-        onMOAUpdated={() => {
-          fetchMOAs();
-          toast.success("MOA updated successfully");
-        }}
-      /> */}
-
+      {isEditModalOpen && selectedMOA && (
+        <EditMOAModal
+          isOpen={isEditModalOpen}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setSelectedMOA(null); // Clear selected MOA when closing
+          }}
+          moaData={selectedMOA} // Pass as moaData to match the prop name in the modal
+          onMOAUpdated={() => {
+            fetchMOAs();
+            setIsEditModalOpen(false);
+            setSelectedMOA(null);
+          }}
+        />
+      )}
     </div>
   );
 }
