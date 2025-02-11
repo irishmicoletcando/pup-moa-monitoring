@@ -31,6 +31,9 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
     isDeleting: false
   });
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
   const fetchMOAs = async () => {
     try {
       setLoading(true);
@@ -183,6 +186,11 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
     return matchesSearch && matchesType && matchesStatus && matchesBranches && matchesCourses;
   })) : [];
 
+  const paginatedMOAs = filteredMOAs.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   if (loading) {
     return (
       <div className="bg-white rounded-lg shadow p-8 text-center">
@@ -237,8 +245,8 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
             />
           </thead>
           <tbody>
-            {Array.isArray(filteredMOAs) && filteredMOAs.length > 0 ? (
-              filteredMOAs.map((moa, index) => (
+            {Array.isArray(paginatedMOAs) && paginatedMOAs.length > 0 ? (
+              paginatedMOAs.map((moa, index) => (
                 <tr
                   key={index}
                   className="border-t border-gray-200 hover:bg-gray-50 transition-colors"
@@ -324,6 +332,52 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
             )}
           </tbody>
         </table>
+      </div>
+
+      <div className="flex items-center justify-between p-4 border-t border-gray-200">
+        <div>
+          <label>
+            Items per page:
+            <select
+              value={itemsPerPage}
+              onChange={(e) => {
+                setItemsPerPage(parseInt(e.target.value, 10));
+                setCurrentPage(1); // Reset to the first page
+              }}
+              className="ml-2 border rounded px-2 py-1"
+            >
+              {[10, 20, 50, 100].map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className="px-4 py-2 border border-gray-300 rounded disabled:opacity-50"
+          >
+            Previous
+          </button>
+          <span>
+            Page {currentPage} of {Math.ceil(filteredMOAs.length / itemsPerPage)}
+          </span>
+          <button
+            onClick={() =>
+              setCurrentPage((prev) =>
+                Math.min(prev + 1, Math.ceil(filteredMOAs.length / itemsPerPage))
+              )
+            }
+            disabled={currentPage === Math.ceil(filteredMOAs.length / itemsPerPage)}
+            className="px-4 py-2 border border-gray-300 rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
       </div>
 
       {/* Delete Modal */}
