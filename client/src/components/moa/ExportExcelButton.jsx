@@ -5,9 +5,9 @@ export default function ExportExcelButton({ onClick }) {
     <div>
       <button 
         onClick={onClick}
-        className="flex items-center gap-2 bg-maroon text-white px-4 py-2 rounded-xl hover:bg-red transition">
+        className="flex items-center justify-center gap-2 bg-maroon text-white px-4 py-2 rounded-xl hover:bg-red transition w-[48px] sm:w-[48px] md:w-[48px] lg:w-[160px]">
         <Sheet className="h-4 w-4" />
-        <span className="hidden sm:inline-block ml-2">Export Excel</span>
+        <span className="hidden lg:inline-block ml-2">Export Excel</span>
       </button>
     </div>
   );

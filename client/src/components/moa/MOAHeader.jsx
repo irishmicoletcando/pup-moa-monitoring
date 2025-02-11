@@ -94,8 +94,8 @@ export default function MOAHeader({
           ref={(el) => el && (el.indeterminate = isSomeSelected)}
         />
       </th>
-      <th className="p-4 text-left text-sm font-medium">Name</th>
-      <th className="p-4 text-left text-sm font-medium">
+      <th className="p-4 text-left text-sm font-medium min-w-[150px] max-w-xs break-words whitespace-normal">Name</th>
+      <th className="p-4 text-left text-sm font-medium min-w-[80px] max-w-xs break-words whitespace-normal">
         <FilterDropdown
           type="Type of MOA"
           options={["Practicum", "Research", "Employment", "Scholarship"]}
@@ -103,13 +103,13 @@ export default function MOAHeader({
           onChange={(value) => onFilterChange("moaTypes", value)}
         />
       </th>
-      <th className="p-4 text-left text-sm font-medium">Nature of Business</th>
-      <th className="p-4 text-left text-sm font-medium">Company Address</th>
-      <th className="p-4 text-left text-sm font-medium">Contact Person</th>
-      <th className="p-4 text-left text-sm font-medium">Contact Position</th>
-      <th className="p-4 text-left text-sm font-medium">Contact Number</th>
-      <th className="p-4 text-left text-sm font-medium">Email Address</th>
-      <th className="p-4 text-left text-sm font-medium">
+      <th className="p-4 text-left text-sm font-medium min-w-[100px] max-w-xs break-words whitespace-normal">Nature of Business</th>
+      <th className="p-4 text-left text-sm font-medium min-w-[320px] max-w-xs break-words whitespace-normal">Company Address</th>
+      <th className="p-4 text-left text-sm font-medium min-w-[150px] max-w-xs break-words whitespace-normal">Contact Person</th>
+      <th className="p-4 text-left text-sm font-medium min-w-[100px] max-w-xs break-words whitespace-normal">Contact Position</th>
+      <th className="p-4 text-left text-sm font-medium min-w-[110px] max-w-xs break-words whitespace-normal">Contact Number</th>
+      <th className="p-4 text-left text-sm font-medium min-w-[20px] max-w-xs break-words whitespace-normal">Email Address</th>
+      <th className="p-4 text-left text-sm font-medium min-w-[20px] max-w-xs break-words whitespace-normal">
         <FilterDropdown
           type="MOA Status"
           options={["Active", "Expired", "Expiry"]}
@@ -117,7 +117,7 @@ export default function MOAHeader({
           onChange={(value) => onFilterChange("moaStatus", value)}
         />
       </th>
-      <th className="p-4 text-left text-sm font-medium">
+      <th className="p-4 text-center text-sm font-medium min-w-[120px] max-w-xs break-words whitespace-normal">
         <FilterDropdown
           type="Branch"
           options={[
@@ -149,7 +149,7 @@ export default function MOAHeader({
           onChange={(value) => onFilterChange("branch", value)}
         />
       </th>
-      <th className="p-4 text-left text-sm font-medium">
+      <th className="p-4 text-center text-sm font-medium min-w-[20px] max-w-xs break-words whitespace-normal">
         <FilterDropdown
           type="Origin Course"
           options={[
@@ -235,9 +235,9 @@ export default function MOAHeader({
           onChange={(value) => onFilterChange("course", value)}
         />
       </th>
-      <th className="p-4 text-left text-sm font-medium">Validity</th>
-      <th className="p-4 text-left text-sm font-medium">Date Notarized</th>
-      <th className="p-4 text-left text-sm font-medium">
+      <th className="p-4 text-left text-sm font-medium min-w-[20px] max-w-xs break-words whitespace-normal">Validity</th>
+      <th className="p-4 text-left text-sm font-medium min-w-[50px] max-w-xs break-words whitespace-normal">Date Notarized</th>
+      <th className="p-4 text-left text-sm font-medium min-w-[20px] max-w-xs break-words whitespace-normal">
         <button
           className="flex items-center hover:text-maroon"
           onClick={() => onSort("expiry_date")}
@@ -246,7 +246,8 @@ export default function MOAHeader({
           {getSortIcon("expiry_date")}
         </button>
       </th>
-      <th className="p-4 text-left text-sm font-medium">Year Submitted to ARCDO</th>
+      <th className="p-4 text-left text-sm font-medium min-w-[100px] max-w-xs break-words whitespace-normal">Year Submitted to ARCDO</th>
+
       <th className="p-4 text-left text-sm font-medium"></th>
     </tr>
   );

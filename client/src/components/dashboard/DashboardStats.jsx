@@ -76,7 +76,7 @@ export default function DashboardStats() {
   }
 
   return (
-    <main className="flex-1 px-6 py-5">
+    <main className="flex-1 px-6 py-5 w-full">
       <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
       <div className="grid grid-cols-1 gap-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 h-full">

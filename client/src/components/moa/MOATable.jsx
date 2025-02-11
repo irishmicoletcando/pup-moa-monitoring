@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Trash2, Search, RefreshCw, X, Edit2, FileText } from "lucide-react";
@@ -33,6 +33,10 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
     moa: null,
     isDeleting: false
   });
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [paginatedMOAs, setPaginatedMOAs] = useState([]);
 
   // Fetch MOAs when component mounts
   useEffect(() => {
@@ -157,9 +161,9 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
     }));
   };
 
-  const sortData = (data) => {
+  const sortData = useCallback((data) => {
     if (!sortConfig.field) return data;
-
+  
     return [...data].sort((a, b) => {
       if (sortConfig.field === 'expiry_date') {
         const dateA = new Date(a[sortConfig.field]);
@@ -168,30 +172,65 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
           ? dateA - dateB 
           : dateB - dateA;
       }
+      return 0; // Default sort logic for unsupported fields
     });
+  }, [sortConfig]);
+ 
+  const filteredMOAs = useMemo(() => {
+    return Array.isArray(moas) ? sortData(moas.filter(moa => {
+      const matchesSearch = (
+        moa.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        moa.contactPerson?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        moa.email.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+  
+      const matchesType = moaFilters.moaTypes.length === 0 || 
+      moaFilters.moaTypes.includes(moa.type_of_moa);
+  
+      const matchesStatus = moaFilters.moaStatus.length === 0 || 
+      moaFilters.moaStatus.includes(moa.moa_status);
+  
+      const matchesBranches = moaFilters.branch.length === 0 || 
+      moaFilters.branch.includes(moa.branch);
+  
+      const matchesCourses = moaFilters.course.length === 0 || 
+      moaFilters.course.includes(moa.course);
+  
+      return matchesSearch && matchesType && matchesStatus && matchesBranches && matchesCourses;
+    })) : [];
+  }, [moas, searchTerm, moaFilters, sortData]);
+
+  const totalPages = Math.ceil(filteredMOAs.length / itemsPerPage);
+
+  useEffect(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    setPaginatedMOAs(filteredMOAs.slice(startIndex, endIndex));
+  }, [currentPage, itemsPerPage, filteredMOAs]);
+
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxPagesToShow = 5; // Max number of pages to show at a time
+    const halfRange = Math.floor(maxPagesToShow / 2);
+  
+    let start = Math.max(1, currentPage - halfRange);
+    let end = Math.min(totalPages, currentPage + halfRange);
+  
+    if (currentPage <= halfRange) {
+      end = Math.min(totalPages, maxPagesToShow);
+    }
+  
+    if (currentPage + halfRange >= totalPages) {
+      start = Math.max(1, totalPages - maxPagesToShow + 1);
+    }
+  
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+  
+    return pages;
   };
-
-  const filteredMOAs = Array.isArray(moas) ? sortData(moas.filter(moa => {
-    const matchesSearch = (
-      moa.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      moa.contactPerson?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      moa.email.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    const matchesType = moaFilters.moaTypes.length === 0 || 
-    moaFilters.moaTypes.includes(moa.type_of_moa);
-
-    const matchesStatus = moaFilters.moaStatus.length === 0 || 
-    moaFilters.moaStatus.includes(moa.moa_status);
-
-    const matchesBranches = moaFilters.branch.length === 0 || 
-    moaFilters.branch.includes(moa.branch);
-
-    const matchesCourses = moaFilters.course.length === 0 || 
-    moaFilters.course.includes(moa.course);
-
-    return matchesSearch && matchesType && matchesStatus && matchesBranches && matchesCourses;
-  })) : [];
+  
 
   if (loading) {
     return (
@@ -243,8 +282,8 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
             />
           </thead>
           <tbody>
-            {Array.isArray(filteredMOAs) && filteredMOAs.length > 0 ? (
-              filteredMOAs.map((moa, index) => (
+            {Array.isArray(paginatedMOAs) && paginatedMOAs.length > 0 ? (
+              paginatedMOAs.map((moa, index) => (
                 <tr
                   key={index}
                   className="border-t border-gray-200 hover:bg-gray-50 transition-colors"
@@ -327,6 +366,72 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
             )}
           </tbody>
         </table>
+      </div>
+
+      <div className="flex items-center justify-between p-4 border-t border-gray-200">
+        <div>
+          <label>
+            Rows per page:
+            <select
+              value={itemsPerPage}
+              onChange={(e) => {
+                setItemsPerPage(parseInt(e.target.value, 10));
+                setCurrentPage(1); // Reset to the first page
+              }}
+              className="ml-2 border rounded px-2 py-1"
+            >
+              {[5, 10, 50, 100].map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+
+        {/* Pagination Controls */}
+        <div className="flex items-center">
+          {/* Previous Button */}
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className={`px-4 py-2 border border-gray-300 rounded ${
+              currentPage === 1 ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-maroon text-white"
+            }`}
+          >
+            ← Previous
+          </button>
+
+          {/* Page Numbers */}
+          <div className="flex gap-2 mx-2">
+            {getPageNumbers()[0] > 1 && <span className="px-3 py-1">...</span>}
+            {getPageNumbers().map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`px-3 py-1 border rounded ${
+                  page === currentPage
+                    ? "bg-maroon text-white"
+                    : "bg-white text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+            {getPageNumbers().slice(-1)[0] < totalPages && <span className="px-3 py-1">...</span>}
+          </div>
+
+          {/* Next Button */}
+          <button
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className={`px-4 py-2 border border-gray-300 rounded ${
+              currentPage === totalPages ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-maroon text-white"
+            }`}
+          >
+            Next →
+          </button>
+        </div>
       </div>
 
       {/* Delete Modal */}
