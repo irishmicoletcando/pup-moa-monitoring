@@ -191,6 +191,32 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
     currentPage * itemsPerPage
   );
 
+  const totalPages = Math.ceil(filteredMOAs.length / itemsPerPage);
+
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxPagesToShow = 5; // Max number of pages to show at a time
+    const halfRange = Math.floor(maxPagesToShow / 2);
+  
+    let start = Math.max(1, currentPage - halfRange);
+    let end = Math.min(totalPages, currentPage + halfRange);
+  
+    if (currentPage <= halfRange) {
+      end = Math.min(totalPages, maxPagesToShow);
+    }
+  
+    if (currentPage + halfRange >= totalPages) {
+      start = Math.max(1, totalPages - maxPagesToShow + 1);
+    }
+  
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+  
+    return pages;
+  };
+  
+
   if (loading) {
     return (
       <div className="bg-white rounded-lg shadow p-8 text-center">
@@ -337,7 +363,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
       <div className="flex items-center justify-between p-4 border-t border-gray-200">
         <div>
           <label>
-            Items per page:
+            Rows per page:
             <select
               value={itemsPerPage}
               onChange={(e) => {
@@ -346,7 +372,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
               }}
               className="ml-2 border rounded px-2 py-1"
             >
-              {[10, 20, 50, 100].map((option) => (
+              {[1, 20, 50, 100].map((option) => (
                 <option key={option} value={option}>
                   {option}
                 </option>
@@ -355,27 +381,47 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
           </label>
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* Pagination Controls */}
+        <div className="flex items-center">
+          {/* Previous Button */}
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
-            className="bg-maroon text-white px-4 py-2 border border-gray-300 rounded disabled:opacity-50"
+            className={`px-4 py-2 border border-gray-300 rounded ${
+              currentPage === 1 ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-maroon text-white"
+            }`}
           >
-            Previous
+            ← Previous
           </button>
-          <span>
-             Page {currentPage} of {Math.ceil(filteredMOAs.length / itemsPerPage)} 
-          </span>
+
+          {/* Page Numbers */}
+          <div className="flex gap-2 mx-2">
+            {getPageNumbers()[0] > 1 && <span className="px-3 py-1">...</span>}
+            {getPageNumbers().map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`px-3 py-1 border rounded ${
+                  page === currentPage
+                    ? "bg-maroon text-white"
+                    : "bg-white text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+            {getPageNumbers().slice(-1)[0] < totalPages && <span className="px-3 py-1">...</span>}
+          </div>
+
+          {/* Next Button */}
           <button
-            onClick={() =>
-              setCurrentPage((prev) =>
-                Math.min(prev + 1, Math.ceil(filteredMOAs.length / itemsPerPage))
-              )
-            }
-            disabled={currentPage === Math.ceil(filteredMOAs.length / itemsPerPage)}
-            className="bg-maroon text-white px-4 py-2 border border-gray-300 rounded disabled:opacity-50"
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className={`px-4 py-2 border border-gray-300 rounded ${
+              currentPage === totalPages ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-maroon text-white"
+            }`}
           >
-            Next
+            Next →
           </button>
         </div>
       </div>
