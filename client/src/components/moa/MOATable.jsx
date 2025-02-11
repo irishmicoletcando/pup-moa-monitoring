@@ -162,6 +162,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
   };
 
   const sortData = useCallback((data) => {
+  const sortData = useCallback((data) => {
     if (!sortConfig.field) return data;
   
     return [...data].sort((a, b) => {
