@@ -8,6 +8,9 @@ router.get('/moas', moaController.getAllMOAs);
 // Add a new MOA
 router.post('/moas', moaController.addMOA);
 
+// Fetch specific MOA
+router.get('/moas/:id', moaController.getMOAById);
+
 // Update an existing MOA
 router.patch('/moas/:id', moaController.updateMOA);
 
