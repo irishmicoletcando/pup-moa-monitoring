@@ -5,27 +5,173 @@ import { Upload, X } from "lucide-react";
 export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [files, setFiles] = useState([]);
+  const branchToCourses = {
+    "Sta. Mesa, Manila": ["ABELS", "ABF", "ABLCS", "AB-PHILO", "BADPR", "BA Broadcasting", "BACR", "BAJ", "BLIS", "BPA", "BPEA", "BSA", "BSBAFM", "BSBA-HRM", "BSBA-MM", "BSBIO", "BSCE", "BSCpE", "BSCS", "BSECE", "BSEE", "BSENTREP", "BSFT", "BSHM", "BSIE", "BSIT", "BSMA", "BSME", "BSOA", "BSRE", "BSTM", "BTLEd", "DCET", "DEET", "DECET", "DICT", "DMET", "DOMT"],
+    "Quezon City": ["BBTLEDHE", "BSBAHRM", "BSBA-MM", "BSENTREP", "BSIT", "BPAPFM", "DOMTMOM"],
+    "San Juan City": ["BSA", "BSBAFM", "BSENTREP", "BSHM", "BSIT", "BSEDEN", "BSEDMT"],
+    "Taguig City": ["BSBA-HRM", "BSBA-MM", "BSECE", "BSIT", "BSME", "BSOALT", "BSEDEN", "BSEDMT", "DICT", "DMET", "DOMTLOM"],
+    "Parañaque City": ["BSCpE", "BSHM", "BSIT", "BSOA", "DOMTLOM"],
+    "Mariveles, Bataan": ["BEED", "BSA", "BSBA-HRM", "BSENTREP", "BSIE", "BSIT", "DCET", "DICT", "DOMTLOM"],
+    "Sta. Maria, Bulacan": ["BSA", "BSCpE", "BSENTREP", "BSHM", "BSIT", "BSEDEN", "BSEDMT", "DOMTLOM"],
+    "Pulilan, Bulacan": ["BSENTREP", "BPAPFM"],
+    "Cabiao, Nueva Ecija": ["BEED", "BSBA-MM"],
+    "Biñan, Laguna": ["BEED", "BSA", "BSBA-HRM", "BSCpE", "BSIE", "BSIT", "BSEDEN", "BSEDSS", "DCET", "DICT"],
+    "Calauan, Laguna": ["BBTLEDHE-CL", "BSENTREP-UN", "BSIT"],
+    "San Pedro, Laguna": ["BSA", "BSBA-HRM", "BSBA-MM", "BSENTREP", "BSIT", "BSEDEN", "BSEDMT"],
+    "Sta. Rosa, Laguna": ["BBTLE", "BSA", "BSBA-HRM", "BSBA-MM", "BSECE", "BSIE", "BSIT", "BSPSY", "BSEDEN", "BSEDFL", "BSEDMT"],
+    "Sto. Tomas, Batangas": ["BBTLE", "BSA", "BSEE", "BSECE", "BSENTREP", "BSIE", "BSIT", "BPAPFM", "BSPSY", "DICT", "DOMTLOM"],
+    "Maragondon, Cavite": ["BSA", "BSBA-HRM", "BSEDEN", "BSEE", "BSECE", "BSENTREP", "BSME", "DICT", "DOMTLOM", "DOMTMOM"],
+    "Alfonso, Cavite (Maragondon Annex)": ["BSA", "BSME", "BSEDEN", "BSEDMT"],
+    "Lopez, Quezon": ["BPA", "BSA", "BSAM", "BS-ARCHI", "BSBA-MM", "BSCE", "BSEE", "BSHM", "BSIT", "BSOA", "BPAPFM", "BSEDMT", "DEET", "DICT", "DOMT"],
+    "Mulanay, Quezon": ["BEED", "BSAM", "BSENTREP", "BSOA", "BPAPFM", "DICT", "DOMTMOM"],
+    "General Luna, Quezon (Mulanay Annex)": ["BPA", "BSBA-MM"],
+    "Unisan, Quezon": ["BEED", "BSENTREP", "BSIT", "DICT", "DOMT"],
+    "Ragay, Camarines Sur": ["BEED", "BSBA-HRM", "BSBA-MM", "BSIT", "BSOA", "BSEDEN"],
+    "Bansud Oriental Mindoro": ["BSIT", "BPAPFM", "BSEDEN", "BSEDMT"],
+    "Sablayan, Occidental Mindoro": ["BCOOP", "BSEDMT", "BSENTREP", "ATM"]
+  };
+  
+  const courseNames = {
+    "ABELS": "Bachelor of Arts in English Language Studies",
+    "ABF": "Bachelor of Arts in Filipinology",
+    "ABLCS": "Bachelor of Arts in Literary and Cultural Studies",
+    "AB-PHILO": "Bachelor of Arts in Philosophy",
+    "ATM": "Associate Degree Associate in Tourism Management",
+    "BA Broadcasting": "Bachelor of Arts in Broadcasting",
+    "BACR": "Bachelor of Arts in Communication Research",
+    "BADPR": "Bachelor in Advertising and Public Relations",
+    "BAH": "Bachelor of Arts in History",
+    "BAIS": "Bachelor of Arts in International Studies",
+    "BAJ": "Bachelor of Arts in Journalism",
+    "BAPE": "Bachelor of Arts in Political Economy",
+    "BAPS": "Bachelor of Arts in Political Science",
+    "BAS": "Bachelor of Arts in Sociology",
+    "BBTLE": "Bachelor of Business Technology and Livelihood Education",
+    "BBTLEDHE": "Bachelor of Business Technology and Livelihood Education major in Home Economics",
+    "BBTLEDHE-CL": "Bachelor of Business Technology and Livelihood Education major in Home Economics",
+    "BCOOP": "Bachelor in Cooperatives",
+    "BEED": "Bachelor in Elementary Education",
+    "BLIS": "Bachelor of Library and Information Science",
+    "BPA": "Bachelor of Public Administration",
+    "BPAPFM": "Bachelor of Public Administration major in Public Financial Management",
+    "BPEA": "Bachelor of Performing Arts major in Theater Arts",
+    "BSA": "Bachelor of Science in Accountancy",
+    "BSAM": "Bachelor of Science in Agricultural Business Management",
+    "BS-ARCHI": "Bachelor of Science in Architecture",
+    "BSBAFM": "Bachelor of Science in Business Administration Major in Financial Management",
+    "BSBA-HRM": "Bachelor of Science in Business Administration major in Human Resource Management",
+    "BSBA-MM": "Bachelor of Science in Business Administration major in Marketing Management",
+    "BSBIO": "Bachelor of Science in Biology",
+    "BSCE": "Bachelor of Science in Civil Engineering",
+    "BSCpE": "Bachelor of Science in Computer Engineering",
+    "BSCS": "Bachelor of Science in Computer Science",
+    "BSECE": "Bachelor of Science in Electronics Engineering",
+    "BSEDEN": "Bachelor of Secondary Education major in English",
+    "BSEDFL": "Bachelor of Secondary Education major in Filipino",
+    "BSEDMT": "Bachelor of Secondary Education major in Mathematics",
+    "BSEDSS": "Bachelor of Secondary Education major in Social Studies",
+    "BSEE": "Bachelor of Science in Electrical Engineering",
+    "BSENTREP": "Bachelor of Science in Entrepreneurship",
+    "BSENTREP-UN": "Bachelor of Science in Entrepreneurship",
+    "BSFT": "Bachelor of Science Food Technology",
+    "BSHM": "Bachelor of Science in Hospitality Management",
+    "BSIE": "Bachelor of Science in Industrial Engineering",
+    "BSIT": "Bachelor of Science in Information Technology",
+    "BSMA": "Bachelor of Science in Management Accounting",
+    "BSME": "Bachelor of Science in Mechanical Engineering",
+    "BSOA": "Bachelor of Science in Office Administration",
+    "BSOALT": "Bachelor of Science in Office Administration major in Legal Transcription",
+    "BSPSY": "Bachelor of Science in Psychology",
+    "BSRE": "Bachelor of Science in Railway Engineering",
+    "BSTM": "Bachelor of Science in Tourism Management",
+    "BTLEd": "Bachelor of Technology and Livelihood Education",
+    "DCET": "Diploma in Computer Engineering Technology",
+    "DEET": "Diploma in Electrical Engineering Technology",
+    "DECET": "Diploma in Electronics Engineering Technology",
+    "DICT": "Diploma in Information Communication Technology",
+    "DMET": "Diploma in Mechanical Engineering Technology",
+    "DOMT": "Diploma in Office Management",
+    "DOMTLOM": "Diploma in Office Management Technology- Legal Office Management",
+    "DOMTMOM": "Diploma in Office Management Technology Medical Office Management",
+  };
+
+  const [selectedBranch, setSelectedBranch] = useState("");
+  const [selectedCourse, setSelectedCourse] = useState("");
+  const [availableCourses, setAvailableCourses] = useState([]);
   const [formData, setFormData] = useState({
-    moaName: "",
+    name: "",
     typeOfMoa: "Practicum",
     natureOfBusiness: "",
-    firstName: "",
-    lastName: "",
+    address: "",
+    firstname: "",
+    lastname: "",
+    position: "",
+    branch: "",
+    course: "",
     contactNumber: "",
-    emailAddress: "",
+    email: "",
+    status: "Active",
     validity: "",
-    dateNotarized: ""
+    dateNotarized: "",
+    hasNDA: false
   });
 
+  // Initialize form data when modal opens
   useEffect(() => {
-    if (moaData) {
-      setFormData({ ...moaData });
+    if (isOpen && moaData) {
+      console.group('MOA Data Debug');
+      console.log('Raw MOA Data:', moaData);
+      
+      // Log the mapping of incoming data
+      const formMapping = {
+        name: moaData.name,
+        typeOfMoa: moaData.type_of_moa,
+        natureOfBusiness: moaData.nature_of_business,
+        address: moaData.address,
+        firstname: moaData.firstname || "", // Changed to match API response
+        lastname: moaData.lastname || "", // Changed to match API response
+        position: moaData.position || "",
+        branch: moaData.branch || "",
+        course: moaData.course || "",
+        contactNumber: moaData.contact_number || "",
+        email: moaData.email || "", // Changed to match API response
+        status: moaData.status || "Active",
+        validity: moaData.years_validity || "",
+        dateNotarized: moaData.date_notarized ? new Date(moaData.date_notarized).toISOString().split('T')[0] : "",
+        hasNDA: moaData.has_nda || false
+      };
+      
+      console.log('Field Mapping:', formMapping);
+      console.log('Missing or Null Fields:', 
+        Object.entries(formMapping)
+          .filter(([_, value]) => value === undefined || value === null)
+          .map(([key]) => key)
+      );
+  
+      setFormData({
+        ...formMapping
+      });
+  
+      console.log('Processed Form Data:', formData);
+      console.groupEnd();
+  
+      setSelectedBranch(moaData.branch || "");
+      setSelectedCourse(moaData.course || "");
     }
-  }, [moaData]);
+  }, [isOpen, moaData]);
+
+  useEffect(() => {
+    if (selectedBranch) {
+      setAvailableCourses(branchToCourses[selectedBranch] || []);
+    } else {
+      setAvailableCourses([]);
+    }
+  }, [selectedBranch]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    const { name, value, type, checked } = e.target;
+    const newValue = type === 'checkbox' ? checked : value;
+    setFormData(prev => ({ ...prev, [name]: newValue }));
   };
 
   const handleFileChange = (e) => {
@@ -41,26 +187,88 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
     e.preventDefault();
     if (isSubmitting) return;
     setIsSubmitting(true);
-    try {
-      const updatedData = { ...formData, user_id: localStorage.getItem("user_id") };
-      const formDataToSend = new FormData();
-      formDataToSend.append("data", JSON.stringify(updatedData));
-      files.forEach((file) => formDataToSend.append("files", file));
 
+    try {
+      console.group('Form Submission Debug');
+      console.log('Current Form Data:', formData);
+      
+      // Create dates without time components
+      const [year, month, day] = formData.dateNotarized.split('-').map(Number);
+      const notarizedDate = new Date(year, month - 1, day);
+      const expiryDate = new Date(year, month - 1, day);
+      expiryDate.setFullYear(expiryDate.getFullYear() + parseInt(formData.validity));
+      
+      const formatDate = (date) => {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      };
+
+      const documentsArray = files.map(file => ({
+        document_name: file.name
+      }));
+
+      console.log('Documents to Upload:', documentsArray);
+
+      const formDataToSend = new FormData();
+      
+      const dataToSend = {
+        name: formData.name,
+        type_of_moa: formData.typeOfMoa.trim(),
+        nature_of_business: formData.natureOfBusiness,
+        address: formData.address,
+        firstname: formData.firstname,
+        lastname: formData.lastname,
+        position: formData.position,
+        branch: formData.branch,
+        course: formData.course,
+        contact_number: formData.contactNumber,
+        email_address: formData.emailAddress,
+        status: formData.status,
+        years_validity: formData.validity,
+        date_notarized: formatDate(notarizedDate),
+        expiry_date: formatDate(expiryDate),
+        year_submitted: year,
+        user_id: localStorage.getItem("user_id"),
+        documents: documentsArray,
+        has_nda: formData.hasNDA ? 1 : 0
+      };
+
+      console.log('Data Being Sent:', dataToSend);
+      
+      formDataToSend.append('data', JSON.stringify(dataToSend));
+      
+      files.forEach((file) => {
+        formDataToSend.append('files', file);
+      });
+
+      console.log('Form Data Entries:', Array.from(formDataToSend.entries()));
+      
       const response = await fetch(`/api/moas/${moaData.id}`, {
-        method: "PUT",
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
         body: formDataToSend,
       });
 
+      console.log('Response Status:', response.status);
+      
       if (!response.ok) {
         const data = await response.json();
         throw new Error(data.message || "Failed to update MOA");
       }
+
+      console.log('Update Successful');
+      console.groupEnd();
+
       toast.success("MOA updated successfully!");
       onMOAUpdated();
       onClose();
     } catch (error) {
+      console.error('Update Error:', error);
+      console.groupEnd();
       toast.error(error.message);
     } finally {
       setIsSubmitting(false);
@@ -79,7 +287,7 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
           <div>
             <label htmlFor="moaName" className="block font-bold mb-2 text-sm sm:text-base">MOA Name</label>
-            <input type="text" id="moaName" name="moaName" className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base" value={formData.moaName} onChange={handleChange} required />
+            <input type="text" id="name" name="name" className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base" value={formData.name} onChange={handleChange} required />
           </div>
 
 
@@ -99,18 +307,67 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
             </div>
           </div>
 
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="firstName" className="block font-bold mb-2 text-sm sm:text-base">Contact First Name</label>
-              <input type="text" id="firstName" name="firstName" className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base" value={formData.firstName} onChange={handleChange} required />
-            </div>
-            <div>
-              <label htmlFor="lastName" className="block font-bold mb-2 text-sm sm:text-base">Contact Last Name</label>
-              <input type="text" id="lastName" name="lastName" className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base" value={formData.lastName} onChange={handleChange} required />
-            </div>
+          {/* Company address - Full width */}
+          <div>
+            <label htmlFor="address" className="block font-bold mb-2 text-sm sm:text-base">
+              Company Address
+            </label>
+            <input
+              type="text"
+              id="address"
+              name="address"
+              className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base"
+              value={formData.address}
+              onChange={handleChange}
+              required
+            />
           </div>
 
+          {/* Contact Person - First Name, Last Name, and Position */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label htmlFor="firstname" className="block font-bold mb-2 text-sm sm:text-base">
+                Contact Person First Name
+              </label>
+              <input
+                type="text"
+                id="firstname"
+                name="firstname"
+                className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base"
+                value={formData.firstname}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="lastname" className="block font-bold mb-2 text-sm sm:text-base">
+                Contact Person Last Name
+              </label>
+              <input
+                type="text"
+                id="lastname"
+                name="lastname"
+                className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base"
+                value={formData.lastname}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="position" className="block font-bold mb-2 text-sm sm:text-base">
+                Contact Person Position
+              </label>
+              <input
+                type="text"
+                id="position"
+                name="position"
+                className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base"
+                value={formData.position}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -118,13 +375,31 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
               <input type="tel" id="contactNumber" name="contactNumber" className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base" value={formData.contactNumber} onChange={handleChange} required />
             </div>
             <div>
-              <label htmlFor="emailAddress" className="block font-bold mb-2 text-sm sm:text-base">Email Address</label>
-              <input type="email" id="emailAddress" name="emailAddress" className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base" value={formData.emailAddress} onChange={handleChange} required />
+              <label htmlFor="email" className="block font-bold mb-2 text-sm sm:text-base">Email Address</label>
+              <input type="email" id="email" name="emailAddress" className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base" value={formData.email} onChange={handleChange} required />
             </div>
           </div>
 
           {/* MOA Status, Validity, and Date Notarized */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label htmlFor="moaStatus" className="block font-bold mb-2 text-sm sm:text-base">
+                MOA Status
+              </label>
+              <select
+                id="moaStatus"
+                name="moaStatus"
+                className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base"
+                value={formData.status}
+                onChange={handleChange}
+                required
+              >
+                <option value="Active">Active</option>
+                <option value="Expiry">Expiry</option>
+                <option value="Expired">Expired</option>
+              </select>
+            </div>
+
             <div>
               <label htmlFor="validity" className="block font-bold mb-2 text-sm sm:text-base">
                 Validity
@@ -156,6 +431,56 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
             </div>
           </div>
 
+          {/* Branch & Course */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="branch" className="block font-bold mb-2 text-sm sm:text-base">
+                Branch
+              </label>
+              <select
+                id="branch"
+                className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base"
+                value={selectedBranch}
+                onChange={(e) => {
+                  setSelectedBranch(e.target.value);
+                  setFormData(prev => ({ ...prev, branch: e.target.value }));
+                }}
+                required
+              >
+                <option value="">Select Branch</option>
+                {Object.keys(branchToCourses).map((branch) => (
+                  <option key={branch} value={branch}>
+                    {branch}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="course" className="block font-bold mb-2 text-sm sm:text-base">
+                Course
+              </label>
+              <select
+                id="course"
+                className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base"
+                value={selectedCourse}
+                onChange={(e) => {
+                  setSelectedCourse(e.target.value);
+                  setFormData(prev => ({ ...prev, course: e.target.value }));
+                }}
+                required
+                disabled={!selectedBranch}
+              >
+                <option value="">Select Course</option>
+                {availableCourses.map((courseCode) => (
+                  <option key={courseCode} value={courseCode}>
+                    {courseCode} - {courseNames[courseCode] || courseCode}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
           <div>
             <label className="block font-bold mb-2 text-sm sm:text-base">Upload New Documents</label>
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
@@ -166,6 +491,22 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
               </label>
             </div>
           </div>
+
+          {/* NDA Checkbox */}
+          <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="hasNDA"
+                name="hasNDA"
+                checked={formData.hasNDA}
+                onChange={handleChange}
+                className="w-4 h-4 text-maroon border-gray-300 rounded focus:ring-maroon"
+              />
+              <label htmlFor="hasNDA" className="font-medium text-gray-700 text-sm sm:text-base">
+                Has Non-Disclosure Agreement (NDA)
+              </label>
+            </div>
+            
           {files.length > 0 && files.map((file, index) => (
             <div key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded">
               <span className="text-sm truncate">{file.name}</span>
