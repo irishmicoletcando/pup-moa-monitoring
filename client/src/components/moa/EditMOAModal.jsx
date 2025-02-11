@@ -227,6 +227,11 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
         const d = String(date.getDate()).padStart(2, "0");
         return `${y}-${m}-${d}`;
       };
+
+      // Prepare documents array to match backend expectation
+      const documentsArray = files.map(file => ({
+        document_name: file.name
+      }));
     
       const dataToSend = {
         name: formData.name,
@@ -246,6 +251,7 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
         expiry_date: formatDate(expiryDate),
         year_submitted: year,
         user_id: localStorage.getItem("user_id"),
+        documents: documentsArray,
         has_nda: formData.hasNDA ? 1 : 0
       };
   
@@ -255,10 +261,31 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
       let bodyData;
       if (files.length > 0) {
         bodyData = new FormData();
+        // First append all the regular data
         bodyData.append("data", JSON.stringify(dataToSend));
-        files.forEach((file) => bodyData.append("files", file));
+        
+        // Log file details before append
+        console.log("Files to upload:", files.map(f => ({
+          name: f.name,
+          size: f.size,
+          type: f.type
+        })));
+        
+        // Append each file individually
+        files.forEach((file, index) => {
+          if (file.size > 10 * 1024 * 1024) {
+            throw new Error(`File ${file.name} is too large. Maximum size is 10MB`);
+          }
+          bodyData.append("files", file, file.name);
+        });
+      
+        // Debug log FormData contents
+        console.log("FormData contents:");
+        for (let pair of bodyData.entries()) {
+          console.log(pair[0], typeof pair[1], pair[1] instanceof File ? `File: ${pair[1].name}` : pair[1]);
+        }
       } else {
-        bodyData = JSON.stringify(dataToSend);
+        bodyData = dataToSend;
       }
 
       const headers = files.length > 0
@@ -271,18 +298,21 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
       const response = await fetch(`/api/moas/${moaData.moa_id}`, {
         method: "PATCH",
         headers: headers,
-        body: bodyData
+        body: files.length > 0 ? bodyData : JSON.stringify(bodyData),
       });
-      
-      const responseData = await response.json();
   
       if (!response.ok) {
-        console.log('Response data:', responseData);
+        const responseData = await response.json().catch(() => ({
+          message: `HTTP error! status: ${response.status}`
+        }));
+        
+        console.log('Error response:', responseData);
+        
         if (responseData.fieldDetails) {
-          console.log('Missing fields details:', responseData.fieldDetails);
           throw new Error(`Missing required fields: ${responseData.fields.join(', ')}\nDetails: ${JSON.stringify(responseData.fieldDetails, null, 2)}`);
         }
-        throw new Error(responseData.message || "Failed to update MOA");
+        
+        throw new Error(responseData.message || `Failed to update MOA: ${response.status}`);
       }
   
       toast.success("MOA updated successfully!");
@@ -290,12 +320,13 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
       onClose();
     } catch (error) {
       console.error("Error updating MOA:", error);
-      console.log("Full error details:", {
-        message: error.message,
-        data: error.response?.data,
-        status: error.response?.status
-      });
-      toast.error(error.message);
+      
+      // Improved error handling
+      const errorMessage = error.name === 'AbortError' 
+        ? "Request timed out. Please try again."
+        : error.message || "Failed to update MOA";
+      
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

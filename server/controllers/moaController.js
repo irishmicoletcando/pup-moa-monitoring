@@ -10,7 +10,7 @@ const upload = multer({
     fileSize: 20 * 1024 * 1024, // 20MB limit
     files: 10 // Maximum 10 files
   }
-});
+}).array('files');
 
 // Azure Blob Storage configuration
 const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
@@ -259,68 +259,91 @@ const updateMOA = async (req, res) => {
   const { id } = req.params;
   
   try {
-    // Parse the JSON data from FormData
+    // Improved data parsing logic
     let moaData;
-    try {
-      moaData = typeof req.body.data === 'string' ? JSON.parse(req.body.data) : req.body;
-      console.log('Parsed MOA Data:', moaData);
-    } catch (error) {
-      console.error('Error parsing MOA data:', error);
+    if (req.files && req.files.length > 0) {
+      // If files are present, data should be in req.body.data
+      try {
+        moaData = JSON.parse(req.body.data);
+      } catch (error) {
+        console.error('Error parsing FormData JSON:', error);
+        return res.status(400).json({
+          message: "Invalid form data format",
+          error: error.message
+        });
+      }
+    } else {
+      // If no files, data should be directly in req.body
+      moaData = req.body;
+    }
+
+     // Validate that we have data
+     if (!moaData || Object.keys(moaData).length === 0) {
       return res.status(400).json({
-        message: "Invalid request data format",
-        error: error.message
+        message: "No MOA data received",
+        receivedBody: req.body,
+        contentType: req.headers['content-type']
       });
     }
+
+    console.log('Parsed MOA Data:', moaData);
 
     // Required fields for MOA update (documents are now optional)
     const requiredFields = [
-      'name',
-      'type_of_moa',
-      'nature_of_business',
-      'address',
-      'firstname',
-      'lastname',
-      'position',
-      'contact_number',
-      'email_address',
-      'status',
-      'years_validity',
-      'date_notarized',
-      'expiry_date',
-      'year_submitted',
-      'branch',
-      'course',
-      'user_id'
+      { name: 'name', type: 'string' },
+      { name: 'type_of_moa', type: 'number' },
+      { name: 'nature_of_business', type: 'string' },
+      { name: 'address', type: 'string' },
+      { name: 'firstname', type: 'string' },
+      { name: 'lastname', type: 'string' },
+      { name: 'position', type: 'string' },
+      { name: 'contact_number', type: 'string' },
+      { name: 'email_address', type: 'string' },
+      { name: 'status', type: 'string' },
+      { name: 'years_validity', type: 'number' },
+      { name: 'date_notarized', type: 'string' },
+      { name: 'expiry_date', type: 'string' },
+      { name: 'year_submitted', type: 'number' },
+      { name: 'branch', type: 'string' },
+      { name: 'course', type: 'string' },
+      { name: 'user_id', type: 'string' }
     ];
 
-    const missingFields = requiredFields.filter(field => {
-      const value = moaData[field];
+    const missingOrInvalidFields = requiredFields.filter(field => {
+      const value = moaData[field.name];
+      const valueType = typeof value;
+      
+      // Check if value is missing or empty
       const isEmpty = value === undefined || value === null || value === '';
-      if (isEmpty) {
-        console.log(`Field "${field}" is missing or empty. Value:`, value);
+      
+      // Check if type matches (but skip if empty as we handle that separately)
+      const wrongType = !isEmpty && valueType !== field.type;
+      
+      // Log the validation result
+      if (isEmpty || wrongType) {
+        console.log(`Field "${field.name}": Value = ${value}, Type = ${valueType}, Required Type = ${field.type}`);
       }
-      return isEmpty;
+      
+      return isEmpty || wrongType;
     });
     
-    if (missingFields.length > 0) {
-      console.log('All received data:', moaData);
-      console.log('Missing fields detail:', missingFields.map(field => ({
-        field,
-        value: moaData[field],
-        type: typeof moaData[field]
-      })));
-      
+    if (missingOrInvalidFields.length > 0) {
       return res.status(400).json({
-        message: "Missing required fields",
-        fields: missingFields,
-        receivedData: moaData,
-        fieldDetails: missingFields.map(field => ({
-          field,
-          value: moaData[field],
-          type: typeof moaData[field]
+        message: "Invalid or missing fields",
+        fields: missingOrInvalidFields.map(field => field.name),
+        fieldDetails: missingOrInvalidFields.map(field => ({
+          field: field.name,
+          value: moaData[field.name],
+          expectedType: field.type,
+          actualType: typeof moaData[field.name]
         }))
       });
     }
+
+    // Convert specific fields to their proper types
+    moaData.type_of_moa = parseInt(moaData.type_of_moa);
+    moaData.years_validity = parseInt(moaData.years_validity);
+    moaData.year_submitted = parseInt(moaData.year_submitted);
 
     const connection = await pool.getConnection();
     try {
@@ -403,14 +426,43 @@ const updateMOA = async (req, res) => {
         );
       }
 
-      // Handle file uploads only if files are present
+      // Handle file uploads with better error handling
       if (req.files && req.files.length > 0) {
+        // Delete existing documents
+        const [existingDocs] = await connection.query(
+          "SELECT document_id, file_path FROM moa_documents WHERE moa_id = ?",
+          [id]
+        );
+
+        for (const doc of existingDocs) {
+          if (doc.file_path) {
+            try {
+              await deleteFromBlob(doc.file_path);
+            } catch (err) {
+              console.warn(`Warning: Could not delete file ${doc.file_path}:`, err);
+            }
+          }
+          await connection.query(
+            "DELETE FROM moa_documents WHERE document_id = ?",
+            [doc.document_id]
+          );
+        }
+
+        // Upload new files
         for (const file of req.files) {
-          const fileName = `${Date.now()}-${file.originalname}`;
-          const blobUrl = await uploadToBlob(file, fileName);
+          const fileName = `${Date.now()}-${file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+          let blobUrl;
+          
+          try {
+            blobUrl = await uploadToBlob(file, fileName);
+          } catch (err) {
+            throw new Error(`Failed to upload file ${file.originalname}: ${err.message}`);
+          }
 
           await connection.query(
-            "INSERT INTO moa_documents (moa_id, document_name, file_path, uploaded_at, uploaded_by, has_nda) VALUES (?, ?, ?, NOW(), ?, ?)",
+            `INSERT INTO moa_documents 
+             (moa_id, document_name, file_path, uploaded_at, uploaded_by, has_nda)
+             VALUES (?, ?, ?, NOW(), ?, ?)`,
             [id, file.originalname, blobUrl, moaData.user_id, moaData.has_nda || false]
           );
         }
