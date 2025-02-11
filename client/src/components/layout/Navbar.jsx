@@ -49,6 +49,10 @@ const Navbar = () => {
     navigate(route);
   };
 
+  const handleLanding = () => {
+    navigate("/landing-page");
+  };
+
   const navItems = [
     {
       icon: <LayoutDashboard size={24} />,
@@ -75,7 +79,7 @@ const Navbar = () => {
       {/* Desktop Sidebar */}
       <nav className="hidden md:flex w-20 m-3 rounded-lg bg-maroon max-h-screen flex-col items-center py-4">
         <div className="mb-8">
-          <img src="/PUP.png" alt="PUP Logo" className="w-12 h-12" />
+          <img src="/PUP.png" alt="PUP Logo" className="w-12 h-12 cursor-pointer" onClick = {handleLanding}/>
         </div>
 
         <div className="flex flex-col space-y-5 flex-grow justify-center w-full">
