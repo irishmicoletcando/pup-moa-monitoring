@@ -21,12 +21,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
     field: null,
     direction: 'asc'
   });
-  // const [filters, setFilters] = useState({
-  //   moaTypes: [],
-  //   moaStatus: [],
-  //   branch: [],
-  //   course: []
-  // });
+
   const { moaFilters, onMoaFilterChange } = useMoaFilterContext();
   const [deleteModal, setDeleteModal] = useState({
     isOpen: false,
@@ -162,7 +157,6 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
   };
 
   const sortData = useCallback((data) => {
-  const sortData = useCallback((data) => {
     if (!sortConfig.field) return data;
   
     return [...data].sort((a, b) => {
@@ -173,7 +167,14 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
           ? dateA - dateB 
           : dateB - dateA;
       }
-      return 0; // Default sort logic for unsupported fields
+      
+      // Add string comparison for other fields
+      const valueA = a[sortConfig.field] || '';
+      const valueB = b[sortConfig.field] || '';
+      
+      return sortConfig.direction === 'asc'
+        ? valueA.localeCompare(valueB)
+        : valueB.localeCompare(valueA);
     });
   }, [sortConfig]);
  
