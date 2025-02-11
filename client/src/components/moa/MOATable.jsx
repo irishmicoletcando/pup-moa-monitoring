@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Trash2, Search, RefreshCw, X, Edit2, FileText } from "lucide-react";
@@ -33,6 +33,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [paginatedMOAs, setPaginatedMOAs] = useState([]);
 
   const fetchMOAs = async () => {
     try {
@@ -150,9 +151,9 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
     }));
   };
 
-  const sortData = (data) => {
+  const sortData = useCallback((data) => {
     if (!sortConfig.field) return data;
-
+  
     return [...data].sort((a, b) => {
       if (sortConfig.field === 'expiry_date') {
         const dateA = new Date(a[sortConfig.field]);
@@ -161,37 +162,41 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
           ? dateA - dateB 
           : dateB - dateA;
       }
+      return 0; // Default sort logic for unsupported fields
     });
-  };
-
-  const filteredMOAs = Array.isArray(moas) ? sortData(moas.filter(moa => {
-    const matchesSearch = (
-      moa.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      moa.contactPerson?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      moa.email.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    const matchesType = moaFilters.moaTypes.length === 0 || 
-    moaFilters.moaTypes.includes(moa.type_of_moa);
-
-    const matchesStatus = moaFilters.moaStatus.length === 0 || 
-    moaFilters.moaStatus.includes(moa.moa_status);
-
-    const matchesBranches = moaFilters.branch.length === 0 || 
-    moaFilters.branch.includes(moa.branch);
-
-    const matchesCourses = moaFilters.course.length === 0 || 
-    moaFilters.course.includes(moa.course);
-
-    return matchesSearch && matchesType && matchesStatus && matchesBranches && matchesCourses;
-  })) : [];
-
-  const paginatedMOAs = filteredMOAs.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  }, [sortConfig]);
+ 
+  const filteredMOAs = useMemo(() => {
+    return Array.isArray(moas) ? sortData(moas.filter(moa => {
+      const matchesSearch = (
+        moa.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        moa.contactPerson?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        moa.email.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+  
+      const matchesType = moaFilters.moaTypes.length === 0 || 
+      moaFilters.moaTypes.includes(moa.type_of_moa);
+  
+      const matchesStatus = moaFilters.moaStatus.length === 0 || 
+      moaFilters.moaStatus.includes(moa.moa_status);
+  
+      const matchesBranches = moaFilters.branch.length === 0 || 
+      moaFilters.branch.includes(moa.branch);
+  
+      const matchesCourses = moaFilters.course.length === 0 || 
+      moaFilters.course.includes(moa.course);
+  
+      return matchesSearch && matchesType && matchesStatus && matchesBranches && matchesCourses;
+    })) : [];
+  }, [moas, searchTerm, moaFilters, sortData]);
 
   const totalPages = Math.ceil(filteredMOAs.length / itemsPerPage);
+
+  useEffect(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    setPaginatedMOAs(filteredMOAs.slice(startIndex, endIndex));
+  }, [currentPage, itemsPerPage, filteredMOAs]);
 
   const getPageNumbers = () => {
     const pages = [];
@@ -372,7 +377,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
               }}
               className="ml-2 border rounded px-2 py-1"
             >
-              {[1, 20, 50, 100].map((option) => (
+              {[5, 10, 50, 100].map((option) => (
                 <option key={option} value={option}>
                   {option}
                 </option>
