@@ -121,6 +121,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
     // Handle checkbox separately
     const newValue = type === 'checkbox' ? checked : value;
     setFormData({ ...formData, [name]: newValue });
+    console.log(formData.natureOfBusiness);
   };
 
   const handleFileChange = (e) => {
@@ -164,7 +165,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
       const dataToSend = {
         name: formData.moaName,
         typeOfMoa: formData.typeOfMoa.trim(),
-        nature_of_business: formData.natureOfBusiness,
+        natureOfBusiness: formData.natureOfBusiness,
         address: formData.address,
         contactFirstName: formData.firstName,
         contactLastName: formData.lastName,

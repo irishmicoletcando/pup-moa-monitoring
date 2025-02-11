@@ -7,10 +7,10 @@ const storage = multer.memoryStorage();
 const upload = multer({ 
   storage: storage,
   limits: {
-    fileSize: 20 * 1024 * 1024, // 10MB limit
+    fileSize: 20 * 1024 * 1024, // 20MB limit
     files: 10 // Maximum 10 files
   }
-});
+}).array('files');
 
 // Azure Blob Storage configuration
 const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
@@ -37,7 +37,6 @@ const uploadToBlob = async (file, fileName) => {
     throw new Error('Failed to upload file to storage');
   }
 };
-
 
 const addMOA = async (req, res) => {
   const uploadFiles = upload.array('files', 10);
@@ -89,8 +88,6 @@ const addMOA = async (req, res) => {
           Scholarship: 3,
           Research: 4,
         }[typeOfMoa];
-
-        
 
         if (!type_id) {
           await connection.rollback();
@@ -168,8 +165,6 @@ const addMOA = async (req, res) => {
   });
 };
 
-
-
 // Get All MOAs
 const getAllMOAs = async (req, res) => {
   const query = `
@@ -181,6 +176,8 @@ const getAllMOAs = async (req, res) => {
           moa_info.address,
           moa_info.branch,
           moa_info.course,
+          moa_contact.firstname,
+          moa_contact.lastname,
           CONCAT(moa_contact.firstname, ' ', moa_contact.lastname) AS contact_person, 
           moa_contact.contact_number, 
           moa_contact.email, 
@@ -210,7 +207,6 @@ const getAllMOAs = async (req, res) => {
 const getMOAById = async (req, res) => {
   const { id } = req.params;
   
-  // Convert id to number and validate
   const moaId = parseInt(id, 10);
   if (isNaN(moaId)) {
     return res.status(400).json({ error: 'Invalid MOA ID' });
@@ -225,16 +221,18 @@ const getMOAById = async (req, res) => {
       moa_info.address,
       moa_info.branch,
       moa_info.course,
-      CONCAT(moa_contact.firstname, ' ', moa_contact.lastname) AS contact_person, 
+      moa_contact.firstname,
+      moa_contact.lastname,
       moa_contact.contact_number, 
       moa_contact.position,
-      moa_contact.email, 
-      moa_info.status AS moa_status, 
+      moa_contact.email AS email_address, 
+      moa_info.status, 
       moa_validity_period.years_validity, 
       moa_validity_period.date_notarized, 
       moa_validity_period.expiry_date, 
       moa_validity_period.year_submitted,
-      moa_documents.file_path
+      moa_documents.file_path,
+      moa_documents.has_nda
     FROM moa_info
     JOIN moa_contact ON moa_info.contact_id = moa_contact.contact_id
     JOIN moa_validity_period ON moa_info.validity_id = moa_validity_period.validity_id
@@ -258,24 +256,237 @@ const getMOAById = async (req, res) => {
 
 // Update MOA
 const updateMOA = async (req, res) => {
-    const { id } = req.params;
-    const { name, type_id, nature_of_business, contact_id, status, validity_id, user_id } = req.body;
-
-    const query = `
-        UPDATE moa_info
-        SET name = ?, type_id = ?, nature_of_business = ?, contact_id = ?, status = ?, validity_id = ?, user_id = ?
-        WHERE moa_id = ?
-    `;
-    
-    try {
-        const [result] = await pool.query(query, [name, type_id, nature_of_business, contact_id, status, validity_id, user_id, id]);
-        if (result.affectedRows === 0) {
-            return res.status(404).send('MOA not found');
-        }
-        res.status(200).send('MOA updated successfully');
-    } catch (err) {
-        res.status(500).send('Error updating MOA');
+  const { id } = req.params;
+  
+  try {
+    // Improved data parsing logic
+    let moaData;
+    if (req.files && req.files.length > 0) {
+      // If files are present, data should be in req.body.data
+      try {
+        moaData = JSON.parse(req.body.data);
+      } catch (error) {
+        console.error('Error parsing FormData JSON:', error);
+        return res.status(400).json({
+          message: "Invalid form data format",
+          error: error.message
+        });
+      }
+    } else {
+      // If no files, data should be directly in req.body
+      moaData = req.body;
     }
+
+     // Validate that we have data
+     if (!moaData || Object.keys(moaData).length === 0) {
+      return res.status(400).json({
+        message: "No MOA data received",
+        receivedBody: req.body,
+        contentType: req.headers['content-type']
+      });
+    }
+
+    console.log('Parsed MOA Data:', moaData);
+
+    // Required fields for MOA update (documents are now optional)
+    const requiredFields = [
+      { name: 'name', type: 'string' },
+      { name: 'type_of_moa', type: 'number' },
+      { name: 'nature_of_business', type: 'string' },
+      { name: 'address', type: 'string' },
+      { name: 'firstname', type: 'string' },
+      { name: 'lastname', type: 'string' },
+      { name: 'position', type: 'string' },
+      { name: 'contact_number', type: 'string' },
+      { name: 'email_address', type: 'string' },
+      { name: 'status', type: 'string' },
+      { name: 'years_validity', type: 'number' },
+      { name: 'date_notarized', type: 'string' },
+      { name: 'expiry_date', type: 'string' },
+      { name: 'year_submitted', type: 'number' },
+      { name: 'branch', type: 'string' },
+      { name: 'course', type: 'string' },
+      { name: 'user_id', type: 'string' }
+    ];
+
+    const missingOrInvalidFields = requiredFields.filter(field => {
+      const value = moaData[field.name];
+      const valueType = typeof value;
+      
+      // Check if value is missing or empty
+      const isEmpty = value === undefined || value === null || value === '';
+      
+      // Check if type matches (but skip if empty as we handle that separately)
+      const wrongType = !isEmpty && valueType !== field.type;
+      
+      // Log the validation result
+      if (isEmpty || wrongType) {
+        console.log(`Field "${field.name}": Value = ${value}, Type = ${valueType}, Required Type = ${field.type}`);
+      }
+      
+      return isEmpty || wrongType;
+    });
+    
+    if (missingOrInvalidFields.length > 0) {
+      return res.status(400).json({
+        message: "Invalid or missing fields",
+        fields: missingOrInvalidFields.map(field => field.name),
+        fieldDetails: missingOrInvalidFields.map(field => ({
+          field: field.name,
+          value: moaData[field.name],
+          expectedType: field.type,
+          actualType: typeof moaData[field.name]
+        }))
+      });
+    }
+
+    // Convert specific fields to their proper types
+    moaData.type_of_moa = parseInt(moaData.type_of_moa);
+    moaData.years_validity = parseInt(moaData.years_validity);
+    moaData.year_submitted = parseInt(moaData.year_submitted);
+
+    const connection = await pool.getConnection();
+    try {
+      await connection.beginTransaction();
+
+      // Verify MOA exists
+      const [moaExists] = await connection.query(
+        "SELECT moa_id FROM moa_info WHERE moa_id = ?",
+        [id]
+      );
+
+      if (moaExists.length === 0) {
+        await connection.rollback();
+        return res.status(404).json({ message: "MOA not found" });
+      }
+
+      // Update contact details
+      const [contactResults] = await connection.query(
+        "SELECT contact_id FROM moa_contact WHERE contact_number = ? AND email = ?",
+        [moaData.contact_number, moaData.email_address]
+      );
+
+      let contact_id;
+      if (contactResults.length > 0) {
+        contact_id = contactResults[0].contact_id;
+        await connection.query(
+          "UPDATE moa_contact SET firstname = ?, lastname = ?, position = ?, contact_number = ?, email = ? WHERE contact_id = ?",
+          [moaData.firstname, moaData.lastname, moaData.position, moaData.contact_number, moaData.email_address, contact_id]
+        );
+      } else {
+        const [contactInsertResult] = await connection.query(
+          "INSERT INTO moa_contact (firstname, lastname, position, contact_number, email) VALUES (?, ?, ?, ?, ?)",
+          [moaData.firstname, moaData.lastname, moaData.position, moaData.contact_number, moaData.email_address]
+        );
+        contact_id = contactInsertResult.insertId;
+      }
+
+      // Update MOA details
+      await connection.query(
+        `UPDATE moa_info 
+         SET name = ?, 
+             type_id = ?, 
+             nature_of_business = ?, 
+             address = ?, 
+             contact_id = ?, 
+             status = ?, 
+             branch = ?, 
+             course = ?, 
+             user_id = ?
+         WHERE moa_id = ?`,
+        [
+          moaData.name,
+          moaData.type_of_moa,
+          moaData.nature_of_business,
+          moaData.address,
+          contact_id,
+          moaData.status,
+          moaData.branch,
+          moaData.course,
+          moaData.user_id,
+          id
+        ]
+      );
+
+      // Update validity period
+      const [validityResults] = await connection.query(
+        "SELECT validity_id FROM moa_validity_period WHERE moa_id = ?",
+        [id]
+      );
+
+      if (validityResults.length > 0) {
+        await connection.query(
+          "UPDATE moa_validity_period SET years_validity = ?, date_notarized = ?, expiry_date = ?, year_submitted = ? WHERE moa_id = ?",
+          [moaData.years_validity, moaData.date_notarized, moaData.expiry_date, moaData.year_submitted, id]
+        );
+      } else {
+        await connection.query(
+          "INSERT INTO moa_validity_period (moa_id, years_validity, date_notarized, expiry_date, year_submitted) VALUES (?, ?, ?, ?, ?)",
+          [id, moaData.years_validity, moaData.date_notarized, moaData.expiry_date, moaData.year_submitted]
+        );
+      }
+
+      // Handle file uploads with better error handling
+      if (req.files && req.files.length > 0) {
+        // Delete existing documents
+        const [existingDocs] = await connection.query(
+          "SELECT document_id, file_path FROM moa_documents WHERE moa_id = ?",
+          [id]
+        );
+
+        for (const doc of existingDocs) {
+          if (doc.file_path) {
+            try {
+              await deleteFromBlob(doc.file_path);
+            } catch (err) {
+              console.warn(`Warning: Could not delete file ${doc.file_path}:`, err);
+            }
+          }
+          await connection.query(
+            "DELETE FROM moa_documents WHERE document_id = ?",
+            [doc.document_id]
+          );
+        }
+
+        // Upload new files
+        for (const file of req.files) {
+          const fileName = `${Date.now()}-${file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+          let blobUrl;
+          
+          try {
+            blobUrl = await uploadToBlob(file, fileName);
+          } catch (err) {
+            throw new Error(`Failed to upload file ${file.originalname}: ${err.message}`);
+          }
+
+          await connection.query(
+            `INSERT INTO moa_documents 
+             (moa_id, document_name, file_path, uploaded_at, uploaded_by, has_nda)
+             VALUES (?, ?, ?, NOW(), ?, ?)`,
+            [id, file.originalname, blobUrl, moaData.user_id, moaData.has_nda || false]
+          );
+        }
+      }
+
+      await connection.commit();
+      res.status(200).json({ 
+        message: "MOA updated successfully",
+        moa_id: id
+      });
+    } catch (error) {
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  } catch (error) {
+    console.error("Error updating MOA:", error);
+    res.status(500).json({ 
+      message: "Error updating MOA", 
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
+  }
 };
 
 const deleteMOA = async (req, res) => {
