@@ -2,6 +2,13 @@ import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { Upload, X } from "lucide-react";
 
+const moaTypeMapping = {
+  Practicum: 1,
+  Employment: 2,
+  Scholarship: 3,
+  Research: 4,
+};
+
 export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [files, setFiles] = useState([]);
@@ -100,7 +107,7 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
   const [availableCourses, setAvailableCourses] = useState([]);
   const [formData, setFormData] = useState({
     name: "",
-    typeOfMoa: "Practicum",
+    typeOfMoa: 1, // Default to Practicum ID (1)
     natureOfBusiness: "",
     address: "",
     firstname: "",
@@ -119,46 +126,29 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
   // Initialize form data when modal opens
   useEffect(() => {
     if (isOpen && moaData) {
-      console.group('MOA Data Debug');
-      console.log('Raw MOA Data:', moaData);
-      
-      // Log the mapping of incoming data
-      const formMapping = {
-        name: moaData.name,
-        typeOfMoa: moaData.type_of_moa,
-        natureOfBusiness: moaData.nature_of_business,
-        address: moaData.address,
-        firstname: moaData.firstname || "", // Changed to match API response
-        lastname: moaData.lastname || "", // Changed to match API response
+      setFormData({
+        name: moaData.name || "",
+        typeOfMoa: moaTypeMapping[moaData.type_of_moa] || 1, // Convert type string to ID
+        natureOfBusiness: moaData.nature_of_business || "",
+        address: moaData.address || "",
+        firstname: moaData.firstname || "",
+        lastname: moaData.lastname || "",
         position: moaData.position || "",
         branch: moaData.branch || "",
         course: moaData.course || "",
         contactNumber: moaData.contact_number || "",
-        email: moaData.email || "", // Changed to match API response
+        email: moaData.email || "",
         status: moaData.status || "Active",
         validity: moaData.years_validity || "",
         dateNotarized: moaData.date_notarized ? new Date(moaData.date_notarized).toISOString().split('T')[0] : "",
         hasNDA: moaData.has_nda || false
-      };
-      
-      console.log('Field Mapping:', formMapping);
-      console.log('Missing or Null Fields:', 
-        Object.entries(formMapping)
-          .filter(([_, value]) => value === undefined || value === null)
-          .map(([key]) => key)
-      );
-  
-      setFormData({
-        ...formMapping
       });
-  
-      console.log('Processed Form Data:', formData);
-      console.groupEnd();
   
       setSelectedBranch(moaData.branch || "");
       setSelectedCourse(moaData.course || "");
     }
   }, [isOpen, moaData]);
+  
 
   useEffect(() => {
     if (selectedBranch) {
@@ -170,110 +160,151 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    const newValue = type === 'checkbox' ? checked : value;
-    setFormData(prev => ({ ...prev, [name]: newValue }));
+    setFormData((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
   };
 
   const handleFileChange = (e) => {
-    const newFiles = Array.from(e.target.files);
-    setFiles(prevFiles => [...prevFiles, ...newFiles]);
+    setFiles((prevFiles) => [...prevFiles, ...Array.from(e.target.files)]);
   };
 
   const removeFile = (indexToRemove) => {
-    setFiles(prevFiles => prevFiles.filter((_, index) => index !== indexToRemove));
+    setFiles((prevFiles) => prevFiles.filter((_, index) => index !== indexToRemove));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
     setIsSubmitting(true);
-
+  
     try {
-      console.group('Form Submission Debug');
-      console.log('Current Form Data:', formData);
-      
-      // Create dates without time components
-      const [year, month, day] = formData.dateNotarized.split('-').map(Number);
-      const notarizedDate = new Date(year, month - 1, day);
-      const expiryDate = new Date(year, month - 1, day);
-      expiryDate.setFullYear(expiryDate.getFullYear() + parseInt(formData.validity));
-      
-      const formatDate = (date) => {
-        const y = date.getFullYear();
-        const m = String(date.getMonth() + 1).padStart(2, '0');
-        const d = String(date.getDate()).padStart(2, '0');
-        return `${y}-${m}-${d}`;
-      };
-
-      const documentsArray = files.map(file => ({
-        document_name: file.name
-      }));
-
-      console.log('Documents to Upload:', documentsArray);
-
-      const formDataToSend = new FormData();
-      
-      const dataToSend = {
+      // Validate all required fields first
+      const requiredFields = {
         name: formData.name,
-        type_of_moa: formData.typeOfMoa.trim(),
+        type_of_moa: formData.typeOfMoa,
         nature_of_business: formData.natureOfBusiness,
         address: formData.address,
         firstname: formData.firstname,
         lastname: formData.lastname,
         position: formData.position,
-        branch: formData.branch,
-        course: formData.course,
         contact_number: formData.contactNumber,
-        email_address: formData.emailAddress,
+        email_address: formData.email,
         status: formData.status,
-        years_validity: formData.validity,
+        years_validity: formData.validity, // Changed from validity to years_validity
+        date_notarized: formData.dateNotarized,
+        expiry_date: null, // Will be calculated later
+        year_submitted: null, // Will be calculated from date_notarized
+        branch: selectedBranch,
+        course: selectedCourse,
+        user_id: localStorage.getItem("user_id")
+      };
+  
+      // Check for empty fields
+      const emptyFields = Object.entries(requiredFields)
+      .filter(([key, value]) => {
+        // Skip expiry_date and year_submitted as they're calculated later
+        if (key === 'expiry_date' || key === 'year_submitted') return false;
+        return !value;
+      })
+      .map(([key]) => key);
+  
+      if (emptyFields.length > 0) {
+        throw new Error(`Please fill in all required fields: ${emptyFields.join(', ')}`);
+      }
+  
+      // Parse and validate dates
+      if (!formData.dateNotarized) {
+        throw new Error('Date notarized is required');
+      }
+
+      const [year, month, day] = formData.dateNotarized.split('-').map(Number);
+      const notarizedDate = new Date(year, month - 1, day);
+      const expiryDate = new Date(year, month - 1, day);
+      expiryDate.setFullYear(expiryDate.getFullYear() + parseInt(formData.validity));
+
+      const formatDate = (date) => {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, "0");
+        const d = String(date.getDate()).padStart(2, "0");
+        return `${y}-${m}-${d}`;
+      };
+    
+      const dataToSend = {
+        name: formData.name,
+        type_of_moa: parseInt(formData.typeOfMoa),
+        nature_of_business: formData.natureOfBusiness,
+        address: formData.address,
+        firstname: formData.firstname,
+        lastname: formData.lastname,
+        position: formData.position,
+        branch: selectedBranch,
+        course: selectedCourse,
+        contact_number: formData.contactNumber,
+        email_address: formData.email,
+        status: formData.status,
+        years_validity: parseInt(formData.validity),
         date_notarized: formatDate(notarizedDate),
         expiry_date: formatDate(expiryDate),
         year_submitted: year,
         user_id: localStorage.getItem("user_id"),
-        documents: documentsArray,
         has_nda: formData.hasNDA ? 1 : 0
       };
-
-      console.log('Data Being Sent:', dataToSend);
-      
-      formDataToSend.append('data', JSON.stringify(dataToSend));
-      
-      files.forEach((file) => {
-        formDataToSend.append('files', file);
-      });
-
-      console.log('Form Data Entries:', Array.from(formDataToSend.entries()));
-      
-      const response = await fetch(`/api/moas/${moaData.id}`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: formDataToSend,
-      });
-
-      console.log('Response Status:', response.status);
-      
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || "Failed to update MOA");
+  
+      // Debug log
+      console.log("Data to be sent:", JSON.stringify(dataToSend, null, 2));
+  
+      let bodyData;
+      if (files.length > 0) {
+        bodyData = new FormData();
+        bodyData.append("data", JSON.stringify(dataToSend));
+        files.forEach((file) => bodyData.append("files", file));
+      } else {
+        bodyData = JSON.stringify(dataToSend);
       }
 
-      console.log('Update Successful');
-      console.groupEnd();
+      const headers = files.length > 0
+        ? { 'Authorization': `Bearer ${localStorage.getItem("token")}` }
+        : {
+            'Authorization': `Bearer ${localStorage.getItem("token")}`,
+            'Content-Type': 'application/json'
+          };
 
+      const response = await fetch(`/api/moas/${moaData.moa_id}`, {
+        method: "PATCH",
+        headers: headers,
+        body: bodyData
+      });
+      
+      const responseData = await response.json();
+  
+      if (!response.ok) {
+        console.log('Response data:', responseData);
+        if (responseData.fieldDetails) {
+          console.log('Missing fields details:', responseData.fieldDetails);
+          throw new Error(`Missing required fields: ${responseData.fields.join(', ')}\nDetails: ${JSON.stringify(responseData.fieldDetails, null, 2)}`);
+        }
+        throw new Error(responseData.message || "Failed to update MOA");
+      }
+  
       toast.success("MOA updated successfully!");
       onMOAUpdated();
       onClose();
     } catch (error) {
-      console.error('Update Error:', error);
-      console.groupEnd();
+      console.error("Error updating MOA:", error);
+      console.log("Full error details:", {
+        message: error.message,
+        data: error.response?.data,
+        status: error.response?.status
+      });
       toast.error(error.message);
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    console.log("moaData received in EditMOAModal:", moaData);
+  }, [moaData]);
+  
 
   if (!isOpen) return null;
 
@@ -294,11 +325,18 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="typeOfMoa" className="block font-bold mb-2 text-sm sm:text-base">Type of MOA</label>
-              <select id="typeOfMoa" name="typeOfMoa" className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base" value={formData.typeOfMoa} onChange={handleChange} required>
-                <option value="Practicum">Practicum</option>
-                <option value="Employment">Employment</option>
-                <option value="Scholarship">Scholarship</option>
-                <option value="Research">Research</option>
+                <select
+                  id="typeOfMoa"
+                  name="typeOfMoa"
+                  className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base"
+                  value={formData.typeOfMoa}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, typeOfMoa: Number(e.target.value) }))}
+                  required
+                >
+                <option value={1}>Practicum</option>
+                <option value={2}>Employment</option>
+                <option value={3}>Scholarship</option>
+                <option value={4}>Research</option>
               </select>
             </div>
             <div>
@@ -376,7 +414,7 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
             </div>
             <div>
               <label htmlFor="email" className="block font-bold mb-2 text-sm sm:text-base">Email Address</label>
-              <input type="email" id="email" name="emailAddress" className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base" value={formData.email} onChange={handleChange} required />
+              <input type="email" id="email" name="email" className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base" value={formData.email} onChange={handleChange} required />
             </div>
           </div>
 

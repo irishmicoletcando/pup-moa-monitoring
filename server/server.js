@@ -14,6 +14,7 @@ const app = express();
 // Enable CORS and JSON parsing
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Use authentication routes
 app.use('/api/auth', authRoutes);
