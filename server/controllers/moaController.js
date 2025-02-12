@@ -10,7 +10,7 @@ const upload = multer({
     fileSize: 20 * 1024 * 1024, // 20MB limit
     files: 10 // Maximum 10 files
   }
-}).array('files');
+});
 
 // Azure Blob Storage configuration
 const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
