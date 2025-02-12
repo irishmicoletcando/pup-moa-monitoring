@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Trash2, Search, RefreshCw, X, Edit2, FileText } from "lucide-react";
+import { Trash2, Search, RefreshCw, X, Edit2, FileText, FilterX } from "lucide-react";
 import Modal from "../layout/Modal";
 import MOAHeader from "./MOAHeader";
 import AddMOAModal from "./AddMOAModal";
@@ -22,7 +22,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
     direction: 'asc'
   });
 
-  const { moaFilters, onMoaFilterChange } = useMoaFilterContext();
+  const { moaFilters, onMoaFilterChange, clearFilters } = useMoaFilterContext();
   const [deleteModal, setDeleteModal] = useState({
     isOpen: false,
     moa: null,
@@ -266,6 +266,15 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
           >
             <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
             <span className="hidden sm:inline">Refresh</span>
+          </button>
+          {/* TODO Clear Filter */}
+          <button
+            onClick={clearFilters}
+            disabled={refreshing}
+            className="flex-shrink-0 flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <FilterX className={`w-4 h-4`} />
+            <span className="hidden sm:inline">Clear All Filters</span>
           </button>
         </div>
       </div>

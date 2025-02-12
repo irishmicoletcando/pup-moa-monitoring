@@ -13,14 +13,12 @@ export const MoaFilterProvider = ({ children }) => {
   const onMoaFilterChange = (filterType, value) => {
     setMoaFilters((prevFilters) => {
       const updatedFilters = { ...prevFilters };
-      
-      // If the value is already in the filter array, remove it
+
       if (updatedFilters[filterType].includes(value)) {
         updatedFilters[filterType] = updatedFilters[filterType].filter(
           (item) => item !== value
         );
       } else {
-        // Otherwise, add the value to the filter array
         updatedFilters[filterType] = [...updatedFilters[filterType], value];
       }
 
@@ -28,8 +26,18 @@ export const MoaFilterProvider = ({ children }) => {
     });
   };
 
+  // Function to clear all filters
+  const clearFilters = () => {
+    setMoaFilters({
+      moaTypes: [],
+      moaStatus: [],
+      branch: [],
+      course: [],
+    });
+  };
+
   return (
-    <MoaFilterContext.Provider value={{ moaFilters, onMoaFilterChange }}>
+    <MoaFilterContext.Provider value={{ moaFilters, onMoaFilterChange, clearFilters }}>
       {children}
     </MoaFilterContext.Provider>
   );
