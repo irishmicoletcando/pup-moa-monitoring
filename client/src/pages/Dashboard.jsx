@@ -5,7 +5,7 @@ export default function Dashboard() {
   return (
     <div className="flex h-screen overflow-hidden">
       <Navbar />
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-x-hidden h-full">
         <DashboardStats />
       </div>
     </div>
