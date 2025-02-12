@@ -14,7 +14,7 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
   const [files, setFiles] = useState([]);
   const branchToCourses = {
     "Sta. Mesa, Manila": ["ABELS", "ABF", "ABLCS", "AB-PHILO", "BADPR", "BA Broadcasting", "BACR", "BAJ", "BLIS", "BPA", "BPEA", "BSA", "BSBAFM", "BSBA-HRM", "BSBA-MM", "BSBIO", "BSCE", "BSCpE", "BSCS", "BSECE", "BSEE", "BSENTREP", "BSFT", "BSHM", "BSIE", "BSIT", "BSMA", "BSME", "BSOA", "BSRE", "BSTM", "BTLEd", "DCET", "DEET", "DECET", "DICT", "DMET", "DOMT"],
-    "Quezon City": ["BBTLEDHE", "BSBAHRM", "BSBA-MM", "BSENTREP", "BSIT", "BPAPFM", "DOMTMOM"],
+    "Quezon City": ["BBTLEDHE", "BSBA-HRM", "BSBA-MM", "BSENTREP", "BSIT", "BPAPFM", "DOMTMOM"],
     "San Juan City": ["BSA", "BSBAFM", "BSENTREP", "BSHM", "BSIT", "BSEDEN", "BSEDMT"],
     "Taguig City": ["BSBA-HRM", "BSBA-MM", "BSECE", "BSIT", "BSME", "BSOALT", "BSEDEN", "BSEDMT", "DICT", "DMET", "DOMTLOM"],
     "Parañaque City": ["BSCpE", "BSHM", "BSIT", "BSOA", "DOMTLOM"],
