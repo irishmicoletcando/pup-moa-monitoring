@@ -398,6 +398,9 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
               ))}
             </select>
           </label>
+          <p className="text-left text-gray-700 text-sm">
+            MOA Count: {filteredMOAs.length}
+          </p>
         </div>
 
         {/* Pagination Controls */}
