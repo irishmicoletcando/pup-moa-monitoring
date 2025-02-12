@@ -79,7 +79,8 @@ const addMOA = async (req, res) => {
           year_submitted,
           branch,
           course,
-          user_id
+          user_id,
+          hasNDA
         } = moa;
 
         const type_id = {
@@ -142,8 +143,8 @@ const addMOA = async (req, res) => {
             const blobUrl = await uploadToBlob(file, fileName);
 
             await connection.query(
-              "INSERT INTO moa_documents (moa_id, document_name, file_path, uploaded_at, uploaded_by) VALUES (?, ?, ?, NOW(), ?)",
-              [moa_id, file.originalname, blobUrl, user_id]
+              "INSERT INTO moa_documents (moa_id, document_name, file_path, uploaded_at, uploaded_by, has_nda) VALUES (?, ?, ?, NOW(), ?, ?)",
+              [moa_id, file.originalname, blobUrl, user_id, hasNDA]
             );
           }
         }
@@ -186,7 +187,8 @@ const getAllMOAs = async (req, res) => {
           moa_validity_period.years_validity, 
           moa_validity_period.date_notarized, 
           moa_validity_period.expiry_date, 
-          moa_validity_period.year_submitted, 
+          moa_validity_period.year_submitted,
+          moa_documents.has_nda, 
           moa_documents.file_path -- Now mapping 1 file_path per MOA
       FROM moa_info
       JOIN moa_contact ON moa_info.contact_id = moa_contact.contact_id
