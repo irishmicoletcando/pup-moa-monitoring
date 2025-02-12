@@ -8,6 +8,7 @@ import AddMOAModal from "./AddMOAModal";
 import ExportExcelModal from "./ExportExcelModal";
 import ImportExcelModal from "./ImportExcelModal";
 import EditMOAModal from "./EditMOAModal";
+import ViewMOAModal from "./ViewMOAModal";
 import { useMoaFilterContext } from "../context/MoaFilterContext";
 
 export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelModalOpen, setIsExportExcelModalOpen, isImportExcelModalOpen, setIsImportExcelModalOpen, selectedRows, setSelectedRows }) {
@@ -16,6 +17,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
   const [searchTerm, setSearchTerm] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedMOA, setSelectedMOA] = useState(null);
   const [sortConfig, setSortConfig] = useState({
     field: null,
@@ -81,6 +83,11 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
   const handleEditClick = (moa) => {
     setSelectedMOA(moa);
     setIsEditModalOpen(true);
+  };
+
+  const handleViewClick = (moa) => {
+    setSelectedMOA(moa);
+    setIsViewModalOpen(true);
   };
 
   const handleRefresh = () => {
@@ -306,7 +313,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
                       onChange={() => toggleRowSelection(moa.moa_id)}
                     />
                   </td>
-                  <td className="p-4 text-sm text-gray-900">{moa.name}</td>
+                  <td className="p-4 text-sm text-gray-900 cursor-pointer hover:text-maroon" onClick={() => handleViewClick(moa)}>{moa.name}</td>
                   <td className="p-4 text-sm text-gray-900">{moa.type_of_moa}</td>
                   <td className="p-4 text-sm text-gray-900">{moa.nature_of_business}</td>
                   <td className="p-4 text-sm text-gray-900">{moa.address}</td>
@@ -525,6 +532,17 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
             setIsEditModalOpen(false);
             setSelectedMOA(null);
           }}
+        />
+      )}
+      
+      {isViewModalOpen && selectedMOA && (
+        <ViewMOAModal
+          isOpen={isViewModalOpen}
+          onClose={() => {
+            setIsViewModalOpen(false);
+            setSelectedMOA(null); // Clear selected MOA when closing
+          }}
+          formData={selectedMOA} // Pass as moaData to match the prop name in the modal
         />
       )}
     </div>
