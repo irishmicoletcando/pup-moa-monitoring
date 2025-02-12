@@ -104,9 +104,10 @@ const iconMap = {
 
 const MoaCard = ({ title, count, description }) => {
   const navigate = useNavigate();
-  const { onMoaFilterChange } = useMoaFilterContext();
+  const { onMoaFilterChange, clearFilters } = useMoaFilterContext();
 
   const handleClick = () => {
+    clearFilters();
     onMoaFilterChange("moaTypes", title); // Update filter
     navigate("/moa-monitoring"); // Navigate to monitoring page
   };
