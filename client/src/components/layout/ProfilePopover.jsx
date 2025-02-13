@@ -37,6 +37,8 @@ const ProfilePopover = ({ show, onClose }) => {
       localStorage.removeItem("user_id");
       localStorage.removeItem("userEmail");
 
+      localStorage.setItem("logout-event", Date.now()); 
+      
       toast.success("Logout successful! Redirecting...", { position: "top-right" });
       setTimeout(() => navigate("/"), 2000);
     } catch (err) {

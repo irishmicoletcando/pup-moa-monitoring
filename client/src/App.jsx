@@ -32,6 +32,18 @@ function AppRoutes() {
         navigate("/"); // If no token, go back to login
       }
     };
+    
+    const handleStorageChange = (event) => {
+      if (event.key === "logout-event") {
+        navigate("/"); // Redirect to login if another tab logs out
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
   }, [navigate]);
 
   return (
