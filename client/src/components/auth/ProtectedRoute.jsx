@@ -7,6 +7,10 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/" replace />;
   }
 
+  if (location.pathname === "/") {
+    return <Navigate to="/moa-dashboard" replace />;
+  }
+  
   return children;
 };
 
