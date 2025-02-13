@@ -313,7 +313,11 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
                       onChange={() => toggleRowSelection(moa.moa_id)}
                     />
                   </td>
-                  <td className="p-4 text-sm text-gray-900 cursor-pointer hover:text-maroon" onClick={() => handleViewClick(moa)}>{moa.name}</td>
+                  <td className="p-4 text-sm text-gray-900 relative cursor-pointer hover:text-maroon" onClick={() => handleViewClick(moa)}>  
+                    {moa.has_nda === 1 && (
+                      <div className="nda-ribbon">NDA</div>
+                    )}{moa.name}
+                  </td>
                   <td className="p-4 text-sm text-gray-900">{moa.type_of_moa}</td>
                   <td className="p-4 text-sm text-gray-900">{moa.nature_of_business}</td>
                   <td className="p-4 text-sm text-gray-900">{moa.address}</td>
@@ -336,12 +340,6 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
                   <td className="p-4 text-sm text-gray-900">{new Date(moa.date_notarized).toLocaleDateString()}</td>
                   <td className="p-4 text-sm text-gray-900">{new Date(moa.expiry_date).toLocaleDateString()}</td>
                   <td className="p-4 text-sm text-gray-900">{moa.year_submitted}</td>
-                  <td className="p-4 text-sm ">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${ 
-                        moa.has_nda === 1 ? 'bg-maroon text-white' : ""
-                      }`}>{moa.has_nda === 1 ? 'NDA' : ''}
-                    </span>
-                  </td>
 
                   <td className="p-4 text-sm">
                     <div className="flex items-center gap-2">
