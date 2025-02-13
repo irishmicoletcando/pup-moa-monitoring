@@ -247,6 +247,7 @@ export default function MOAHeader({
         </button>
       </th>
       <th className="p-4 text-left text-sm font-medium min-w-[100px] max-w-xs break-words whitespace-normal">Year Submitted to ARCDO</th>
+      <th className="p-4 text-left text-sm font-medium"></th>
 
       <th className="p-4 text-left text-sm font-medium"></th>
     </tr>
