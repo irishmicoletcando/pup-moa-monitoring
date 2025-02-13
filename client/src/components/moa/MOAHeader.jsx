@@ -117,7 +117,7 @@ export default function MOAHeader({
           onChange={(value) => onFilterChange("moaStatus", value)}
         />
       </th>
-      <th className="p-4 text-center text-sm font-medium min-w-[120px] max-w-xs break-words whitespace-normal">
+      <th className="p-4 text-left text-sm font-medium min-w-[120px] max-w-xs break-words whitespace-normal">
         <FilterDropdown
           type="Branch"
           options={[
