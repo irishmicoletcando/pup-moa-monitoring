@@ -336,8 +336,11 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
                   <td className="p-4 text-sm text-gray-900">{new Date(moa.date_notarized).toLocaleDateString()}</td>
                   <td className="p-4 text-sm text-gray-900">{new Date(moa.expiry_date).toLocaleDateString()}</td>
                   <td className="p-4 text-sm text-gray-900">{moa.year_submitted}</td>
-                  <td className="p-4 text-sm text-gray-900">
-                    {moa.has_nda === 1 ? "[NDA]" : ""}
+                  <td className="p-4 text-sm ">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${ 
+                        moa.has_nda === 1 ? 'bg-maroon text-white' : ""
+                      }`}>{moa.has_nda === 1 ? 'NDA' : ''}
+                    </span>
                   </td>
 
                   <td className="p-4 text-sm">
