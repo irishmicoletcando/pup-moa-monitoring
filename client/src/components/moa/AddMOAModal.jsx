@@ -539,7 +539,8 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
           <div className="space-y-4">
             <div>
               <label className="block font-bold mb-2 text-sm sm:text-base">
-                Upload Documents
+                Upload Documents 
+                <span className = "ml-2 text-red font-normal italic">(Files with .pdf file format only)</span>
               </label>
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-sm sm:text-base">
                 <div className="flex items-center justify-center">
