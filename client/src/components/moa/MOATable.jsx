@@ -391,74 +391,74 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
         </table>
       </div>
 
-      <div className="flex items-center justify-between p-4 border-t border-gray-200">
-        <div>
-          <label>
-            Rows per page:
-            <select
-              value={itemsPerPage}
-              onChange={(e) => {
-                setItemsPerPage(parseInt(e.target.value, 10));
-                setCurrentPage(1); // Reset to the first page
-              }}
-              className="ml-2 border rounded px-2 py-1"
-            >
-              {[5, 10, 50, 100].map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </label>
-          <p className="text-left text-gray-700 text-sm">
-            MOA Count: {filteredMOAs.length}
-          </p>
-        </div>
-
-        {/* Pagination Controls */}
-        <div className="flex items-center">
-          {/* Previous Button */}
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-            className={`px-4 py-2 border border-gray-300 rounded ${
-              currentPage === 1 ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-maroon text-white"
-            }`}
+      <div className="flex flex-col items-center w-full gap-4 p-4 border-t border-gray-200 sm:flex-row sm:justify-center md:justify-between">
+      <div className="flex items-center gap-2 sm:flex-nowrap sm:justify-start flex-1">
+        <label className="text-xs sm:text-sm">
+          Rows per page:
+          <select
+            value={itemsPerPage}
+            onChange={(e) => {
+              setItemsPerPage(parseInt(e.target.value, 10));
+              setCurrentPage(1); // Reset to the first page
+            }}
+            className="ml-1 sm:ml-2 border rounded px-1 sm:px-2 py-0.5 sm:py-1 text-xs sm:text-sm"
           >
-            ← Previous
-          </button>
-
-          {/* Page Numbers */}
-          <div className="flex gap-2 mx-2">
-            {getPageNumbers()[0] > 1 && <span className="px-3 py-1">...</span>}
-            {getPageNumbers().map((page) => (
-              <button
-                key={page}
-                onClick={() => setCurrentPage(page)}
-                className={`px-3 py-1 border rounded ${
-                  page === currentPage
-                    ? "bg-maroon text-white"
-                    : "bg-white text-gray-700 hover:bg-gray-100"
-                }`}
-              >
-                {page}
-              </button>
+            {[5, 10, 50, 100].map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
             ))}
-            {getPageNumbers().slice(-1)[0] < totalPages && <span className="px-3 py-1">...</span>}
-          </div>
-
-          {/* Next Button */}
-          <button
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-            className={`px-4 py-2 border border-gray-300 rounded ${
-              currentPage === totalPages ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-maroon text-white"
-            }`}
-          >
-            Next →
-          </button>
-        </div>
+          </select>
+        </label>
+        <p className="text-xs sm:text-sm text-gray-700">
+          MOA Count: {filteredMOAs.length}
+        </p>
       </div>
+
+      {/* Pagination Controls*/}
+      <div className="flex items-center gap-2 sm:justify-end flex-2">
+        {/* Previous Button */}
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+          className={`px-2 sm:px-4 py-1 sm:py-2 border border-gray-300 rounded text-sm ${
+            currentPage === 1 ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-maroon text-white"
+          }`}
+        >
+          <span className="md:hidden">←</span>
+          <span className="hidden md:inline">← Previous</span>
+        </button>
+
+        {/* Page Numbers */}
+        <div className="flex gap-1 sm:gap-2 mx-1 sm:mx-2">
+          {getPageNumbers()[0] > 1 && <span className="px-2 py-1 sm:px-3">...</span>}
+          {getPageNumbers().map((page) => (
+            <button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={`px-2 sm:px-3 py-1 border rounded text-xs sm:text-sm ${
+                page === currentPage ? "bg-maroon text-white" : "bg-white text-gray-700 hover:bg-gray-100"
+              }`}
+            >
+              {page}
+            </button>
+          ))}
+          {getPageNumbers().slice(-1)[0] < totalPages && <span className="px-2 py-1 sm:px-3">...</span>}
+        </div>
+
+        {/* Next Button */}
+        <button
+          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+          disabled={currentPage === totalPages}
+          className={`px-2 sm:px-4 py-1 sm:py-2 border border-gray-300 rounded text-sm ${
+            currentPage === totalPages ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-maroon text-white"
+          }`}
+        >
+          <span className="md:hidden">→</span>
+          <span className="hidden md:inline">Next →</span>
+        </button>
+      </div>
+    </div>
 
       {/* Delete Modal */}
       <Modal
