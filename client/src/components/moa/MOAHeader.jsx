@@ -49,7 +49,7 @@ export default function MOAHeader({
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
     const buttonRef = useRef(null);
-    const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+    const [dropdownPosition, setDropdownPosition] = useState(null); // Start as null to prevent flicker
   
     useEffect(() => {
       function handleClickOutside(event) {
@@ -109,8 +109,8 @@ export default function MOAHeader({
           <ChevronDown className="w-4 h-4" />
         </button>
   
-        {/* Dropdown - Always follows button position even when scrolling */}
-        {isOpen &&
+        {/* Dropdown - Renders only when position is available (Prevents flicker) */}
+        {isOpen && dropdownPosition &&
           ReactDOM.createPortal(
             <div
               ref={dropdownRef}
@@ -119,6 +119,7 @@ export default function MOAHeader({
                 top: `${dropdownPosition.top}px`,
                 left: `${dropdownPosition.left}px`,
                 zIndex: 50,
+                transition: "top 0.15s ease-out, left 0.15s ease-out", // Smooth transition
               }}
               className="w-48 bg-white rounded-md shadow-lg border border-gray-200"
             >
