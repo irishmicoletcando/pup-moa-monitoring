@@ -126,7 +126,16 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
 
   const handleFileChange = (e) => {
     const newFiles = Array.from(e.target.files);
-    setFiles(prevFiles => [...prevFiles, ...newFiles]);
+
+    const validFiles = newFiles.filter((file) => file.type === "application/pdf");
+    const invalidFiles = newFiles.filter((file) => file.type !== "application/pdf");
+  
+    // Show error toast for each invalid file
+    invalidFiles.forEach(() => {
+      toast.error("File with PDF format only");
+    });
+  
+    setFiles((prevFiles) => [...prevFiles, ...validFiles]);
   };
 
   const removeFile = (indexToRemove) => {
@@ -540,7 +549,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
             <div>
               <label className="block font-bold mb-2 text-sm sm:text-base">
                 Upload Documents 
-                <span className = "ml-2 text-red font-normal italic">(Files with .pdf file format only)</span>
+                <span className = "ml-2 text-red font-normal italic">(Documents with .pdf file format only)</span>
               </label>
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-sm sm:text-base">
                 <div className="flex items-center justify-center">
@@ -552,7 +561,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
                       multiple
                       className="hidden"
                       onChange={handleFileChange}
-                      accept=".pdf,.doc,.docx,.txt"
+                      accept=".pdf"
                     />
                   </label>
                 </div>
