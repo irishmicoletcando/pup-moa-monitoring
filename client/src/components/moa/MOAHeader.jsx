@@ -1,6 +1,7 @@
 import { ArrowUpDown, ChevronDown } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useMoaFilterContext } from "../context/MoaFilterContext";
+import ReactDOM from "react-dom";
 
 export default function MOAHeader({
   onSort,
@@ -45,22 +46,83 @@ export default function MOAHeader({
   };
 
   const FilterDropdown = ({ type, options, selectedValues, onChange }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const dropdownRef = useRef(null);
+    const buttonRef = useRef(null);
+    const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+  
+    useEffect(() => {
+      function handleClickOutside(event) {
+        if (
+          dropdownRef.current &&
+          !dropdownRef.current.contains(event.target) &&
+          buttonRef.current &&
+          !buttonRef.current.contains(event.target)
+        ) {
+          setIsOpen(false);
+        }
+      }
+  
+      function updateDropdownPosition() {
+        if (!buttonRef.current) return;
+  
+        const buttonRect = buttonRef.current.getBoundingClientRect();
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const scrollLeft = window.scrollX || document.documentElement.scrollLeft;
+  
+        setDropdownPosition({
+          top: buttonRect.bottom + scrollTop + 4, // Stay below button
+          left: buttonRect.left + scrollLeft,
+        });
+      }
+  
+      if (isOpen) {
+        document.addEventListener("mousedown", handleClickOutside);
+        window.addEventListener("scroll", updateDropdownPosition, true);
+        window.addEventListener("resize", updateDropdownPosition);
+        updateDropdownPosition(); 
+      } else {
+        document.removeEventListener("mousedown", handleClickOutside);
+        window.removeEventListener("scroll", updateDropdownPosition, true);
+        window.removeEventListener("resize", updateDropdownPosition);
+      }
+  
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+        window.removeEventListener("scroll", updateDropdownPosition, true);
+        window.removeEventListener("resize", updateDropdownPosition);
+      };
+    }, [isOpen]);
+  
     return (
-      <div className="relative inline-block" ref={(el) => (filterRefs.current[type] = el)}>
+      <>
+        {/* Filter Button */}
         <button
+          ref={buttonRef}
           onClick={(e) => {
             e.stopPropagation();
-            setOpenFilter(openFilter === type ? null : type);
+            setIsOpen((prev) => !prev);
           }}
           className="flex items-center gap-1 hover:text-maroon text-sm whitespace-nowrap"
         >
           {type}
           <ChevronDown className="w-4 h-4" />
         </button>
-        {openFilter === type && (
-          <div className="absolute left-0 mt-1 h-80 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50">
-            <div className="h-full overflow-y-auto">
-              <div className="p-2">
+  
+        {/* Dropdown - Always follows button position even when scrolling */}
+        {isOpen &&
+          ReactDOM.createPortal(
+            <div
+              ref={dropdownRef}
+              style={{
+                position: "absolute",
+                top: `${dropdownPosition.top}px`,
+                left: `${dropdownPosition.left}px`,
+                zIndex: 50,
+              }}
+              className="w-48 bg-white rounded-md shadow-lg border border-gray-200"
+            >
+              <div className="max-h-80 overflow-y-auto p-2">
                 {options.map((option) => (
                   <label
                     key={option}
@@ -72,17 +134,17 @@ export default function MOAHeader({
                       onChange={() => onChange(option)}
                       className="mr-2 h-4 w-4 rounded border-gray-300 flex-shrink-0"
                     />
-                    <span className="text-sm text-gray-700 break-words">{option}</span>
+                    <span className="text-sm text-gray-700">{option}</span>
                   </label>
                 ))}
               </div>
-            </div>
-          </div>
-        )}
-      </div>
+            </div>,
+            document.body // Moves dropdown out of <thead> into <body>
+          )}
+      </>
     );
   };
-
+  
   return (
     <tr className="bg-gray-50">
       <th className="w-12 p-4 text-left">
