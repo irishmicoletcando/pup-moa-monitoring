@@ -88,9 +88,12 @@ export default function ImportExcelModal({ isOpen, onClose, onMOAAdded }) {
           expiry_date: row.expiry_date || new Date().toISOString().split("T")[0],
           year_submitted: row.year_submitted || new Date().getFullYear(),
           user_id: localStorage.getItem("user_id"),
-          hasNDA: row.hasNDA || "FALSE",
+          documents: row.documents || "",
+          hasNDA: row.hasNDA === true ? 1 : (row.hasNDA === false ? 0 : null),
         }))
       }));
+
+      
 
       if (files.length > 0) {
         files.forEach((file) => {

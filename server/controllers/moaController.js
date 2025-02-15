@@ -83,12 +83,14 @@ const addMOA = async (req, res) => {
           hasNDA
         } = moa;
 
+
         const type_id = {
           Practicum: 1,
           Employment: 2,
           Scholarship: 3,
           Research: 4,
         }[typeOfMoa];
+        
 
         if (!type_id) {
           await connection.rollback();
@@ -137,18 +139,44 @@ const addMOA = async (req, res) => {
         }
 
         // Handle file uploads for the current MOA
-        if (req.files && req.files.length > 0) {
-          for (const file of req.files) {
-            const fileName = `${Date.now()}-${file.originalname}`;
-            const blobUrl = await uploadToBlob(file, fileName);
-
+        try {
+          if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
+            // No files uploaded at all, insert a default record
             await connection.query(
-              "INSERT INTO moa_documents (moa_id, document_name, file_path, uploaded_at, uploaded_by, has_nda) VALUES (?, ?, ?, NOW(), ?, ?)",
-              [moa_id, file.originalname, blobUrl, user_id, hasNDA]
+              "INSERT INTO moa_documents (moa_id, document_name, file_path, uploaded_at, uploaded_by, has_nda) VALUES (?, ?, NULL, NOW(), ?, ?)",
+              [moa_id, "No PDF Uploaded", user_id, hasNDA]
             );
+          } else {
+            // Track if any valid PDFs were uploaded
+            const uploadPromises = req.files
+              .filter(file => file.mimetype === "application/pdf") // Filter out non-PDF files
+              .map(async (file) => {
+                const fileName = `${Date.now()}-${file.originalname}`;
+                const blobUrl = await uploadToBlob(file, fileName);
+        
+                await connection.query(
+                  "INSERT INTO moa_documents (moa_id, document_name, file_path, uploaded_at, uploaded_by, has_nda) VALUES (?, ?, ?, NOW(), ?, ?)",
+                  [moa_id, file.originalname, blobUrl, user_id, hasNDA]
+                );
+              });
+        
+            if (uploadPromises.length > 0) {
+              // Wait for all PDF uploads and inserts to complete in parallel
+              await Promise.all(uploadPromises);
+            } else {
+              // If no valid PDFs were uploaded, insert NULL
+              await connection.query(
+                "INSERT INTO moa_documents (moa_id, document_name, file_path, uploaded_at, uploaded_by, has_nda) VALUES (?, ?, NULL, NOW(), ?, ?)",
+                [moa_id, "No PDF Uploaded", user_id, hasNDA]
+              );
+            }
           }
+        } catch (error) {
+          console.error("Error uploading files or inserting records:", error);
+          // Handle the error (e.g., send a response to the client or log it)
+          res.status(500).json({ error: 'An error occurred while processing the files.' });
         }
-
+        
         insertedMOAs.push({ moa_id, name });
       }
 
@@ -308,7 +336,8 @@ const updateMOA = async (req, res) => {
       { name: 'year_submitted', type: 'number' },
       { name: 'branch', type: 'string' },
       { name: 'course', type: 'string' },
-      { name: 'user_id', type: 'string' }
+      { name: 'user_id', type: 'string' },
+      { name: 'has_nda', type: 'number' }
     ];
 
     const missingOrInvalidFields = requiredFields.filter(field => {
@@ -429,7 +458,15 @@ const updateMOA = async (req, res) => {
       }
 
       // Handle file uploads with better error handling
-      if (req.files && req.files.length > 0) {
+      if (!req.files || req.files.length === 0) {
+        // No files uploaded at all, insert a default record
+        await connection.query(
+          `UPDATE moa_documents 
+           SET has_nda = ?
+           WHERE moa_id = ?`,
+          [moaData.has_nda || false, id ]
+        );
+      } else if (req.files && req.files.length > 0) {
         // Delete existing documents
         const [existingDocs] = await connection.query(
           "SELECT document_id, file_path FROM moa_documents WHERE moa_id = ?",
