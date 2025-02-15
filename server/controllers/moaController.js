@@ -137,14 +137,37 @@ const addMOA = async (req, res) => {
         }
 
         // Handle file uploads for the current MOA
-        if (req.files && req.files.length > 0) {
+        if (!req.files || req.files.length === 0) {
+          // No files uploaded at all, insert a default record
+          await connection.query(
+            "INSERT INTO moa_documents (moa_id, document_name, file_path, uploaded_at, uploaded_by) VALUES (?, ?, NULL, NOW(), ?)",
+            [moa_id, "No PDF Uploaded", user_id]
+          );
+        } else {
+          let uploadedFiles = false; // Track if any valid PDFs were uploaded
+        
           for (const file of req.files) {
+            if (file.mimetype !== "application/pdf") {
+              console.log(`Skipping file: ${file.originalname} (Not a PDF)`);
+              continue; // Skip non-PDF files
+            }
+        
             const fileName = `${Date.now()}-${file.originalname}`;
             const blobUrl = await uploadToBlob(file, fileName);
-
+        
             await connection.query(
-              "INSERT INTO moa_documents (moa_id, document_name, file_path, uploaded_at, uploaded_by, has_nda) VALUES (?, ?, ?, NOW(), ?, ?)",
-              [moa_id, file.originalname, blobUrl, user_id, hasNDA]
+              "INSERT INTO moa_documents (moa_id, document_name, file_path, uploaded_at, uploaded_by) VALUES (?, ?, ?, NOW(), ?)",
+              [moa_id, file.originalname, blobUrl, user_id]
+            );
+        
+            uploadedFiles = true;
+          }
+        
+          // If no valid PDFs were uploaded, insert NULL
+          if (!uploadedFiles) {
+            await connection.query(
+              "INSERT INTO moa_documents (moa_id, document_name, file_path, uploaded_at, uploaded_by) VALUES (?, ?, NULL, NOW(), ?)",
+              [moa_id, "No PDF Uploaded", user_id]
             );
           }
         }
@@ -308,7 +331,8 @@ const updateMOA = async (req, res) => {
       { name: 'year_submitted', type: 'number' },
       { name: 'branch', type: 'string' },
       { name: 'course', type: 'string' },
-      { name: 'user_id', type: 'string' }
+      { name: 'user_id', type: 'string' },
+      { name: 'has_nda', type: 'number' }
     ];
 
     const missingOrInvalidFields = requiredFields.filter(field => {
