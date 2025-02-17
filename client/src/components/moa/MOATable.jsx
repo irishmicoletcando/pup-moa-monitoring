@@ -264,6 +264,14 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-maroon focus:border-maroon outline-none w-full"
             />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm("")}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
           </div>
 
           <button
