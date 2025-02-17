@@ -5,7 +5,7 @@ export default function About() {
     <section className="py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div className="space-y-8 text-center lg:text-left">
+          <div className="space-y-8 text-left lg:text-left sm:text-center">
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight">
               What does MOA Monitoring System do?
             </h2>
@@ -17,7 +17,7 @@ export default function About() {
           
           <div className="flex justify-center lg:justify-end">
             <img 
-              src="/Landing.png" 
+              src="/LandingIcon.png" 
               alt="MOA Monitoring" 
               className="w-full max-w-lg transform"
             />
@@ -26,4 +26,4 @@ export default function About() {
       </div>
     </section>
   );
-}
+};
