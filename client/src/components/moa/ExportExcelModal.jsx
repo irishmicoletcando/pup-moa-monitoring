@@ -6,7 +6,7 @@ const ExportExcelModal = ({ isOpen, onClose, filteredMOAs }) => {
   const columns = [
     "Name", "Type of MOA", "Nature of Business", "Company Address", 
     "Contact Person", "Contact Position", "Contact Number", "Email Address", 
-    "MOA Status", "Validity", "Date Notarized", "Expiry Date", "Year Submitted to ARCDO"
+    "MOA Status", "Branch", "Origin Course", "Validity", "Date Notarized", "Expiry Date", "Year Submitted to ARCDO"
   ];
 
   const columnMapping = {
@@ -19,6 +19,8 @@ const ExportExcelModal = ({ isOpen, onClose, filteredMOAs }) => {
     "Contact Number": "contact_number",
     "Email Address": "email",
     "MOA Status": "moa_status",
+    "Branch": "branch",
+    "Origin Course": "course",
     "Validity": "years_validity",
     "Date Notarized": "date_notarized",
     "Expiry Date": "expiry_date",
