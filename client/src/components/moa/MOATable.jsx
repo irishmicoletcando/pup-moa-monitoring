@@ -315,11 +315,12 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
                   className="border-t border-gray-200 hover:bg-gray-50 transition-colors"
                 >
                   <td className="p-4">
-                    <input type="checkbox" 
+                    {/* CHECKBOXES FOR MULTIPLE SELECTION */}
+                    {/* <input type="checkbox" 
                       className="h-4 w-4 rounded border-gray-300"
                       checked={selectedRows.includes(moa.moa_id)}
                       onChange={() => toggleRowSelection(moa.moa_id)}
-                    />
+                    /> */}
                   </td>
                   <td className="p-4 text-sm text-gray-900 relative cursor-pointer hover:text-maroon" onClick={() => handleViewClick(moa)}>  
                     {moa.has_nda === 1 && (

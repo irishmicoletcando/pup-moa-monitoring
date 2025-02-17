@@ -106,7 +106,8 @@ export default function MOA() {
               <h1 className="text-2xl md:text-3xl font-bold">MOAs</h1>
             <div className="flex gap-4 ml-auto">
               <AddMOAButton onClick={() => setIsModalOpen(true)} />
-              <ExportMOAButton onClick={() => exportSelectedFiles}/>
+              {/* MULTIPLE EXPORT DOCUMENT MOA */}
+              {/* <ExportMOAButton onClick={() => exportSelectedFiles}/> */}
               <ExportExcelButton onClick={()=> setIsExportExcelModalOpen(true)}/>
               <ImportExcelButton onClick={() => setIsImportExcelModalOpen(true)}/>
             </div>

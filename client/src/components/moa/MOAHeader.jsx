@@ -149,13 +149,14 @@ export default function MOAHeader({
   return (
     <tr className="bg-gray-50">
       <th className="w-12 p-4 text-left">
-        <input
+        {/* CHECKBOXES FOR MULTIPLE SELECTION */}
+        {/* <input
           type="checkbox"
           className="h-4 w-4 rounded border-gray-300"
           onChange={onToggleSelectAll}
           checked={isAllSelected}
           ref={(el) => el && (el.indeterminate = isSomeSelected)}
-        />
+        /> */}
       </th>
       <th className="p-4 text-left text-sm font-medium min-w-[150px] max-w-xs break-words whitespace-normal">Name</th>
       <th className="p-4 text-left text-sm font-medium min-w-[80px] max-w-xs break-words whitespace-normal">
