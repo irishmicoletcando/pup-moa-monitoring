@@ -113,7 +113,7 @@ export default function MOA() {
             </div>
           </div>
           </div>
-          <div className="bg-gray-50 rounded-lg overflow-x-auto shadow-sm pb-16">
+          <div className="bg-gray-50 rounded-lg overflow-x-auto shadow-sm">
             <MOATable 
               isModalOpen={isModalOpen}
               setIsModalOpen={setIsModalOpen}

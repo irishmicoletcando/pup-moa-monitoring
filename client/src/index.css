@@ -147,3 +147,27 @@
 
   clip-path: polygon(0% 0%, 100% 0%, 100% 80%, 50% 100%, 0% 80%);
 }
+
+@layer utilities {
+  .minimal-scrollbar::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
+  
+  .minimal-scrollbar::-webkit-scrollbar-track {
+    @apply bg-transparent; /* Transparent track */
+  }
+  
+  .minimal-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-gray-200 rounded-full transition-colors duration-200 ease-in-out;
+  }
+  
+  .minimal-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-300;
+  }
+
+  /* For Firefox */
+  .minimal-scrollbar {
+    scrollbar-width: auto;
+    scrollbar-color: #E5E7EB transparent; /* Light gray thumb, transparent track */
+  }
+}

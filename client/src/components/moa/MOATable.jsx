@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Trash2, Search, RefreshCw, X, Edit2, FileText, FilterX } from "lucide-react";
+import { Trash2, Search, RefreshCw, X, Edit2, FileText, FilterX, Eye } from "lucide-react";
 import Modal from "../layout/Modal";
 import MOAHeader from "./MOAHeader";
 import AddMOAModal from "./AddMOAModal";
@@ -251,11 +251,12 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
   }
 
   return (
-    <div className="bg-white rounded-lg shadow">
+    <div className="bg-white rounded-lg shadow h-full">
       <ToastContainer />
-      <div className="p-4 border-b border-gray-200">
+      <div className="relative w-full h-full">
+        <div className="p-4 border-b border-gray-200 bg-white">
         <div className="flex flex-row items-center gap-3">
-          <div className="relative flex-grow">
+          <div className="relative flex-grow bg-white">
             <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input
               type="text"
@@ -292,185 +293,243 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
             <span className="hidden sm:inline">Clear All Filters</span>
           </button>
         </div>
-      </div>
-
-      <div className="relative overflow-x-auto min-h-[400px]">
-        <table className="w-full">
-          <thead className="sticky top-0 z-10 bg-gray-50">
-            <MOAHeader
-              onSort={handleSort}
-              sortConfig={sortConfig}
-              filters={moaFilters}
-              onFilterChange={onMoaFilterChange}
-              isAllSelected={isAllSelected}
-              isSomeSelected={isSomeSelected}
-              onToggleSelectAll={toggleSelectAll}
-            />
-          </thead>
-          <tbody>
-            {Array.isArray(paginatedMOAs) && paginatedMOAs.length > 0 ? (
-              paginatedMOAs.map((moa, index) => (
-                <tr
-                  key={index}
-                  className="border-t border-gray-200 hover:bg-gray-50 transition-colors"
-                >
-                  <td className="p-4">
-                    {/* CHECKBOXES FOR MULTIPLE SELECTION */}
-                    {/* <input type="checkbox" 
+        </div>
+        <div className="overflow-x-auto overflow-y-auto h-[60vh] md:h-[65vh] minimal-scrollbar"> {/* Adjust max-h to your preferred fixed height */}
+          <table className="">
+            <thead className="sticky top-0 z-10 bg-gray-50">
+              <MOAHeader
+                onSort={handleSort}
+                sortConfig={sortConfig}
+                filters={moaFilters}
+                onFilterChange={onMoaFilterChange}
+                isAllSelected={isAllSelected}
+                isSomeSelected={isSomeSelected}
+                onToggleSelectAll={toggleSelectAll}
+              />
+            </thead>
+            <tbody className="">
+              {Array.isArray(paginatedMOAs) && paginatedMOAs.length > 0 ? (
+                paginatedMOAs.map((moa, index) => (
+                  <tr
+                    key={index}
+                    className="border-t border-gray-200 hover:bg-gray-50 transition-colors"
+                  >
+                    <td className="p-4">
+                      {/* CHECKBOXES FOR MULTIPLE SELECTION */}
+                      {/* <input type="checkbox" 
                       className="h-4 w-4 rounded border-gray-300"
                       checked={selectedRows.includes(moa.moa_id)}
                       onChange={() => toggleRowSelection(moa.moa_id)}
                     /> */}
-                  </td>
-                  <td className="p-4 text-sm text-gray-900 relative cursor-pointer hover:text-maroon" onClick={() => handleViewClick(moa)}>  
-                    {moa.has_nda === 1 && (
-                      <div className="nda-ribbon">NDA</div>
-                    )}{moa.name}
-                  </td>
-                  <td className="p-4 text-sm text-gray-900">{moa.type_of_moa}</td>
-                  <td className="p-4 text-sm text-gray-900">{moa.nature_of_business}</td>
-                  <td className="p-4 text-sm text-gray-900">{moa.address}</td>
-                  <td className="p-4 text-sm text-gray-900">{moa.contact_person || "N/A"}</td>
-                  <td className="p-4 text-sm text-gray-900">{moa.position}</td>
-                  <td className="p-4 text-sm text-gray-900">{moa.contact_number}</td>
-                  <td className="p-4 text-sm text-gray-900">{moa.email}</td>
-                  <td className="p-4 text-sm">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${ 
-                      moa.moa_status === 'Active' ? 'bg-green-100 text-green-800' : 
-                      moa.moa_status === 'Expired' ? 'bg-red text-white' : 
-                      'bg-yellow text-gray-900' 
-                    }`}>
-                      {moa.moa_status}
-                    </span>
-                  </td>
-                  <td className="p-4 text-sm text-gray-900">{moa.branch}</td>
-                  <td className="p-4 text-sm text-gray-900">{moa.course}</td>
-                  <td className="p-4 text-sm text-gray-900">{moa.years_validity}</td>
-                  <td className="p-4 text-sm text-gray-900">{new Date(moa.date_notarized).toLocaleDateString()}</td>
-                  <td className="p-4 text-sm text-gray-900">{new Date(moa.expiry_date).toLocaleDateString()}</td>
-                  <td className="p-4 text-sm text-gray-900">{moa.year_submitted}</td>
+                    </td>
+                    {/* <td className="p-4 text-sm text-gray-900 relative cursor-pointer hover:text-maroon" onClick={() => handleViewClick(moa)}>  
+                      {moa.has_nda === 1 && (
+                        <div className="nda-ribbon">NDA</div>
+                      )}{moa.name}
+                    </td> */}
+                    <td 
+                      className="group p-4 text-sm text-gray-900 relative cursor-pointer hover:text-maroon" 
+                      onClick={() => handleViewClick(moa)}
+                    >  
+                      {moa.has_nda === 1 && (
+                        <div className="nda-ribbon">NDA</div>
+                      )}
+                      {moa.name}
+                      
+                      {/* Tooltip */}
+                      <div className="absolute z-10 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200 bg-white shadow-lg rounded-lg p-2 -translate-y-full left-1/2 -translate-x-1/2 top-0 mt-1 whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleViewClick(moa)}
+                            className="text-slate-600 hover:text-slate-800 p-2 rounded-full hover:bg-slate-50 transition-colors"
+                            title="View MOA"
+                          >
+                            <Eye className="w-4 h-4" />
+                          
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent triggering the cell's onClick
+                              if (moa.file_path) {
+                                window.open(moa.file_path, '_blank');
+                              } else {
+                                toast.error("No file available for this MOA");
+                                console.log(moa.file_path);
+                              }
+                            }}
+                            className="text-slate-600 hover:text-slate-800 p-2 rounded-full hover:bg-slate-50 transition-colors"
+                            title="View Document">
+                            <FileText className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent triggering the cell's onClick
+                              handleEditClick(moa);
+                            }}
+                            className="text-slate-600 hover:text-slate-800 p-2 rounded-full hover:bg-slate-50 transition-colors"
+                            title="Edit MOA"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent triggering the cell's onClick
+                              setDeleteModal({ isOpen: true, moa, isDeleting: false });
+                            }}
+                            className="text-rose-600 hover:text-rose-800 p-2 rounded-full hover:bg-rose-50 transition-colors"
+                            title="Delete MOA"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                          
+                        </div>
+                      </div>
+                    </td>
+                    <td className="p-4 text-sm text-gray-900">{moa.type_of_moa}</td>
+                    <td className="p-4 text-sm text-gray-900">{moa.nature_of_business}</td>
+                    <td className="p-4 text-sm text-gray-900">{moa.address}</td>
+                    <td className="p-4 text-sm text-gray-900">{moa.contact_person || "N/A"}</td>
+                    <td className="p-4 text-sm text-gray-900">{moa.position}</td>
+                    <td className="p-4 text-sm text-gray-900">{moa.contact_number}</td>
+                    <td className="p-4 text-sm text-gray-900">{moa.email}</td>
+                    <td className="p-4 text-sm">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${ 
+                        moa.moa_status === 'Active' ? 'bg-green-100 text-green-800' : 
+                        moa.moa_status === 'Expired' ? 'bg-red text-white' : 
+                        'bg-yellow text-gray-900' 
+                      }`}>
+                        {moa.moa_status}
+                      </span>
+                    </td>
+                    <td className="p-4 text-sm text-gray-900">{moa.branch}</td>
+                    <td className="p-4 text-sm text-gray-900">{moa.course}</td>
+                    <td className="p-4 text-sm text-gray-900">{moa.years_validity}</td>
+                    <td className="p-4 text-sm text-gray-900">{new Date(moa.date_notarized).toLocaleDateString()}</td>
+                    <td className="p-4 text-sm text-gray-900">{new Date(moa.expiry_date).toLocaleDateString()}</td>
+                    <td className="p-4 text-sm text-gray-900">{moa.year_submitted}</td>
 
-                  <td className="p-4 text-sm">
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => {
-                          if (moa.file_path) {
-                            // Open the PDF in a new tab
-                            window.open(moa.file_path, '_blank');
-                          } else {
-                            toast.error("No file available for this MOA");
-                            console.log(moa.file_path);
-                          }
-                        }}
-                        className="text-slate-600 hover:text-slate-800 p-2 rounded-full hover:bg-slate-50 transition-colors"
-                        title="View Document">
-                        <FileText className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleEditClick(moa)} // Pass the entire moa object
-                        className="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-50 transition-colors"
-                        title="Edit MOA"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
+                    <td className="p-4 text-sm">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => {
+                            if (moa.file_path) {
+                              window.open(moa.file_path, '_blank');
+                            } else {
+                              toast.error("No file available for this MOA");
+                              console.log(moa.file_path);
+                            }
+                          }}
+                          className="text-slate-600 hover:text-slate-800 p-2 rounded-full hover:bg-slate-50 transition-colors"
+                          title="View Document">
+                          <FileText className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleEditClick(moa)} // Pass the entire moa object
+                          className="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-50 transition-colors"
+                          title="Edit MOA"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
 
-                      <button
-                        onClick={() => setDeleteModal({ isOpen: true, moa, isDeleting: false })}
-                        className="text-rose-600 hover:text-rose-800 p-2 rounded-full hover:bg-rose-50 transition-colors"
-                        title="Delete MOA"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
+                        <button
+                          onClick={() => setDeleteModal({ isOpen: true, moa, isDeleting: false })}
+                          className="text-rose-600 hover:text-rose-800 p-2 rounded-full hover:bg-rose-50 transition-colors"
+                          title="Delete MOA"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="13" className="p-8 text-center text-gray-500">
+                    {searchTerm || moaFilters.moaTypes.length > 0 || moaFilters.moaStatus.length > 0 || moaFilters.branch.length > 0 || moaFilters.course.length > 0 ? (
+                      <p className="text-lg font-medium">No matching MOAs found</p>
+                    ) : (
+                      <p className="text-lg font-medium">No MOAs found</p>
+                    )}
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="13" className="p-8 text-center text-gray-500">
-                {searchTerm || moaFilters.moaTypes.length > 0 || moaFilters.moaStatus.length > 0 || moaFilters.branch.length > 0 || moaFilters.course.length > 0 ? (
-                  <p className="text-lg font-medium">No matching MOAs found</p>
-                ) : (
-                  <p className="text-lg font-medium">No MOAs found</p>
-                )}
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="flex flex-col items-center w-full gap-4 p-4 border-t border-gray-200 sm:flex-row sm:justify-center md:justify-between">
-      <div className="flex items-center gap-2 sm:flex-nowrap sm:justify-start flex-1">
-        <label className="text-xs sm:text-sm">
-          Rows per page:
-          <select
-            value={itemsPerPage}
-            onChange={(e) => {
-              setItemsPerPage(parseInt(e.target.value, 10));
-              setCurrentPage(1); // Reset to the first page
-            }}
-            className="ml-1 sm:ml-2 border rounded px-1 sm:px-2 py-0.5 sm:py-1 text-xs sm:text-sm"
-          >
-            {[5, 10, 50, 100].map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </label>
-        <p className="text-xs sm:text-sm text-gray-700 ml-1">
-          {filteredMOAs.length === 0 
-          ? "No MOAs to show" 
-          : `Showing ${filteredMOAs.length < itemsPerPage ? filteredMOAs.length : itemsPerPage} of ${filteredMOAs.length} ${filteredMOAs.length === 1 ? "MOA" : "MOAs"}`}
-        </p>
-
-      </div>
-
-      {/* Pagination Controls*/}
-      <div className="flex items-center gap-2 sm:justify-end flex-2">
-        {/* Previous Button */}
-        <button
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-          className={`px-2 sm:px-4 py-1 sm:py-2 border border-gray-300 rounded text-sm ${
-            currentPage === 1 ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-maroon text-white"
-          }`}
-        >
-          <span className="md:hidden">←</span>
-          <span className="hidden md:inline">← Previous</span>
-        </button>
-
-        {/* Page Numbers */}
-        <div className="flex gap-1 sm:gap-2 mx-1 sm:mx-2">
-          {getPageNumbers()[0] > 1 && <span className="px-2 py-1 sm:px-3">...</span>}
-          {getPageNumbers().map((page) => (
-            <button
-              key={page}
-              onClick={() => setCurrentPage(page)}
-              className={`px-2 sm:px-3 py-1 border rounded text-xs sm:text-sm ${
-                page === currentPage ? "bg-maroon text-white" : "bg-white text-gray-700 hover:bg-gray-100"
-              }`}
+              )}
+            </tbody>
+          </table>
+        </div>
+        <div className="flex flex-col items-center w-full gap-4 p-4 border-t border-gray-200 sm:flex-row sm:justify-center md:justify-between bg-white z-50">
+        <div className="flex items-center gap-2 sm:flex-nowrap sm:justify-start flex-1">
+          <label className="text-xs sm:text-sm">
+            Rows per page:
+            <select
+              value={itemsPerPage}
+              onChange={(e) => {
+                setItemsPerPage(parseInt(e.target.value, 10));
+                setCurrentPage(1); // Reset to the first page
+              }}
+              className="ml-1 sm:ml-2 border rounded px-1 sm:px-2 py-0.5 sm:py-1 text-xs sm:text-sm"
             >
-              {page}
-            </button>
-          ))}
-          {getPageNumbers().slice(-1)[0] < totalPages && <span className="px-2 py-1 sm:px-3">...</span>}
+              {[5, 10, 50, 100].map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </label>
+          <p className="text-xs sm:text-sm text-gray-700 ml-1">
+            {filteredMOAs.length === 0 
+            ? "No MOAs to show" 
+            : `Showing ${filteredMOAs.length < itemsPerPage ? filteredMOAs.length : itemsPerPage} of ${filteredMOAs.length} ${filteredMOAs.length === 1 ? "MOA" : "MOAs"}`}
+          </p>
+
         </div>
 
-        {/* Next Button */}
-        <button
-          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-          disabled={currentPage === totalPages}
-          className={`px-2 sm:px-4 py-1 sm:py-2 border border-gray-300 rounded text-sm ${
-            currentPage === totalPages ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-maroon text-white"
-          }`}
-        >
-          <span className="md:hidden">→</span>
-          <span className="hidden md:inline">Next →</span>
-        </button>
+        {/* Pagination Controls*/}
+        <div className="flex items-center gap-2 sm:justify-end flex-2">
+          {/* Previous Button */}
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className={`px-2 sm:px-4 py-1 sm:py-2 border border-gray-300 rounded text-sm ${
+              currentPage === 1 ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-maroon text-white"
+            }`}
+          >
+            <span className="md:hidden">←</span>
+            <span className="hidden md:inline">← Previous</span>
+          </button>
+
+          {/* Page Numbers */}
+          <div className="flex gap-1 sm:gap-2 mx-1 sm:mx-2">
+            {getPageNumbers()[0] > 1 && <span className="px-2 py-1 sm:px-3">...</span>}
+            {getPageNumbers().map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`px-2 sm:px-3 py-1 border rounded text-xs sm:text-sm ${
+                  page === currentPage ? "bg-maroon text-white" : "bg-white text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+            {getPageNumbers().slice(-1)[0] < totalPages && <span className="px-2 py-1 sm:px-3">...</span>}
+          </div>
+
+          {/* Next Button */}
+          <button
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className={`px-2 sm:px-4 py-1 sm:py-2 border border-gray-300 rounded text-sm ${
+              currentPage === totalPages ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-maroon text-white"
+            }`}
+          >
+            <span className="md:hidden">→</span>
+            <span className="hidden md:inline">Next →</span>
+          </button>
+        </div>
       </div>
-    </div>
+      </div>
+
+      
 
       {/* Delete Modal */}
       <Modal
