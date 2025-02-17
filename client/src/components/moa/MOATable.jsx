@@ -419,9 +419,12 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
             ))}
           </select>
         </label>
-        <p className="text-xs sm:text-sm text-gray-700">
-          MOA Count: {filteredMOAs.length}
+        <p className="text-xs sm:text-sm text-gray-700 ml-1">
+          {filteredMOAs.length === 0 
+          ? "No MOAs to show" 
+          : `Showing ${filteredMOAs.length < itemsPerPage ? filteredMOAs.length : itemsPerPage} of ${filteredMOAs.length} ${filteredMOAs.length === 1 ? "MOA" : "MOAs"}`}
         </p>
+
       </div>
 
       {/* Pagination Controls*/}
