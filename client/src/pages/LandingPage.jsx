@@ -4,21 +4,10 @@ import About from "@/components/landing-page/About";
 export default function LandingPage() {
   return (
     <div className="min-h-screen w-screen relative flex flex-col overflow-hidden">
-      {/* Background for all views (Mobile and Desktop) */}
-      <svg
-        className="absolute top-0 left-0 w-full h-full lg:hidden"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 100 100"
-        preserveAspectRatio="none"
-      >
-        {/* Top Section - Maroon */}
-        <rect x="0" y="0" width="100" height="50" fill="maroon" />
-        
-        {/* Bottom Section - White */}
-        <rect x="0" y="50" width="100" height="50" fill="white" />
-      </svg>
+      {/* Background for Mobile - Maroon */}
+      <div className="absolute top-0 left-0 w-full h-auto min-h-screen bg-maroon lg:hidden" />
 
-      {/* Background for desktop */}
+      {/* Background for Desktop */}
       <svg
         className="hidden lg:block fixed top-0 left-0 w-full h-full"
         xmlns="http://www.w3.org/2000/svg"
@@ -33,9 +22,13 @@ export default function LandingPage() {
       </svg>
 
       <div className="relative z-10 flex flex-col flex-grow max-w-7xl mx-auto w-full">
-        <Header />
+        {/* Ensure Header and About text part stay in maroon */}
+        <div className="w-full bg-maroon lg:bg-transparent">
+          <Header />
+        </div>
         <About />
       </div>
     </div>
   );
 };
+

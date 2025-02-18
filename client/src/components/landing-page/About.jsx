@@ -5,8 +5,8 @@ export default function About() {
     <section className="py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div className="space-y-8 text-left lg:text-left sm:text-center">
-            <h2 className="text-4xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight">
+          <div className="space-y-8 text-left lg:text-left sm:text-center p-8 sm:p-0">
+            <h2 className="text-xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight">
               What does MOA Monitoring System do?
             </h2>
             <p className="text-md sm:text-md text-white/90 max-w-2xl mx-auto lg:mx-0 py-6">
@@ -16,8 +16,8 @@ export default function About() {
               <DashboardButton />
             </div>
           </div>
-          
-          <div className="flex justify-center lg:justify-start -mt-20 ml-10">
+       
+          <div className="hidden lg:flex justify-center lg:justify-start -mt-20 ml-10">
             <img 
               src="/LandingIcon.png" 
               alt="MOA Monitoring" 
