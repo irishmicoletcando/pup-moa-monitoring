@@ -6,9 +6,12 @@ import MOA from "./pages/MOA";
 import Admin from "./pages/Admin";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import LandingPage from "./pages/LandingPage";
+import TimeoutWarning from "./components/layout/TimeoutWarning";
+import { jwtDecode } from "jwt-decode";
 import { useMoaFilterContext, MoaFilterProvider } from "./components/context/MoaFilterContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function App() {
   return (
@@ -20,40 +23,107 @@ export default function App() {
   );
 }
 
+let logoutTimeout, warningTimeout; // Declare timeouts globally
+
 function AppRoutes() {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
+    const [isWarningShown, setIsWarningShown] = useState(false);
 
-  useEffect(() => {
-    window.history.pushState(null, null, window.location.href);
-    window.onpopstate = () => {
-      if (localStorage.getItem("token")) {
-        navigate("/moa-dashboard"); // Prevent back navigation to login
-      } else {
-        navigate("/"); // If no token, go back to login
-      }
+    const setupTokenCheck = () => {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            navigate("/");
+            return;
+        }
+
+        try {
+            const decodedToken = jwtDecode(token);
+            const expiryTime = decodedToken.exp * 1000; // Convert expiry timestamp to milliseconds
+            const currentTime = Date.now();
+            const warningTime = expiryTime - 5 * 60 * 1000; // Show warning 5 mins before expiry
+            // const warningTime = expiryTime - 5 * 1000; // Show warning 5 secs before expiry [DEBUGGING]
+
+            console.log("Token expires at:", new Date(expiryTime));
+            // console.log("Warning will show at:", new Date(warningTime));
+
+            // Clear any existing timeouts
+            clearTimeout(logoutTimeout);
+            clearTimeout(warningTimeout);
+
+            // Show warning 5 min before expiry
+            warningTimeout = setTimeout(() => {
+                setIsWarningShown(true);
+                // console.log("Session warning shown!");
+            }, warningTime - currentTime);
+
+            // Auto logout when token expires
+            logoutTimeout = setTimeout(() => {
+                // console.log("Token expired. Logging out...");
+                localStorage.clear();
+                setIsWarningShown(false);
+                navigate("/");
+            }, expiryTime - currentTime);
+        } catch (error) {
+            console.error("Error decoding token:", error);
+            localStorage.clear();
+            setIsWarningShown(false);
+            navigate("/");
+        }
     };
-    
-    const handleStorageChange = (event) => {
-      if (event.key === "logout-event") {
-        navigate("/"); // Redirect to login if another tab logs out
-      }
+
+    useEffect(() => {
+        setupTokenCheck(); // Run token validation when component mounts
+
+        return () => {
+            clearTimeout(logoutTimeout);
+            clearTimeout(warningTimeout);
+        };
+    }, [navigate]);
+
+    const handleExtendSession = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            // console.log("Attempting to renew token with:", token);
+
+            const response = await axios.post("/api/auth/renew-token", {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            const newToken = response.data.token;
+            // console.log("New token received:", newToken);
+
+            localStorage.setItem("token", newToken);
+            setIsWarningShown(false);
+
+            // Clear old timeouts and reset the checks
+            clearTimeout(logoutTimeout);
+            clearTimeout(warningTimeout);
+            setupTokenCheck();
+            // console.log("Session extended successfully!");
+        } catch (error) {
+            console.error("Failed to extend session:", error);
+            localStorage.clear();
+            navigate("/");
+        }
     };
 
-    window.addEventListener("storage", handleStorageChange);
+    return (
+        <>
+            <TimeoutWarning 
+                isVisible={isWarningShown} 
+                onExtendSession={handleExtendSession} 
+                onClose={() => setIsWarningShown(false)} 
+            />
 
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, [navigate]);
-
-  return (
-    <Routes>
-      <Route path="/" element={<LoginPage />} />
-      <Route path="/landing-page" element={<LandingPage />} />
-      <Route path="/moa-dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-      <Route path="/moa-monitoring" element={<ProtectedRoute><MOA /></ProtectedRoute>} />
-      <Route path="/moa-monitoring-admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
-      <Route path="/add-admin" element={<ProtectedRoute><AddAdmin /></ProtectedRoute>} />
-    </Routes>
-  );
+            <Routes>
+                <Route path="/" element={<LoginPage />} />
+                <Route path="/landing-page" element={<LandingPage />} />
+                <Route path="/moa-dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                <Route path="/moa-monitoring" element={<ProtectedRoute><MOA /></ProtectedRoute>} />
+                <Route path="/moa-monitoring-admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+                <Route path="/add-admin" element={<ProtectedRoute><AddAdmin /></ProtectedRoute>} />
+            </Routes>
+        </>
+    );
 }

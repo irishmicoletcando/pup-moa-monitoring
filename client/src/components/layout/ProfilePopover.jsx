@@ -30,17 +30,11 @@ const ProfilePopover = ({ show, onClose }) => {
 
   const handleUserLogout = () => {
     try {
-      localStorage.removeItem("token");
-      localStorage.removeItem("firstname");
-      localStorage.removeItem("lastname");
-      localStorage.removeItem("role");
-      localStorage.removeItem("user_id");
-      localStorage.removeItem("userEmail");
-
-      localStorage.setItem("logout-event", Date.now()); 
-      
+      localStorage.clear(); // Clear all stored user data
+      localStorage.setItem("logout-event", Date.now()); // Notify other tabs
       toast.success("Logout successful! Redirecting...", { position: "top-right" });
-      setTimeout(() => navigate("/"), 2000);
+  
+      setTimeout(() => navigate("/"), 1000); // Redirect to login
     } catch (err) {
       toast.error(err.message, { position: "top-right" });
     }
