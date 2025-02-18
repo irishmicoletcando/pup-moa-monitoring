@@ -5,9 +5,9 @@ export default function Header() {
         <img 
           src="/PUP.png" 
           alt="Polytechnic University of the Philippines logo" 
-          className="h-16 sm:h-20 w-auto"
+          className="h-16 sm:h-16 w-auto"
         />
-        <h1 className="text-2xl sm:text-3xl font-semibold text-white">
+        <h1 className="text-xl sm:text-xl font-semibold text-white">
           MOA Monitoring System
         </h1>
       </div>

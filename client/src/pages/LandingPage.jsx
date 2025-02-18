@@ -3,7 +3,7 @@ import About from "@/components/landing-page/About";
 
 export default function LandingPage() {
   return (
-    <div className="h-screen w-screen relative flex flex-col">
+    <div className="min-h-screen w-screen relative flex flex-col overflow-hidden">
       {/* Background for all views (Mobile and Desktop) */}
       <svg
         className="absolute top-0 left-0 w-full h-full lg:hidden"
