@@ -184,7 +184,7 @@ const login = async (req, res) => {
         }
 
         // Generate JWT token if the passwords match
-        const token = jwt.sign({ id: user.user_id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user.user_id }, process.env.JWT_SECRET, { expiresIn: '1m' });
 
         // Return the token and last login time in the response
         res.status(200).json({
