@@ -184,7 +184,8 @@ const login = async (req, res) => {
         }
 
         // Generate JWT token if the passwords match
-        const token = jwt.sign({ id: user.user_id }, process.env.JWT_SECRET, { expiresIn: '1m' });
+        const token = jwt.sign({ id: user.user_id }, process.env.JWT_SECRET, { expiresIn: '2h' });
+        // const token = jwt.sign({ id: user.user_id }, process.env.JWT_SECRET, { expiresIn: '1m' }); // [DEBUGGING]
 
         // Return the token and last login time in the response
         res.status(200).json({
@@ -208,8 +209,9 @@ const renewToken = async (req, res) => {
     jwt.verify(token, process.env.JWT_SECRET, async (err, user) => {
         if (err) return res.status(403).send('Invalid Token');
 
-        // Issue a new token with another 1 hour expiry
-        const newToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1m' });
+        // Issue a new token with another 2 hour expiry
+        const newToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '2h' });
+        // const newToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1m' }); // [DEBUGGING]
 
         res.status(200).json({ token: newToken });
     });

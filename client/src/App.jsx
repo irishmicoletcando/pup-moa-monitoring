@@ -41,9 +41,10 @@ function AppRoutes() {
             const decodedToken = jwtDecode(token);
             const expiryTime = decodedToken.exp * 1000; // Convert expiry timestamp to milliseconds
             const currentTime = Date.now();
-            const warningTime = expiryTime - 10 * 1000; // Show warning 10 sec before expiry
+            const warningTime = expiryTime - 5 * 60 * 1000; // Show warning 5 mins before expiry
+            // const warningTime = expiryTime - 5 * 1000; // Show warning 5 secs before expiry [DEBUGGING]
 
-            // console.log("Token expires at:", new Date(expiryTime));
+            console.log("Token expires at:", new Date(expiryTime));
             // console.log("Warning will show at:", new Date(warningTime));
 
             // Clear any existing timeouts
