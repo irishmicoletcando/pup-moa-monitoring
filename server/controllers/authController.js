@@ -201,6 +201,20 @@ const login = async (req, res) => {
     }
 };
 
+const renewToken = async (req, res) => {
+    const token = req.headers['authorization']?.split(' ')[1];
+    if (!token) return res.status(401).send('Access Denied');
+
+    jwt.verify(token, process.env.JWT_SECRET, async (err, user) => {
+        if (err) return res.status(403).send('Invalid Token');
+
+        // Issue a new token with another 1 hour expiry
+        const newToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1m' });
+
+        res.status(200).json({ token: newToken });
+    });
+};
+
 // Protected Route
 const protectedRoute = (req, res) => {
     res.status(200).send('You have accessed a protected route!');
@@ -212,5 +226,6 @@ module.exports = {
     updateUser,
     deleteUser,
     login,
+    renewToken,
     protected: protectedRoute,
 };
