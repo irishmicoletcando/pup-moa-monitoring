@@ -6,6 +6,7 @@ import MOA from "./pages/MOA";
 import Admin from "./pages/Admin";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import LandingPage from "./pages/LandingPage";
+import TimeoutWarning from "./components/layout/TimeoutWarning";
 import { jwtDecode } from "jwt-decode";
 import { useMoaFilterContext, MoaFilterProvider } from "./components/context/MoaFilterContext";
 import { useEffect, useState } from "react";
@@ -42,28 +43,30 @@ function AppRoutes() {
             const currentTime = Date.now();
             const warningTime = expiryTime - 10 * 1000; // Show warning 10 sec before expiry
 
-            console.log("Token expires at:", new Date(expiryTime));
-            console.log("Warning will show at:", new Date(warningTime));
+            // console.log("Token expires at:", new Date(expiryTime));
+            // console.log("Warning will show at:", new Date(warningTime));
 
-            // Clear any existing timeouts before setting new ones
+            // Clear any existing timeouts
             clearTimeout(logoutTimeout);
             clearTimeout(warningTimeout);
 
-            // Show warning 10 sec before expiry
+            // Show warning 5 min before expiry
             warningTimeout = setTimeout(() => {
                 setIsWarningShown(true);
-                console.log("Session warning shown!");
+                // console.log("Session warning shown!");
             }, warningTime - currentTime);
 
             // Auto logout when token expires
             logoutTimeout = setTimeout(() => {
-                console.log("Token expired. Logging out...");
+                // console.log("Token expired. Logging out...");
                 localStorage.clear();
+                setIsWarningShown(false);
                 navigate("/");
             }, expiryTime - currentTime);
         } catch (error) {
             console.error("Error decoding token:", error);
             localStorage.clear();
+            setIsWarningShown(false);
             navigate("/");
         }
     };
@@ -80,23 +83,23 @@ function AppRoutes() {
     const handleExtendSession = async () => {
         try {
             const token = localStorage.getItem("token");
-            console.log("Attempting to renew token with:", token);
+            // console.log("Attempting to renew token with:", token);
 
             const response = await axios.post("/api/auth/renew-token", {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
             const newToken = response.data.token;
-            console.log("New token received:", newToken);
+            // console.log("New token received:", newToken);
 
             localStorage.setItem("token", newToken);
             setIsWarningShown(false);
 
-            // 🛑 Clear old timeouts and reset the checks
+            // Clear old timeouts and reset the checks
             clearTimeout(logoutTimeout);
             clearTimeout(warningTimeout);
             setupTokenCheck();
-            console.log("Session extended successfully!");
+            // console.log("Session extended successfully!");
         } catch (error) {
             console.error("Failed to extend session:", error);
             localStorage.clear();
@@ -106,12 +109,12 @@ function AppRoutes() {
 
     return (
         <>
-            {isWarningShown && (
-                <div className="session-warning">
-                    <p>Your session is about to expire. Do you want to extend it?</p>
-                    <button onClick={handleExtendSession}>Extend Session</button>
-                </div>
-            )}
+            <TimeoutWarning 
+                isVisible={isWarningShown} 
+                onExtendSession={handleExtendSession} 
+                onClose={() => setIsWarningShown(false)} 
+            />
+
             <Routes>
                 <Route path="/" element={<LoginPage />} />
                 <Route path="/landing-page" element={<LandingPage />} />
