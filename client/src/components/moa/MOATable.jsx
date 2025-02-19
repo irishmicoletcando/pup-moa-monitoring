@@ -517,9 +517,9 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
           {/* Previous Button */}
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
+            disabled={currentPage === 1 || filteredMOAs.length === 0}
             className={`px-2 sm:px-4 py-1 sm:py-2 border border-gray-300 rounded text-sm ${
-              currentPage === 1 ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-maroon text-white"
+              currentPage === 1 || filteredMOAs.length === 0 ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-maroon text-white"
             }`}
           >
             <span className="md:hidden">←</span>
@@ -533,6 +533,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
+                disabled={currentPage === page}
                 className={`px-2 sm:px-3 py-1 border rounded text-xs sm:text-sm ${
                   page === currentPage ? "bg-maroon text-white" : "bg-white text-gray-700 hover:bg-gray-100"
                 }`}
@@ -546,9 +547,9 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
           {/* Next Button */}
           <button
             onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
+            disabled={currentPage === totalPages || filteredMOAs.length === 0}
             className={`px-2 sm:px-4 py-1 sm:py-2 border border-gray-300 rounded text-sm ${
-              currentPage === totalPages ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-maroon text-white"
+              currentPage === totalPages || filteredMOAs.length === 0 ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-maroon text-white"
             }`}
           >
             <span className="md:hidden">→</span>
