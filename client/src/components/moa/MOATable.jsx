@@ -318,7 +318,10 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
                   <tr
                     key={index}
                     className= {`border-t border-gray-200 hover:bg-gray-50 transition-colors  cursor-pointer ${selectedRow === index ? "border border-gray-400 bg-gray-50" : ""}`}
-                    onClick={() => handleRowClick(index)}
+                    onClick={() => {
+                      handleRowClick(index);
+                      handleViewClick(moa);
+                    }}
                   >
                     <td className="p-4">
                       {/* CHECKBOXES FOR MULTIPLE SELECTION */}
@@ -416,34 +419,48 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
 
                     <td className="p-4 text-sm">
                       <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => {
-                            if (moa.file_path) {
-                              window.open(moa.file_path, '_blank');
-                            } else {
-                              toast.error("No file available for this MOA");
-                              console.log(moa.file_path);
-                            }
-                          }}
-                          className="text-slate-600 hover:text-slate-800 p-2 rounded-full hover:bg-slate-50 transition-colors"
-                          title="View Document">
-                          <FileText className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleEditClick(moa)} // Pass the entire moa object
-                          className="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-50 transition-colors"
-                          title="Edit MOA"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-
-                        <button
-                          onClick={() => setDeleteModal({ isOpen: true, moa, isDeleting: false })}
-                          className="text-rose-600 hover:text-rose-800 p-2 rounded-full hover:bg-rose-50 transition-colors"
-                          title="Delete MOA"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                      <button
+                            onClick={() => handleViewClick(moa)}
+                            className="text-slate-600 hover:text-slate-800 p-2 rounded-full hover:bg-slate-50 transition-colors"
+                            title="View MOA"
+                          >
+                            <Eye className="w-4 h-4" />
+                          
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent triggering the cell's onClick
+                              if (moa.file_path) {
+                                window.open(moa.file_path, '_blank');
+                              } else {
+                                toast.error("No file available for this MOA");
+                                console.log(moa.file_path);
+                              }
+                            }}
+                            className="text-slate-600 hover:text-slate-800 p-2 rounded-full hover:bg-slate-50 transition-colors"
+                            title="View Document">
+                            <FileText className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent triggering the cell's onClick
+                              handleEditClick(moa);
+                            }}
+                            className="text-slate-600 hover:text-slate-800 p-2 rounded-full hover:bg-slate-50 transition-colors"
+                            title="Edit MOA"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent triggering the cell's onClick
+                              setDeleteModal({ isOpen: true, moa, isDeleting: false });
+                            }}
+                            className="text-rose-600 hover:text-rose-800 p-2 rounded-full hover:bg-rose-50 transition-colors"
+                            title="Delete MOA"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                       </div>
                     </td>
                   </tr>
