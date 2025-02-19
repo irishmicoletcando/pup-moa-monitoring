@@ -23,6 +23,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
     field: null,
     direction: 'asc'
   });
+  const [selectedRow, setSelectedRow] = useState(null);
 
   const { moaFilters, onMoaFilterChange, clearFilters } = useMoaFilterContext();
   const [deleteModal, setDeleteModal] = useState({
@@ -88,6 +89,10 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
   const handleViewClick = (moa) => {
     setSelectedMOA(moa);
     setIsViewModalOpen(true);
+  };
+
+  const handleRowClick = (index) => {
+    setSelectedRow(index);
   };
 
   const handleRefresh = () => {
@@ -312,7 +317,8 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
                 paginatedMOAs.map((moa, index) => (
                   <tr
                     key={index}
-                    className="border-t border-gray-200 hover:bg-gray-50 transition-colors"
+                    className= {`border-t border-gray-200 hover:bg-gray-50 transition-colors  cursor-pointer ${selectedRow === index ? "border border-gray-400 bg-gray-50" : ""}`}
+                    onClick={() => handleRowClick(index)}
                   >
                     <td className="p-4">
                       {/* CHECKBOXES FOR MULTIPLE SELECTION */}
