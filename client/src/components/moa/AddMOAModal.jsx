@@ -125,6 +125,13 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
       newValue = 0;
     }
 
+    if (name === "dateNotarized") {
+      const today = new Date().toISOString().split("T")[0];
+      if (newValue > today) {
+        newValue = today;
+      }
+    }
+
     setFormData({ ...formData, [name]: newValue });
     console.log(formData.natureOfBusiness);
   };
@@ -496,6 +503,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
                 value={formData.dateNotarized}
                 onChange={handleChange}
                 required
+                max={new Date().toISOString().split("T")[0]} // Current date
               />
             </div>
           </div>
