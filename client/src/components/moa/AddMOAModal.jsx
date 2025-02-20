@@ -97,6 +97,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
   const [files, setFiles] = useState([]);
   const [selectedBranch, setSelectedBranch] = useState("");
   const [selectedCourse, setSelectedCourse] = useState("");
+  const [emailError, setEmailError] = useState("");
   const [availableCourses, setAvailableCourses] = useState([]);
   const [formData, setFormData] = useState({
     moaName: "",
@@ -136,6 +137,28 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
     console.log(formData.natureOfBusiness);
   };
 
+  const validateEmail = () => {
+    const email = formData.emailAddress.trim();
+    
+    if (!email) {
+      setEmailError(""); 
+      return true; 
+    }
+  
+    const validDomainPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|org|net|edu|gov|ph)$/;
+  
+    if (!validDomainPattern.test(email)) {
+      if (emailError !== "Invalid email address.") {
+        setEmailError("Invalid email address.");
+        toast.error("Invalid email address.");
+      }
+      return false; // Invalid email
+    }
+  
+    setEmailError("");
+    return true; // Valid email
+  };
+  
   const handleFileChange = (e) => {
     const newFiles = Array.from(e.target.files);
 
@@ -157,8 +180,11 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
-    setIsSubmitting(true);
+
+    if (!validateEmail()) return; // Validate email
   
+    setIsSubmitting(true);
+
     try {
       // Create dates without time components
       const [year, month, day] = formData.dateNotarized.split('-').map(Number);
@@ -446,9 +472,12 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
                 id="emailAddress"
                 name="emailAddress"
                 placeholder="Enter email address"
-                className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base"
+                className={`border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base ${
+                  emailError ? "border-red" : "border-gray-300"
+                }`}
                 value={formData.emailAddress}
                 onChange={handleChange}
+                onBlur={validateEmail}
                 required
               />
             </div>
