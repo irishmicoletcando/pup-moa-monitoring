@@ -29,7 +29,7 @@ function AppRoutes() {
     const navigate = useNavigate();
     const [isWarningShown, setIsWarningShown] = useState(false);
 
-    const setupTokenCheck = () => {
+    const setupTokenCheck = async () => {
         const token = localStorage.getItem("token");
 
         if (!token) {
@@ -39,13 +39,29 @@ function AppRoutes() {
 
         try {
             const decodedToken = jwtDecode(token);
-            const expiryTime = decodedToken.exp * 1000; // Convert expiry timestamp to milliseconds
+            const expiryTime = decodedToken.exp * 1000; 
             const currentTime = Date.now();
             const warningTime = expiryTime - 5 * 60 * 1000; // Show warning 5 mins before expiry
             // const warningTime = expiryTime - 5 * 1000; // Show warning 5 secs before expiry [DEBUGGING]
 
-            console.log("Token expires at:", new Date(expiryTime));
-            // console.log("Warning will show at:", new Date(warningTime));
+            // console.log("Token expires at:", new Date(expiryTime));
+            // console.log("Warning will show at:", new Date(warningTime)); // [DEBUGGING]
+
+            if (currentTime >= warningTime && currentTime < expiryTime) {
+                console.log("User opened site during warning period. Auto-extending session...");
+                clearTimeout(warningTimeout);
+                setIsWarningShown(false);
+                await handleExtendSession(); 
+                return;
+            }
+
+            if (currentTime >= expiryTime) {
+                console.log("Token expired. Logging out...");
+                localStorage.clear();
+                setIsWarningShown(false);
+                navigate("/");
+                return;
+            }
 
             // Clear any existing timeouts
             clearTimeout(logoutTimeout);
@@ -71,11 +87,27 @@ function AppRoutes() {
             navigate("/");
         }
     };
-
     useEffect(() => {
+        const handleTabFocus = () => {
+            // console.log("Tab focused. Rechecking token..."); 
+            setupTokenCheck();
+        };
+    
+        const handleStorageChange = (event) => {
+            if (event.key === "token") {
+                // console.log("Token changed in another tab. Rechecking...");
+                setupTokenCheck();
+            }
+        };
+    
+        window.addEventListener("visibilitychange", handleTabFocus);
+        window.addEventListener("storage", handleStorageChange);
+    
         setupTokenCheck(); // Run token validation when component mounts
-
+    
         return () => {
+            window.removeEventListener("visibilitychange", handleTabFocus);
+            window.removeEventListener("storage", handleStorageChange);
             clearTimeout(logoutTimeout);
             clearTimeout(warningTimeout);
         };
@@ -91,7 +123,7 @@ function AppRoutes() {
             });
 
             const newToken = response.data.token;
-            // console.log("New token received:", newToken);
+            console.log("New token received:", newToken);
 
             localStorage.setItem("token", newToken);
             setIsWarningShown(false);
