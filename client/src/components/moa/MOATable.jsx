@@ -179,6 +179,12 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
           ? dateA - dateB 
           : dateB - dateA;
       }
+
+      if (sortConfig.field === 'name') {
+        return sortConfig.direction === 'asc'
+          ? a.name.localeCompare(b.name)
+          : b.name.localeCompare(a.name);
+      }
       
       // Add string comparison for other fields
       const valueA = a[sortConfig.field] || '';
