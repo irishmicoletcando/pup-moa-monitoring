@@ -41,11 +41,11 @@ function AppRoutes() {
             const decodedToken = jwtDecode(token);
             const expiryTime = decodedToken.exp * 1000; 
             const currentTime = Date.now();
-            const warningTime = expiryTime - 1 * 60 * 1000; // Show warning 5 mins before expiry
+            const warningTime = expiryTime - 5 * 60 * 1000; // Show warning 5 mins before expiry
             // const warningTime = expiryTime - 5 * 1000; // Show warning 5 secs before expiry [DEBUGGING]
 
-            console.log("Token expires at:", new Date(expiryTime));
-            console.log("Warning will show at:", new Date(warningTime));
+            // console.log("Token expires at:", new Date(expiryTime));
+            // console.log("Warning will show at:", new Date(warningTime)); // [DEBUGGING]
 
             if (currentTime >= warningTime && currentTime < expiryTime) {
                 console.log("User opened site during warning period. Auto-extending session...");
@@ -89,13 +89,13 @@ function AppRoutes() {
     };
     useEffect(() => {
         const handleTabFocus = () => {
-            console.log("Tab focused. Rechecking token...");
+            // console.log("Tab focused. Rechecking token..."); 
             setupTokenCheck();
         };
     
         const handleStorageChange = (event) => {
             if (event.key === "token") {
-                console.log("Token changed in another tab. Rechecking...");
+                // console.log("Token changed in another tab. Rechecking...");
                 setupTokenCheck();
             }
         };
