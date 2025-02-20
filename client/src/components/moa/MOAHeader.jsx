@@ -158,7 +158,15 @@ export default function MOAHeader({
           ref={(el) => el && (el.indeterminate = isSomeSelected)}
         /> */}
       </th>
-      <th className="p-4 text-left text-sm font-medium min-w-[150px] max-w-xs break-words whitespace-normal">Name</th>
+      <th className="p-4 text-left text-sm font-medium min-w-[150px] max-w-xs break-words whitespace-normal">
+        <button
+          className="flex items-center hover:text-maroon"
+          onClick={() => onSort("name")}
+        >
+          Name
+          {getSortIcon("name")}
+        </button>
+      </th>
       <th className="p-4 text-left text-sm font-medium min-w-[80px] max-w-xs break-words whitespace-normal">
         <FilterDropdown
           type="Type of MOA"
