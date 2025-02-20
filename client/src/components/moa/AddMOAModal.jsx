@@ -119,7 +119,12 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     // Handle checkbox separately
-    const newValue = type === 'checkbox' ? checked : value;
+    let newValue = type === 'checkbox' ? checked : value;
+
+    if (name === "validity" && newValue < 0) {
+      newValue = 0;
+    }
+
     setFormData({ ...formData, [name]: newValue });
     console.log(formData.natureOfBusiness);
   };
@@ -475,6 +480,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
                 value={formData.validity}
                 onChange={handleChange}
                 required
+                min="0"
               />
             </div>
 
