@@ -223,6 +223,8 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
   }, [currentPage, itemsPerPage, filteredMOAs]);
 
   const getPageNumbers = () => {
+    if (totalPages === 0) return [1];
+
     const pages = [];
     const maxPagesToShow = 5; // Max number of pages to show at a time
     const halfRange = Math.floor(maxPagesToShow / 2);
@@ -533,9 +535,10 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                disabled={currentPage === page}
+                disabled={currentPage === page || filteredMOAs.length === 0}
                 className={`px-2 sm:px-3 py-1 border rounded text-xs sm:text-sm ${
-                  page === currentPage ? "bg-maroon text-white" : "bg-white text-gray-700 hover:bg-gray-100"
+                  filteredMOAs.length === 0 ? "bg-gray-200 text-gray-500 cursor-not-allowed" 
+                  : page === currentPage ? "bg-maroon text-white" : "bg-white text-gray-700 hover:bg-gray-100"
                 }`}
               >
                 {page}
