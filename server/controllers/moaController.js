@@ -172,7 +172,7 @@ const addMOA = async (req, res) => {
             }
           }
         } catch (error) {
-          console.error("Error uploading files or inserting records:", error);
+          // console.error("Error uploading files or inserting records:", error);
           // Handle the error (e.g., send a response to the client or log it)
           res.status(500).json({ error: 'An error occurred while processing the files.' });
         }
@@ -296,7 +296,7 @@ const updateMOA = async (req, res) => {
       try {
         moaData = JSON.parse(req.body.data);
       } catch (error) {
-        console.error('Error parsing FormData JSON:', error);
+        // console.error('Error parsing FormData JSON:', error);
         return res.status(400).json({
           message: "Invalid form data format",
           error: error.message
@@ -316,7 +316,7 @@ const updateMOA = async (req, res) => {
       });
     }
 
-    console.log('Parsed MOA Data:', moaData);
+    // console.log('Parsed MOA Data:', moaData);
 
     // Required fields for MOA update (documents are now optional)
     const requiredFields = [
@@ -352,7 +352,7 @@ const updateMOA = async (req, res) => {
       
       // Log the validation result
       if (isEmpty || wrongType) {
-        console.log(`Field "${field.name}": Value = ${value}, Type = ${valueType}, Required Type = ${field.type}`);
+        // console.log(`Field "${field.name}": Value = ${value}, Type = ${valueType}, Required Type = ${field.type}`);
       }
       
       return isEmpty || wrongType;
@@ -478,7 +478,7 @@ const updateMOA = async (req, res) => {
             try {
               await deleteFromBlob(doc.file_path);
             } catch (err) {
-              console.warn(`Warning: Could not delete file ${doc.file_path}:`, err);
+              // console.warn(`Warning: Could not delete file ${doc.file_path}:`, err);
             }
           }
           await connection.query(
@@ -519,7 +519,7 @@ const updateMOA = async (req, res) => {
       connection.release();
     }
   } catch (error) {
-    console.error("Error updating MOA:", error);
+    // console.error("Error updating MOA:", error);
     res.status(500).json({ 
       message: "Error updating MOA", 
       error: error.message,

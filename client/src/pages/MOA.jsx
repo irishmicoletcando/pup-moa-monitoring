@@ -61,8 +61,8 @@ export default function MOA() {
           URL.revokeObjectURL(blobUrl); // Cleanup memory
           toast.success(`Export successful!`);
         } catch (error) {
-          console.error("Download error:", error);
-          toast.error("Failed to download file.");
+          // console.error("Download error:", error);
+          toast.error("Failed to download file.", error);
         }
       
         return;
@@ -90,7 +90,7 @@ export default function MOA() {
       toast.success("Export successful!");
   
     } catch (error) {
-      console.error("Export error:", error);
+      // console.error("Export error:", error);
       toast.error(`Failed to export files: ${error.message}`);
     }
   };

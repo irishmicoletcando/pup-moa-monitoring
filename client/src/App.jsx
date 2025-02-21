@@ -8,7 +8,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 import LandingPage from "./pages/LandingPage";
 import TimeoutWarning from "./components/layout/TimeoutWarning";
 import { jwtDecode } from "jwt-decode";
-import { useMoaFilterContext, MoaFilterProvider } from "./components/context/MoaFilterContext";
+import { MoaFilterProvider } from "./components/context/MoaFilterContext";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -48,7 +48,7 @@ function AppRoutes() {
             // console.log("Warning will show at:", new Date(warningTime)); // [DEBUGGING]
 
             if (currentTime >= warningTime && currentTime < expiryTime) {
-                console.log("User opened site during warning period. Auto-extending session...");
+                // console.log("User opened site during warning period. Auto-extending session...");
                 clearTimeout(warningTimeout);
                 setIsWarningShown(false);
                 await handleExtendSession(); 
@@ -56,7 +56,7 @@ function AppRoutes() {
             }
 
             if (currentTime >= expiryTime) {
-                console.log("Token expired. Logging out...");
+                // console.log("Token expired. Logging out...");
                 localStorage.clear();
                 setIsWarningShown(false);
                 navigate("/");
@@ -111,7 +111,7 @@ function AppRoutes() {
             clearTimeout(logoutTimeout);
             clearTimeout(warningTimeout);
         };
-    }, [navigate]);
+    });
 
     const handleExtendSession = async () => {
         try {
@@ -123,7 +123,7 @@ function AppRoutes() {
             });
 
             const newToken = response.data.token;
-            console.log("New token received:", newToken);
+            // console.log("New token received:", newToken);
 
             localStorage.setItem("token", newToken);
             setIsWarningShown(false);

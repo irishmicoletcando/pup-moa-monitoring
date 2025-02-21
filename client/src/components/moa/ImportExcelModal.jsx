@@ -45,7 +45,7 @@ export default function ImportExcelModal({ isOpen, onClose, onMOAAdded }) {
         expiry_date: convertExcelDate(row.expiry_date),
       }));
   
-      console.log("Parsed and formatted Excel Data:", formattedData);
+      // console.log("Parsed and formatted Excel Data:", formattedData);
       setExcelData(formattedData);
     };
   

@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: ./client
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+  backend:
+    build: ./server
+    ports:
+      - "5001:5000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+  db:
+    image: mysql:latest
+    restart: always
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: PUP_moa_monitoring
+      MYSQL_DATABASE: moamonitoring
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:

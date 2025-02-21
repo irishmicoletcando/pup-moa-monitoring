@@ -51,10 +51,10 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
       }
       const data = await response.json();
     
-      console.log("Fetched MOAs:", data);
+      // console.log("Fetched MOAs:", data);
     
       const moasData = data.moas || [];
-      console.assert(Array.isArray(moasData), "Fetched data is not an array");
+      // console.assert(Array.isArray(moasData), "Fetched data is not an array");
   
       // Retrieve role from localStorage
       const userRole = localStorage.getItem("role");
@@ -73,7 +73,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
   
       setMoas(filteredMOAs);
     } catch (error) {
-      console.error("Fetch MOAs error:", error);
+      // console.error("Fetch MOAs error:", error);
       toast.error(error.message);
     } finally {
       setLoading(false);
@@ -101,7 +101,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
   };
 
   const handleDelete = async (moaId) => {
-    console.log("Deleting MOA with ID:", moaId);
+    // console.log("Deleting MOA with ID:", moaId);
     if (!moaId) {
       toast.error("Invalid MOA ID");
       return;
@@ -124,7 +124,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
       toast.success("MOA deleted successfully");
       setDeleteModal({ isOpen: false, moa: null, isDeleting: false });
     } catch (error) {
-      console.error('Delete error:', error);
+      // console.error('Delete error:', error);
       toast.error(error.message);
       setDeleteModal(prev => ({ ...prev, isDeleting: false }));
     }
@@ -377,7 +377,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
                                 window.open(moa.file_path, '_blank');
                               } else {
                                 toast.error("No file available for this MOA");
-                                console.log(moa.file_path);
+                                // console.log(moa.file_path);
                               }
                             }}
                             className="text-slate-600 hover:text-slate-800 p-2 rounded-full hover:bg-slate-50 transition-colors"
@@ -448,7 +448,7 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
                                 window.open(moa.file_path, '_blank');
                               } else {
                                 toast.error("No file available for this MOA");
-                                console.log(moa.file_path);
+                                // console.log(moa.file_path);
                               }
                             }}
                             className="text-slate-600 hover:text-slate-800 p-2 rounded-full hover:bg-slate-50 transition-colors"

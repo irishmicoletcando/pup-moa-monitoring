@@ -256,7 +256,7 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
       };
   
       // Debug log
-      console.log("Data to be sent:", JSON.stringify(dataToSend, null, 2));
+      // console.log("Data to be sent:", JSON.stringify(dataToSend, null, 2));
   
       let bodyData;
       if (files.length > 0) {
@@ -265,11 +265,11 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
         bodyData.append("data", JSON.stringify(dataToSend));
         
         // Log file details before append
-        console.log("Files to upload:", files.map(f => ({
-          name: f.name,
-          size: f.size,
-          type: f.type
-        })));
+        // console.log("Files to upload:", files.map(f => ({
+        //   name: f.name,
+        //   size: f.size,
+        //   type: f.type
+        // })));
         
         // Append each file individually
         files.forEach((file, index) => {
@@ -280,7 +280,7 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
         });
       
         // Debug log FormData contents
-        console.log("FormData contents:");
+        // console.log("FormData contents:");
         for (let pair of bodyData.entries()) {
           console.log(pair[0], typeof pair[1], pair[1] instanceof File ? `File: ${pair[1].name}` : pair[1]);
         }
@@ -306,7 +306,7 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
           message: `HTTP error! status: ${response.status}`
         }));
         
-        console.log('Error response:', responseData);
+        // console.log('Error response:', responseData);
         
         if (responseData.fieldDetails) {
           throw new Error(`Missing required fields: ${responseData.fields.join(', ')}\nDetails: ${JSON.stringify(responseData.fieldDetails, null, 2)}`);
@@ -332,9 +332,9 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
     }
   };
 
-  useEffect(() => {
-    console.log("moaData received in EditMOAModal:", moaData);
-  }, [moaData]);
+  // useEffect(() => {
+  //   console.log("moaData received in EditMOAModal:", moaData);
+  // }, [moaData]);
   
 
   if (!isOpen) return null;

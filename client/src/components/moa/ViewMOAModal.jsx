@@ -1,13 +1,12 @@
 "use client"
 
 import { X, FileText, Building, User, Briefcase, Phone, Mail, CheckCircle, Calendar, Clock, MapPin, GraduationCap, Shield, Type } from 'lucide-react';
-import { useState, useEffect } from "react";
 
 const ViewMoaModal = ({ isOpen, formData, onClose }) => {
   if (!isOpen) {
     return null;
   }
-  console.log("formData in ViewMOAModal:", formData);
+  // console.log("formData in ViewMOAModal:", formData);
 
   const sections = [
     { label: "MOA Name", value: formData.name, icon: FileText },
