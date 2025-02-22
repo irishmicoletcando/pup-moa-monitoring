@@ -191,7 +191,7 @@ export default function MOAHeader({
       </th>
       <th className="p-4 text-left text-sm font-medium min-w-[120px] max-w-xs break-words whitespace-normal">
         <FilterDropdown
-          type="Branch"
+          type="Campus"
           options={[
             "Sta. Mesa, Manila",
             "Quezon City",
