@@ -393,20 +393,23 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
                             <Eye className="w-4 h-4" />
                           
                           </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation(); // Prevent triggering the cell's onClick
-                              if (moa.file_path) {
-                                window.open(moa.file_path, '_blank');
-                              } else {
-                                toast.error("No file available for this MOA");
-                                console.log(moa.file_path);
-                              }
-                            }}
-                            className="text-slate-600 hover:text-slate-800 p-2 rounded-full hover:bg-slate-50 transition-colors"
-                            title="View Document">
-                            <FileText className="w-4 h-4" />
-                          </button>
+                          {canViewFile(moa) && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (moa.file_path) {
+                                  window.open(moa.file_path, "_blank");
+                                } else {
+                                  toast.error("No file available for this MOA");
+                                  console.log(moa.file_path);
+                                }
+                              }}
+                              className="text-slate-600 hover:text-slate-800 p-2 rounded-full hover:bg-slate-50 transition-colors"
+                              title="View Document"
+                            >
+                              <FileText className="w-4 h-4" />
+                            </button>
+                          )}
                           {canEditOrDelete(moa) && (
                           <>
                             <button
