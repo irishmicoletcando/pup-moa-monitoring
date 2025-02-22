@@ -21,7 +21,7 @@ export default function LandingPage() {
         <rect x="50" y="0" width="50" height="100" fill="white" />
       </svg>
 
-      <div className="relative z-10 flex flex-col flex-grow max-w-7xl mx-auto w-full justify-center items-center min-h-screen">
+      <div className="relative z-10 flex flex-col flex-grow max-w-7xl mx-auto w-full">
         <div className="w-full bg-white lg:bg-transparent">
           <Header />
           <About />
