@@ -57,21 +57,21 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
       console.assert(Array.isArray(moasData), "Fetched data is not an array");
   
       // Retrieve role from localStorage
-      const userRole = localStorage.getItem("role");
+      // const userRole = localStorage.getItem("role");
     
       // Role-based filtering
-      let filteredMOAs;
-      if (userRole === "Practicum Admin") {
-        filteredMOAs = moasData.filter(moa => moa.type_of_moa === "Practicum");
-      } else if (userRole === "Research Admin") {
-        filteredMOAs = moasData.filter(moa => moa.type_of_moa === "Research" || moa.type_of_moa === "Scholarship");
-      } else if (userRole === "Employment Admin") {
-        filteredMOAs = moasData.filter(moa => moa.type_of_moa === "Employment");
-      } else {
-        filteredMOAs = moasData; // If no role matches, show all
-      }
+      // let filteredMOAs;
+      // if (userRole === "Practicum Admin") {
+      //   filteredMOAs = moasData.filter(moa => moa.type_of_moa === "Practicum");
+      // } else if (userRole === "Research Admin") {
+      //   filteredMOAs = moasData.filter(moa => moa.type_of_moa === "Research" || moa.type_of_moa === "Scholarship");
+      // } else if (userRole === "Employment Admin") {
+      //   filteredMOAs = moasData.filter(moa => moa.type_of_moa === "Employment");
+      // } else {
+      //   filteredMOAs = moasData; // If no role matches, show all
+      // }
   
-      setMoas(filteredMOAs);
+      setMoas(moasData);
     } catch (error) {
       console.error("Fetch MOAs error:", error);
       toast.error(error.message);
@@ -79,6 +79,28 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
       setLoading(false);
       setRefreshing(false);
     }
+  };
+
+  const role = localStorage.getItem("role");
+
+  const canEditOrDelete = (moa) => {
+    if (role === "Practicum Admin") {
+      return moa.type_of_moa === "Practicum";
+    }
+    if (role === "Research Admin") {
+      return moa.type_of_moa === "Research" || moa.type_of_moa === "Scholarship";
+    }
+    if (role === "Employment Admin") {
+      return moa.type_of_moa === "Employment";
+    }
+    return true;
+  };
+
+  const canViewFile = (formData) => {
+    if (formData.has_nda && role !== "Super Admin") {
+      return false; // Hide button if NDA exists and the user is not a Super Admin
+    }
+    return true; // Show button for Super Admin or MOAs without NDA
   };
 
   const handleEditClick = (moa) => {
@@ -201,7 +223,8 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
       const matchesSearch = (
         moa.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         moa.contactPerson?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        moa.email.toLowerCase().includes(searchTerm.toLowerCase())
+        moa.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        moa.nature_of_business.toLowerCase().includes(searchTerm.toLowerCase())
       );
   
       const matchesType = moaFilters.moaTypes.length === 0 || 
@@ -370,40 +393,47 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
                             <Eye className="w-4 h-4" />
                           
                           </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation(); // Prevent triggering the cell's onClick
-                              if (moa.file_path) {
-                                window.open(moa.file_path, '_blank');
-                              } else {
-                                toast.error("No file available for this MOA");
-                                console.log(moa.file_path);
-                              }
-                            }}
-                            className="text-slate-600 hover:text-slate-800 p-2 rounded-full hover:bg-slate-50 transition-colors"
-                            title="View Document">
-                            <FileText className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation(); // Prevent triggering the cell's onClick
-                              handleEditClick(moa);
-                            }}
-                            className="text-slate-600 hover:text-slate-800 p-2 rounded-full hover:bg-slate-50 transition-colors"
-                            title="Edit MOA"
-                          >
-                            <Edit2 className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation(); // Prevent triggering the cell's onClick
-                              setDeleteModal({ isOpen: true, moa, isDeleting: false });
-                            }}
-                            className="text-rose-600 hover:text-rose-800 p-2 rounded-full hover:bg-rose-50 transition-colors"
-                            title="Delete MOA"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                          {canViewFile(moa) && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (moa.file_path) {
+                                  window.open(moa.file_path, "_blank");
+                                } else {
+                                  toast.error("No file available for this MOA");
+                                  console.log(moa.file_path);
+                                }
+                              }}
+                              className="text-slate-600 hover:text-slate-800 p-2 rounded-full hover:bg-slate-50 transition-colors"
+                              title="View Document"
+                            >
+                              <FileText className="w-4 h-4" />
+                            </button>
+                          )}
+                          {canEditOrDelete(moa) && (
+                          <>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEditClick(moa);
+                              }}
+                              className="text-slate-600 hover:text-slate-800 p-2 rounded-full hover:bg-slate-50 transition-colors"
+                              title="Edit MOA"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setDeleteModal({ isOpen: true, moa, isDeleting: false });
+                              }}
+                              className="text-rose-600 hover:text-rose-800 p-2 rounded-full hover:bg-rose-50 transition-colors"
+                              title="Delete MOA"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </>
+                        )}
                           
                         </div>
                       </div>
@@ -441,40 +471,47 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
                             <Eye className="w-4 h-4" />
                           
                           </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation(); // Prevent triggering the cell's onClick
-                              if (moa.file_path) {
-                                window.open(moa.file_path, '_blank');
-                              } else {
-                                toast.error("No file available for this MOA");
-                                console.log(moa.file_path);
-                              }
-                            }}
-                            className="text-slate-600 hover:text-slate-800 p-2 rounded-full hover:bg-slate-50 transition-colors"
-                            title="View Document">
-                            <FileText className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation(); // Prevent triggering the cell's onClick
-                              handleEditClick(moa);
-                            }}
-                            className="text-slate-600 hover:text-slate-800 p-2 rounded-full hover:bg-slate-50 transition-colors"
-                            title="Edit MOA"
-                          >
-                            <Edit2 className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation(); // Prevent triggering the cell's onClick
-                              setDeleteModal({ isOpen: true, moa, isDeleting: false });
-                            }}
-                            className="text-rose-600 hover:text-rose-800 p-2 rounded-full hover:bg-rose-50 transition-colors"
-                            title="Delete MOA"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                          {canViewFile(moa) && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (moa.file_path) {
+                                  window.open(moa.file_path, "_blank");
+                                } else {
+                                  toast.error("No file available for this MOA");
+                                  console.log(moa.file_path);
+                                }
+                              }}
+                              className="text-slate-600 hover:text-slate-800 p-2 rounded-full hover:bg-slate-50 transition-colors"
+                              title="View Document"
+                            >
+                              <FileText className="w-4 h-4" />
+                            </button>
+                          )}
+                          {canEditOrDelete(moa) && (
+                          <>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEditClick(moa);
+                              }}
+                              className="text-slate-600 hover:text-slate-800 p-2 rounded-full hover:bg-slate-50 transition-colors"
+                              title="Edit MOA"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setDeleteModal({ isOpen: true, moa, isDeleting: false });
+                              }}
+                              className="text-rose-600 hover:text-rose-800 p-2 rounded-full hover:bg-rose-50 transition-colors"
+                              title="Delete MOA"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>
