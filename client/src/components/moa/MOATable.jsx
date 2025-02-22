@@ -96,6 +96,13 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
     return true;
   };
 
+  const canViewFile = (formData) => {
+    if (formData.has_nda && role !== "Super Admin") {
+      return false; // Hide button if NDA exists and the user is not a Super Admin
+    }
+    return true; // Show button for Super Admin or MOAs without NDA
+  };
+
   const handleEditClick = (moa) => {
     setSelectedMOA(moa);
     setIsEditModalOpen(true);
@@ -216,7 +223,8 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
       const matchesSearch = (
         moa.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         moa.contactPerson?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        moa.email.toLowerCase().includes(searchTerm.toLowerCase())
+        moa.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        moa.nature_of_business.toLowerCase().includes(searchTerm.toLowerCase())
       );
   
       const matchesType = moaFilters.moaTypes.length === 0 || 
@@ -460,20 +468,23 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
                             <Eye className="w-4 h-4" />
                           
                           </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation(); // Prevent triggering the cell's onClick
-                              if (moa.file_path) {
-                                window.open(moa.file_path, '_blank');
-                              } else {
-                                toast.error("No file available for this MOA");
-                                console.log(moa.file_path);
-                              }
-                            }}
-                            className="text-slate-600 hover:text-slate-800 p-2 rounded-full hover:bg-slate-50 transition-colors"
-                            title="View Document">
-                            <FileText className="w-4 h-4" />
-                          </button>
+                          {canViewFile(moa) && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (moa.file_path) {
+                                  window.open(moa.file_path, "_blank");
+                                } else {
+                                  toast.error("No file available for this MOA");
+                                  console.log(moa.file_path);
+                                }
+                              }}
+                              className="text-slate-600 hover:text-slate-800 p-2 rounded-full hover:bg-slate-50 transition-colors"
+                              title="View Document"
+                            >
+                              <FileText className="w-4 h-4" />
+                            </button>
+                          )}
                           {canEditOrDelete(moa) && (
                           <>
                             <button
