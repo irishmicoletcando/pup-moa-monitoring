@@ -57,21 +57,21 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
       console.assert(Array.isArray(moasData), "Fetched data is not an array");
   
       // Retrieve role from localStorage
-      const userRole = localStorage.getItem("role");
+      // const userRole = localStorage.getItem("role");
     
       // Role-based filtering
-      let filteredMOAs;
-      if (userRole === "Practicum Admin") {
-        filteredMOAs = moasData.filter(moa => moa.type_of_moa === "Practicum");
-      } else if (userRole === "Research Admin") {
-        filteredMOAs = moasData.filter(moa => moa.type_of_moa === "Research" || moa.type_of_moa === "Scholarship");
-      } else if (userRole === "Employment Admin") {
-        filteredMOAs = moasData.filter(moa => moa.type_of_moa === "Employment");
-      } else {
-        filteredMOAs = moasData; // If no role matches, show all
-      }
+      // let filteredMOAs;
+      // if (userRole === "Practicum Admin") {
+      //   filteredMOAs = moasData.filter(moa => moa.type_of_moa === "Practicum");
+      // } else if (userRole === "Research Admin") {
+      //   filteredMOAs = moasData.filter(moa => moa.type_of_moa === "Research" || moa.type_of_moa === "Scholarship");
+      // } else if (userRole === "Employment Admin") {
+      //   filteredMOAs = moasData.filter(moa => moa.type_of_moa === "Employment");
+      // } else {
+      //   filteredMOAs = moasData; // If no role matches, show all
+      // }
   
-      setMoas(filteredMOAs);
+      setMoas(moasData);
     } catch (error) {
       console.error("Fetch MOAs error:", error);
       toast.error(error.message);
