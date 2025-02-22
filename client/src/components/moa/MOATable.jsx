@@ -399,26 +399,30 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
                             title="View Document">
                             <FileText className="w-4 h-4" />
                           </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation(); // Prevent triggering the cell's onClick
-                              handleEditClick(moa);
-                            }}
-                            className="text-slate-600 hover:text-slate-800 p-2 rounded-full hover:bg-slate-50 transition-colors"
-                            title="Edit MOA"
-                          >
-                            <Edit2 className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation(); // Prevent triggering the cell's onClick
-                              setDeleteModal({ isOpen: true, moa, isDeleting: false });
-                            }}
-                            className="text-rose-600 hover:text-rose-800 p-2 rounded-full hover:bg-rose-50 transition-colors"
-                            title="Delete MOA"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                          {canEditOrDelete(moa) && (
+                          <>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEditClick(moa);
+                              }}
+                              className="text-slate-600 hover:text-slate-800 p-2 rounded-full hover:bg-slate-50 transition-colors"
+                              title="Edit MOA"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setDeleteModal({ isOpen: true, moa, isDeleting: false });
+                              }}
+                              className="text-rose-600 hover:text-rose-800 p-2 rounded-full hover:bg-rose-50 transition-colors"
+                              title="Delete MOA"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </>
+                        )}
                           
                         </div>
                       </div>
