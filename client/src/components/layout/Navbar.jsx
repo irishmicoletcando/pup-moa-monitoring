@@ -30,6 +30,8 @@ const Navbar = () => {
       setAsActive("addMOA");
     } else if (location.pathname === "/moa-monitoring-admin") {
       setAsActive("addAdmin");
+    } else if (location.pathname === "/moa-monitoring-about") {
+      setAsActive("about");
     }
   }, [location.pathname]);
 
