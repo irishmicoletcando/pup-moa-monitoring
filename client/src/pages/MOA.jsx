@@ -102,7 +102,7 @@ export default function MOA() {
       <div className="flex-1 overflow-auto">
         <div className="p-4 md:p-6">
           <div className="flex flex-col ml-auto">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 p-1">
               <h1 className="text-2xl md:text-3xl font-bold">MOAs</h1>
             <div className="flex gap-4 ml-auto">
               <AddMOAButton onClick={() => setIsModalOpen(true)} />

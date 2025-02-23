@@ -356,10 +356,10 @@ export default function AdminTable({ isModalOpen, setIsModalOpen, refreshTrigger
                     {userRole === "Super Admin" && (
                       <button
                         onClick={() => openDeleteModal(user)}
-                        className="text-red-600 hover:text-red-800 p-2 rounded-full hover:bg-red-50 transition-colors"
+                        className="text-rose-600 hover:text-rose-800 p-2 rounded-full hover:bg-rose-50 transition-colors"
                         title="Delete admin"
                       >
-                        <Trash2 className="w-5 h-5" />
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     )}
                   </td>

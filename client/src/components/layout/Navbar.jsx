@@ -74,12 +74,12 @@ const Navbar = () => {
       route: "/moa-monitoring-admin",
       tab: "addAdmin"
     },
-    {
-      icon: <Info size={24} />,
-      label: "About",
-      route: "/moa-monitoring-about",
-      tab: "about"
-    }
+    // {
+    //   icon: <Info size={24} />,
+    //   label: "About",
+    //   route: "/moa-monitoring-about",
+    //   tab: "about"
+    // }
   ];
 
   return (

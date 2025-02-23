@@ -132,19 +132,19 @@ export default function ImportExcelModal({ isOpen, onClose, onMOAAdded }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg w-full max-w-4xl mx-auto shadow-lg max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-lg w-full max-w-2xl mx-auto shadow-lg max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-white p-4 border-b flex justify-between items-center">
-          <h2 className="text-xl font-bold">Import Excel</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Import Excel</h2>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700">✕</button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
           <div>
-            <label className="block font-bold mb-2">Upload Excel Files</label>
+            <label className="text-sm text-gray-600 dark:text-gray-300 mb-2">Upload Excel Files</label>
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
               <label className="flex flex-col items-center cursor-pointer">
                 <Upload className="w-8 h-8 text-gray-400" />
-                <span className="mt-2 text-gray-500">Click to upload Excel files</span>
+                <span className="mt-2 text-gray-500 text-sm">Click to upload Excel files</span>
                 <input
                   type="file"
                   multiple
@@ -178,11 +178,17 @@ export default function ImportExcelModal({ isOpen, onClose, onMOAAdded }) {
             </div>
           )}
 
-          <div className="mt-6">
+          <div className="flex justify-end space-x-3 mt-4">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600"
+          >
+            Cancel
+          </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`w-full bg-maroon hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md flex items-center justify-center gap-2${
+              className={`bg-maroon hover:bg-red text-white font-bold py-2 px-4 rounded flex items-center justify-center gap-2${
                 isSubmitting ? " opacity-50 cursor-not-allowed" : ""
               }`}
             >
@@ -193,8 +199,7 @@ export default function ImportExcelModal({ isOpen, onClose, onMOAAdded }) {
                 </>
               ) : (
                 <>
-                  <Plus className="h-5 w-5" />
-                  Import Excel
+                  Import
                 </>
               )}
             </button>

@@ -121,7 +121,7 @@ const MoaCard = ({ title, count, description }) => {
         <div className="p-2 rounded-lg bg-gradient-to-tl from-maroon to-rose-900 flex items-center justify-center">
           {iconMap[title] || <FileText className="text-white" size={20} />}
         </div>
-        <p className="text-md font-bold text-gray-900 dark:text-white">{title}</p>
+        <p className="text-md font-semibold text-gray-900 dark:text-white">{title}</p>
       </div>
       <div className="p-2 rounded-lg flex flex-row justify-center items-center space-x-4">
         <p className="text-4xl font-bold text-gray-900 dark:text-white">{count}</p>

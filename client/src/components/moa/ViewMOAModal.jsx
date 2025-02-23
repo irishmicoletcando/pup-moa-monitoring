@@ -120,7 +120,7 @@ const InfoSection = ({ label, value, icon: Icon }) => {
         </div>
         <div className="flex-1">
           <p className="text-sm font-medium text-gray-500 mb-1">{label}</p>
-          <p className="text-gray-900 font-medium">{value || "N/A"}</p>
+          <p className="text-gray-900">{value || "N/A"}</p>
         </div>
       </div>
     </div>

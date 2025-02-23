@@ -74,7 +74,7 @@ const ExportExcelModal = ({ isOpen, onClose, filteredMOAs }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-96">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-2xl">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Export Excel</h2>
         <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
           Select the columns you want to export:
@@ -112,7 +112,7 @@ const ExportExcelModal = ({ isOpen, onClose, filteredMOAs }) => {
           </button>
           <button
             onClick={handleExport}
-            className="px-4 py-2 bg-maroon text-white rounded-md hover:bg-rose-900"
+            className="px-4 py-2 bg-maroon text-white rounded-md hover:bg-red"
           >
             Export
           </button>
