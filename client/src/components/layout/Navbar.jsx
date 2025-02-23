@@ -1,4 +1,4 @@
-import { User, LayoutDashboard, FileText, Menu } from "lucide-react";
+import { User, LayoutDashboard, FileText, Info } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import ProfilePopover from "./ProfilePopover";
@@ -71,27 +71,39 @@ const Navbar = () => {
       label: "Admin",
       route: "/moa-monitoring-admin",
       tab: "addAdmin"
+    },
+    {
+      icon: <Info size={24} />,
+      label: "About",
+      route: "/moa-monitoring-about",
+      tab: "about"
     }
   ];
 
   return (
     <>
       {/* Desktop Sidebar */}
-      <nav className="hidden md:flex w-20 m-3 rounded-lg bg-maroon max-h-screen flex-col items-center py-4">
+      <nav className="hidden md:flex w-28 bg-maroon max-h-screen flex-col items-center py-4">
         <div className="mb-8">
           <img src="/PUP.png" alt="PUP Logo" className="w-12 h-12 cursor-pointer" onClick = {handleLanding}/>
         </div>
 
-        <div className="flex flex-col space-y-5 flex-grow justify-center w-full">
+        <div className="flex flex-col flex-grow justify-center w-full">
           {navItems.map((item) => (
             <button
               key={item.tab}
-              className={`text-white w-full flex items-center justify-center p-4 transition-colors duration-200 ${
+              className={`text-white w-full flex flex-col items-center justify-center px-4 py-6 transition-colors duration-200 ${
                 activeTab === item.tab ? 'bg-red' : 'hover:bg-red'
               }`}
               onClick={() => handleNavigation(item.route, item.tab)}
             >
-              {item.icon}
+
+              <div className={``}> 
+                {item.icon}
+              </div>
+              <div className={`text-xs`}> 
+                {item.label}
+              </div>
             </button>
           ))}
         </div>
@@ -118,17 +130,17 @@ const Navbar = () => {
 
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-maroon text-white z-10">
-        <div className="flex justify-around items-center h-16">
+        <div className="flex justify-around items-center">
           {navItems.map((item) => (
             <button
               key={item.tab}
-              className={`flex flex-col items-center justify-center p-2 flex-1 ${
+              className={`flex flex-col items-center justify-center px-2 py-4 flex-1 ${
                 activeTab === item.tab ? 'bg-red' : 'hover:bg-red'
               }`}
               onClick={() => handleNavigation(item.route, item.tab)}
             >
               <div className="mb-1">{item.icon}</div>
-              <span className="text-xs">{item.label}</span>
+              {/* <span className="text-xs">{item.label}</span> */}
             </button>
           ))}
           <button
@@ -144,7 +156,7 @@ const Navbar = () => {
                 size="small"
               />
             </div>
-            <span className="text-xs">Profile</span>
+            {/* <span className="text-xs">Profile</span> */}
           </button>
         </div>
       </nav>

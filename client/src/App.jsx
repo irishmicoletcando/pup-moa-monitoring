@@ -6,6 +6,7 @@ import MOA from "./pages/MOA";
 import Admin from "./pages/Admin";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import LandingPage from "./pages/LandingPage";
+import AboutPage from "./pages/AboutPage";
 import TimeoutWarning from "./components/layout/TimeoutWarning";
 import { jwtDecode } from "jwt-decode";
 import { useMoaFilterContext, MoaFilterProvider } from "./components/context/MoaFilterContext";
@@ -155,6 +156,7 @@ function AppRoutes() {
                 <Route path="/moa-monitoring" element={<ProtectedRoute><MOA /></ProtectedRoute>} />
                 <Route path="/moa-monitoring-admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
                 <Route path="/add-admin" element={<ProtectedRoute><AddAdmin /></ProtectedRoute>} />
+                <Route path="/moa-monitoring-about" element={<ProtectedRoute><AboutPage /></ProtectedRoute>} />
             </Routes>
         </>
     );
