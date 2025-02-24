@@ -6,7 +6,7 @@ const ExportExcelModal = ({ isOpen, onClose, filteredMOAs }) => {
   const columns = [
     "Name", "Type of MOA", "Nature of Business", "Company Address", 
     "Contact Person", "Contact Position", "Contact Number", "Email Address", 
-    "MOA Status", "Branch", "Origin Course", "Validity", "Date Notarized", "Expiry Date", "Year Submitted to ARCDO"
+    "MOA Status", "Campus", "Origin Course", "Validity", "Date Notarized", "Expiry Date", "Year Submitted to ARCDO", 
   ];
 
   const columnMapping = {
@@ -19,7 +19,7 @@ const ExportExcelModal = ({ isOpen, onClose, filteredMOAs }) => {
     "Contact Number": "contact_number",
     "Email Address": "email",
     "MOA Status": "moa_status",
-    "Branch": "branch",
+    "Campus": "branch",
     "Origin Course": "course",
     "Validity": "years_validity",
     "Date Notarized": "date_notarized",
@@ -74,13 +74,19 @@ const ExportExcelModal = ({ isOpen, onClose, filteredMOAs }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-2xl">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Export Excel</h2>
+      <div className="bg-white rounded-lg w-full max-w-2xl mx-auto shadow-lg max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-white p-4 border-b flex justify-between items-center">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Export Excel</h2>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">✕</button>
+        </div>
+        <div className="p-4 space-y-4">
         <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
           Select the columns you want to export:
         </p>
-        < br />
-        <i className="text-sm text-gray-600 dark:text-gray-300 mt-2">NOTE: The data exported will be based on filters selected on the dropdowns in the column header (e.g., type or status). To export all MOAs, remove the filters.</i>
+        <span className="text-xs text-red dark:text-red font-normal italic">
+        NOTE: The data exported will be based on filters selected in the dropdowns in the column header 
+        (e.g., type or status). To export all MOAs, remove the filters.
+      </span>
         <div className="mt-4 max-h-48 overflow-y-auto border p-2 rounded-md">
           <label className="flex items-center space-x-2 mb-2 text-gray-900 dark:text-white">
             <input
@@ -116,6 +122,7 @@ const ExportExcelModal = ({ isOpen, onClose, filteredMOAs }) => {
           >
             Export
           </button>
+          </div>
         </div>
       </div>
     </div>
