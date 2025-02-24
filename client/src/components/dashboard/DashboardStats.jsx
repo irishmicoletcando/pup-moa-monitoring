@@ -114,7 +114,7 @@ const MoaCard = ({ title, count, description }) => {
 
   return (
     <div
-      className="p-4 rounded-xl shadow-md hover:shadow-lg transition bg-white border-2 border-gray-200 dark:bg-gray-800 flex flex-col cursor-pointer"
+      className="p-4 rounded-xl shadow-md hover:shadow-lg transition bg-gradient-to-b from-white to-gray-50 border-2 border-gray-200 dark:bg-gray-800 flex flex-col cursor-pointer"
       onClick={handleClick}
     >
       <div className="flex items-center space-x-2 mb-2">
