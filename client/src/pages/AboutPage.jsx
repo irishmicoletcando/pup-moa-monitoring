@@ -49,7 +49,7 @@ const contributors = [
     initials: "AC",
   },
   {
-    name: "Nicole Dela Rosa",
+    name: "Jensen Nicole Dela Rosa",
     role: "Quality Assurance Engineer",
     image: "/about-images/Bugnon_Jelisha.jpg",
     initials: "NR",
