@@ -140,7 +140,13 @@ export default function ImportExcelModal({ isOpen, onClose, onMOAAdded }) {
 
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
           <div>
-            <label className="text-sm text-gray-600 dark:text-gray-300 mb-2">Upload Excel Files</label>
+          <label className="text-sm text-gray-600 dark:text-gray-300 mb-2">
+            Upload Excel Files  
+            <br />
+            <span className="text-red font-normal italic">
+              NOTE: Only .xlsx files are allowed. Please refer to the About page for the correct file format.
+            </span>
+          </label>
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
               <label className="flex flex-col items-center cursor-pointer">
                 <Upload className="w-8 h-8 text-gray-400" />

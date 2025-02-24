@@ -64,7 +64,7 @@ export default function LoginForm() {
 
         <div className="mb-4">
           <label htmlFor="email" className="block font-bold mb-2 text-xl md:text-base">
-            PUP Webmail
+            Email
           </label>
           <input
             type="email"
