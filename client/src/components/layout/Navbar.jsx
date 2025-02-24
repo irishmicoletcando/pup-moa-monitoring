@@ -110,7 +110,17 @@ const Navbar = () => {
           ))}
         </div>
 
-        <div className="relative w-full flex items-center justify-center mt-auto">
+        <div className="relative w-full flex flex-col items-center justify-center mt-auto">
+          <button
+            className={`w-full flex flex-col items-center justify-center p-2 transition-colors duration-200 `}
+            onClick={() => handleNavigation("/moa-monitoring-about", "about")}>
+            <Info className={` hover:scale-105 hover:text-white ${
+              activeTab === "about" ? 'text-rose-200' : 'text-slate-200 '
+            }`}>
+
+            </Info>
+          </button>
+          
           <button
             className="w-full flex items-center justify-center p-4 transition-colors duration-200 hover:bg-red"
             onClick={handleToggleProfile}
@@ -122,6 +132,7 @@ const Navbar = () => {
               roleStyles={roleStyles}
             />
           </button>
+
           
           <ProfilePopover 
             show={showProfile} 

@@ -1,4 +1,5 @@
-import Navbar from "@/components/layout/Navbar"
+import Navbar from "@/components/layout/Navbar";
+import { FileText, FileSpreadsheet } from "lucide-react";
 
 // Role color mapping
 const roleColors = {
@@ -8,7 +9,7 @@ const roleColors = {
   "Backend Developer": "bg-slate-50 text-slate-700",
   "UI/UX Designer": "bg-slate-50 text-slate-700",
   "Quality Assurance Engineer": "bg-slate-50 text-slate-700",
-}
+};
 
 const contributors = [
   {
@@ -59,40 +60,80 @@ const contributors = [
     image: "/about-images/Esguerra_Adrian.png",
     initials: "AE",
   },
+];
 
-]
-
-export default function Admin() {
+export default function About() {
   return (
     <div className="flex h-screen overflow-hidden">
       <Navbar />
 
       <div className="flex-1 overflow-x-auto">
         <div className="p-6">
-          <div className="container mx-auto p-4">
-            {/* Contributors Section */}
-            <div className="mt-4 w-[80vw] mx-auto">
-              <div className="">
-                <h2 className="text-xl md:text-3xl font-bold text-center mb-6">About</h2>
-                <p className="text-gray-600 text-justify mb-12">
-                  The PUP MOA Monitoring System is an optimized platform designed to track, manage, and maintain
-                  Memorandums of Agreement (MOAs). The developers and contributors to this system are Bachelor of
-                  Science in Computer Engineering students from Section BSCOE 4-2, Batch 2025. This system is part of
-                  the Database System Implementation (CMPE 40173) course requirement under Engr. Florinda Oquindo,
-                  Associate Professor II, Director of Alumni Relations and Career Development.
-                </p>
-              </div>
+            <div className="flex justify-between items-center mb-6">
+                <div className="flex items-center gap-2">
+                <h1 className="text-3xl font-bold">About</h1>
+                </div>
+            </div>
+            <div className="w-full">
+            {/* About Section */}
+            <div className="mt-4 w-full mx-auto">
+              <p className="text-gray-600 text-justify mb-12 bg-">
+                The PUP MOA Monitoring System is an optimized platform designed to track, manage, and maintain
+                Memorandums of Agreement (MOAs) for the Polytechnic University of the Philippines. It provides a user-friendly interface for end-users to efficiently track and manage MOAs to stay organized and ensure seamless monitoring experience. 🚀
+              </p>
+            </div>
 
+            {/* How to Use Section */}
+            <div className="mt-8 w-full mx-auto">
+              <h4 className="text-xl md:text-2xl font-bold mb-6 bg-">How to Use the PUPMMS?</h4>
+              <p className="text-gray-600 text-justify mb-6">
+                To effectively use the PUP MOA Monitoring System, refer to the guides below. The User Manual provides
+                instructions for end-users, the Developer Manual includes technical details, and the Excel file contains
+                the accurate column names in importing excel. It is recommended to use the PUPMMS Excel file as a difference in column names may likely cause issues.
+              </p>
+              <div className="flex gap-4">
+                <a
+                  href="/files/User_Manual.pdf"
+                  download
+                  className="bg-red text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-maroon"
+                >
+                  <FileText size={20} /> User Manual
+                </a>
+                <a
+                  href="/files/Developer_Manual.pdf"
+                  download
+                  className="bg-red text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-maroon"
+                >
+                  <FileText size={20} /> Developer Manual
+                </a>
+                <a
+                  href="/files/PUPMMS_Excel.xlsx"
+                  download
+                  className="bg-green-600 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-green-700"
+                >
+                  <FileSpreadsheet size={20} /> PUPMMS Excel File
+                </a>
+              </div>
+            </div>
+
+            {/* Contributors Section */}
+            <div className="mt-12 w-full mx-auto">
+              <h4 className="text-xl md:text-2xl font-bold mb-6">Contributors</h4>
+              <p className="text-gray-600 text-justify mb-6">
+              The developers and contributors to this system are Bachelor of
+                Science in Computer Engineering students from Section BSCOE 4-2, Batch 2021. This system is part of
+                the Database System Implementation (CMPE 40173) course requirement under Engr. Florinda Oquindo,
+                Associate Professor II, Director of Alumni Relations and Career Development. Below are the developers and contributors of the PUP MOA Monitoring System, along with their respective roles.
+              </p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {contributors.map((contributor, index) => (
                   <div
                     key={index}
-                    className="bg-white rounded-lg p-6 text-center transform transition-all duration-300 
-                             hover:shadow-md border border-gray-100"
+                    className="bg-gradient-to-b from-white to-gray-50 rounded-lg p-6 text-center transform transition-all duration-300 hover:shadow-md border border-gray-200"
                   >
                     <div className="flex justify-center mb-4">
-                      <div className="rounded-full p-1">
-                        <div className="relative w-32 h-32 rounded-full border-2 border-gray-200 overflow-hidden">
+                      {/* <div className="rounded-full p-1">
+                        <div className="relative w-20 h-20 rounded-full border-2 border-gray-200 overflow-hidden">
                           <img
                             src={contributor.image || "/placeholder.svg"}
                             alt={contributor.name}
@@ -106,7 +147,7 @@ export default function Admin() {
                             {contributor.initials}
                           </div>
                         </div>
-                      </div>
+                      </div> */}
                     </div>
                     <p className="font-semibold text-md mb-2 text-gray-800">{contributor.name}</p>
                     <span
@@ -122,6 +163,5 @@ export default function Admin() {
         </div>
       </div>
     </div>
-  )
+  );
 }
-
