@@ -99,6 +99,7 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
   const [selectedCourse, setSelectedCourse] = useState("");
   const [emailError, setEmailError] = useState("");
   const [availableCourses, setAvailableCourses] = useState([]);
+  const [moaTypeOptions, setMoaTypeOptions] = useState([]);
   const [formData, setFormData] = useState({
     moaName: "",
     typeOfMoa: "Practicum",
@@ -136,6 +137,56 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
     setFormData({ ...formData, [name]: newValue });
     console.log(formData.natureOfBusiness);
   };
+
+  // Determine MOA types based on user role
+  const getMoaTypeOptions = () => {
+    const role = localStorage.getItem("role");
+    
+    switch(role) {
+      case "Super Admin":
+        return [
+          { value: "Practicum", label: "Practicum" },
+          { value: "Employment", label: "Employment" },
+          { value: "Scholarship", label: "Scholarship" },
+          { value: "Research", label: "Research" }
+        ];
+      case "Research Admin":
+        return [
+          { value: "Research", label: "Research" },
+          { value: "Scholarship", label: "Scholarship" }
+        ];
+      case "Practicum Admin":
+        return [
+          { value: "Practicum", label: "Practicum" }
+        ];
+      case "Employment Admin":
+        return [
+          { value: "Employment", label: "Employment" }
+        ];
+      default:
+        return [
+          { value: "Practicum", label: "Practicum" }
+        ];
+    }
+  };
+
+  // Add this to your useEffect to load the options when component mounts
+  useEffect(() => {
+    setMoaTypeOptions(getMoaTypeOptions());
+    
+    // Set default MOA type based on role
+    const role = localStorage.getItem("role");
+    let defaultType = "Practicum";
+    
+    if (role === "Research Admin") defaultType = "Research";
+    if (role === "Employment Admin") defaultType = "Employment";
+    
+    setFormData(prev => ({
+      ...prev,
+      typeOfMoa: defaultType
+    }));
+    
+  }, []);
 
   const validateEmail = () => {
     const email = formData.emailAddress.trim();
@@ -355,10 +406,11 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
                 onChange={handleChange}
                 required
               >
-                <option value="Practicum">Practicum</option>
-                <option value="Employment">Employment</option>
-                <option value="Scholarship">Scholarship</option>
-                <option value="Research">Research</option>
+                {moaTypeOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
               </select>
             </div>
 
