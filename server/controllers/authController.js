@@ -106,20 +106,31 @@ const getAllUsers = async (req, res) => {
 // Update User
 const updateUser = async (req, res) => {
     const { id } = req.params;
-    const { firstname, lastname, email, role, contactNumber, access_other_moa } = req.body;
+    const { access_other_moa } = req.body;
 
     try {
         const query = `
-            UPDATE users SET firstname = ?, lastname = ?, email = ?, role = ?, contact_number = ?, access_other_moa = ? WHERE user_id = ?
+        UPDATE users 
+        SET access_other_moa = ? 
+        WHERE user_id = ?
         `;
 
-        const [result] = await pool.query(query, [firstname, lastname, email, role, contactNumber, access_other_moa, id]);
+        const [result] = await pool.query(query, [access_other_moa, id]);
 
-        if (result.affectedRows === 0) return res.status(404).send('User not found');
-        res.status(200).send('User updated successfully');
+        if (result.affectedRows === 0) {
+        return res.status(404).json({ message: 'User not found' });
+        }
+        
+        // Return the updated user data
+        const [updatedUser] = await pool.query(
+        'SELECT * FROM users WHERE user_id = ?', 
+        [id]
+        );
+        
+        res.status(200).json(updatedUser[0]);
     } catch (err) {
         console.error(err);
-        res.status(500).send('Error updating user');
+        res.status(500).json({ message: 'Error updating user access' });
     }
 };
 
