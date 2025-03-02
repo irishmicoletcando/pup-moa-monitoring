@@ -13,10 +13,16 @@ export default function AdminModal({ isOpen, onClose, onUserAdded }) {
     contact: "",
     password: "",
     confirmPassword: "",
+    accessOtherMoa: 0,
   });
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, type, checked, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === "checkbox" ? (checked ? 1 : 0) : value, // Handle checkbox as 1 or 0
+    });
+
 
     // if (name === "email") {
     //   const emailRegex = /^[a-zA-Z0-9._%+-]+@(pup\.edu\.ph|iskolarngbayan\.pup\.edu\.ph)$/;
@@ -34,7 +40,7 @@ export default function AdminModal({ isOpen, onClose, onUserAdded }) {
     //   }
     // }
 
-    setFormData({ ...formData, [name]: value });
+    // setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e) => {
@@ -42,7 +48,7 @@ export default function AdminModal({ isOpen, onClose, onUserAdded }) {
     
     if (isSubmitting) return;
 
-    const { firstName, lastName, email, role, contact, password, confirmPassword } = formData;
+    const { firstName, lastName, email, role, contact, password, confirmPassword, accessOtherMoa } = formData;
 
     // const emailRegex = /^[a-zA-Z0-9._%+-]+@(pup\.edu\.ph|iskolarngbayan\.pup\.edu\.ph)$/;
   
@@ -72,6 +78,7 @@ export default function AdminModal({ isOpen, onClose, onUserAdded }) {
           role,
           contactNumber: contact,
           password,
+          access_other_moa: formData.accessOtherMoa || 0,
         }),
       });
 
@@ -104,6 +111,7 @@ export default function AdminModal({ isOpen, onClose, onUserAdded }) {
         contact: "",
         password: "",
         confirmPassword: "",
+        accessOtherMoa: false,
       });
       
       onClose();
@@ -242,6 +250,20 @@ export default function AdminModal({ isOpen, onClose, onUserAdded }) {
                 required
               />
             </div>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="accessOtherMoa"
+              name="accessOtherMoa"
+              checked={formData.accessOtherMoa === 1}
+              onChange={handleChange}
+              className="w-4 h-4 text-maroon border-gray-300 rounded focus:ring-maroon"
+            />
+            <label htmlFor="hasAccessToOtherMOA" className="font-medium text-gray-700 text-sm sm:text-base">
+              Has Access to Other MOA
+            </label>
           </div>
 
           <button
