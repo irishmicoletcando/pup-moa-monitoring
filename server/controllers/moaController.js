@@ -89,8 +89,10 @@ const addMOA = async (req, res) => {
           Employment: 2,
           Scholarship: 3,
           Research: 4,
+          Others: 5,
         }[typeOfMoa];
         
+        console.log("MOA Type:", typeOfMoa, "Type ID:", type_id);
 
         if (!type_id) {
           await connection.rollback();
