@@ -7,7 +7,7 @@ require('dotenv').config({ path: '../../.env' });
 
 // Register User
 const addUser = async (req, res) => {
-    const { firstname, lastname, email, role, contactNumber, password } = req.body;
+    const { firstname, lastname, email, role, contactNumber, access_other_moa, password } = req.body;
 
     try {
         // Check if the email already exists
@@ -75,11 +75,11 @@ const addUser = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const query = `
-            INSERT INTO users (firstname, lastname, email, role, contact_number, password)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO users (firstname, lastname, email, role, contact_number, access_other_moa, password)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
         `;
 
-        await pool.query(query, [firstname, lastname, email, role, contactNumber, hashedPassword]);
+        await pool.query(query, [firstname, lastname, email, role, contactNumber, access_other_moa, hashedPassword]);
         res.status(201).send('User registered successfully');
     } catch (err) {
         // console.error(err);
@@ -91,7 +91,7 @@ const addUser = async (req, res) => {
 const getAllUsers = async (req, res) => {
     try {
         const query = `
-        SELECT user_id, firstname, lastname, email, role, contact_number, 
+        SELECT user_id, firstname, lastname, email, role, contact_number, access_other_moa,
                 CONVERT_TZ(last_login, '+00:00', '+08:00') AS last_login
         FROM users;
         `;
@@ -106,20 +106,31 @@ const getAllUsers = async (req, res) => {
 // Update User
 const updateUser = async (req, res) => {
     const { id } = req.params;
-    const { firstname, lastname, email, role, contactNumber } = req.body;
+    const { access_other_moa } = req.body;
 
     try {
         const query = `
-            UPDATE users SET firstname = ?, lastname = ?, email = ?, role = ?, contact_number = ? WHERE user_id = ?
+        UPDATE users 
+        SET access_other_moa = ? 
+        WHERE user_id = ?
         `;
 
-        const [result] = await pool.query(query, [firstname, lastname, email, role, contactNumber, id]);
+        const [result] = await pool.query(query, [access_other_moa, id]);
 
-        if (result.affectedRows === 0) return res.status(404).send('User not found');
-        res.status(200).send('User updated successfully');
+        if (result.affectedRows === 0) {
+        return res.status(404).json({ message: 'User not found' });
+        }
+        
+        // Return the updated user data
+        const [updatedUser] = await pool.query(
+        'SELECT * FROM users WHERE user_id = ?', 
+        [id]
+        );
+        
+        res.status(200).json(updatedUser[0]);
     } catch (err) {
         console.error(err);
-        res.status(500).send('Error updating user');
+        res.status(500).json({ message: 'Error updating user access' });
     }
 };
 
@@ -195,6 +206,7 @@ const login = async (req, res) => {
             role: user.role,
             token,
             lastLogin: user.last_login, // Send the updated last_login value
+            accessOtherMoa: user.access_other_moa,
             message: 'Login successful'
         });
     } catch (err) {

@@ -82,18 +82,33 @@ export default function MOATable({ isModalOpen, setIsModalOpen, isExportExcelMod
   };
 
   const role = localStorage.getItem("role");
+  const accessOtherMOA = localStorage.getItem("accessOtherMoa")
 
   const canEditOrDelete = (moa) => {
+    // Super Admin can edit/delete all MOAs
+    if (role === "Super Admin") {
+      return true;
+    }
+
+    const hasAccessToOthers = accessOtherMOA === "1";
+    
+    // Check for Practicum Admin
     if (role === "Practicum Admin") {
-      return moa.type_of_moa === "Practicum";
+      return moa.type_of_moa === "Practicum" || (hasAccessToOthers && moa.type_of_moa === "Others");
     }
+    
+    // Check for Research Admin
     if (role === "Research Admin") {
-      return moa.type_of_moa === "Research" || moa.type_of_moa === "Scholarship";
+      return moa.type_of_moa === "Research" || moa.type_of_moa === "Scholarship" || (hasAccessToOthers && moa.type_of_moa === "Others");
     }
+    
+    // Check for Employment Admin
     if (role === "Employment Admin") {
-      return moa.type_of_moa === "Employment";
+      return moa.type_of_moa === "Employment" || (hasAccessToOthers && moa.type_of_moa === "Others");
     }
-    return true;
+    
+    // Default case - no special role assigned
+    return false;
   };
 
   const canViewFile = (formData) => {

@@ -40,6 +40,7 @@ export default function LoginForm() {
       localStorage.setItem("lastname", data.lastname); // Store the last name
       localStorage.setItem("role", data.role); // Store the role
       localStorage.setItem("lastLogin", data.lastLogin); // Store last login time if needed
+      localStorage.setItem("accessOtherMoa", data.accessOtherMoa);
       toast.success("Login successful! Redirecting...", { position: "top-right" });
       setTimeout(() => navigate("/landing-page"), 2000); // Navigate after 2 seconds
     } catch (err) {
@@ -59,7 +60,7 @@ export default function LoginForm() {
 
       <form
         onSubmit={handleLoginButtonClick}
-        className="bg-white w-full md:bg-transparent md:border-none md:rounded-none p-8 md:p-0 border-2 border-gray-300 rounded-lg md:rounded-none mx-auto w-full max-w-4xl"
+        className="bg-white md:bg-transparent md:border-none p-8 md:p-0 border-2 border-gray-300 rounded-lg md:rounded-none mx-auto w-full max-w-4xl"
       >
 
         <div className="mb-4">

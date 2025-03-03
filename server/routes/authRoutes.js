@@ -6,7 +6,7 @@ const router = express.Router();
 // User Management Routes
 router.post('/add-user', addUser); // Create user
 router.get('/users', authMiddleware, getAllUsers); // Get all users
-router.put('/update-user/:id', authMiddleware, updateUser); // Update user
+router.patch('/update-user/:id', authMiddleware, updateUser); // Update user
 router.delete('/delete-user/:id', authMiddleware, deleteUser); // Delete user
 
 // Authentication Routes

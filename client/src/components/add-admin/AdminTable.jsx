@@ -70,6 +70,36 @@ export default function AdminTable({ isModalOpen, setIsModalOpen, refreshTrigger
     }, 500); 
   };
 
+  const handleAccessChange = async (userId, access) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`/api/auth/update-user/${userId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ access_other_moa: access ? 1 : 0 }),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to update access");
+      }
+  
+      const updatedUser = await response.json();
+      setUsers((prev) =>
+        prev.map((user) =>
+          user.user_id === userId
+            ? { ...user, access_other_moa: updatedUser.access_other_moa }
+            : user
+        )
+      );
+      toast.success("Access updated successfully");
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
   const openDeleteModal = (user) => {
     setDeleteModal({ isOpen: true, user, isDeleting: false });
   };
@@ -350,6 +380,14 @@ export default function AdminTable({ isModalOpen, setIsModalOpen, refreshTrigger
                         Never
                       </div>
                     )}
+                  </td>
+                  <td className="p-4 text-sm text-center">
+                    <input
+                      type="checkbox"
+                      checked={user.access_other_moa === 1}
+                      onChange={(e) => handleAccessChange(user.user_id, e.target.checked)}
+                      className="cursor-pointer"
+                    />
                   </td>
                   <td className="p-4 text-sm">
                     {/* Only show delete button if role is "Super Admin" */}

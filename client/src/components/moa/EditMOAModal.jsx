@@ -7,6 +7,7 @@ const moaTypeMapping = {
   Employment: 2,
   Scholarship: 3,
   Research: 4,
+  Others: 5,
 };
 
 export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated }) {
@@ -105,6 +106,7 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
   const [selectedBranch, setSelectedBranch] = useState("");
   const [selectedCourse, setSelectedCourse] = useState("");
   const [availableCourses, setAvailableCourses] = useState([]);
+  const [moaTypeOptions, setMoaTypeOptions] = useState([]);
   const [formData, setFormData] = useState({
     name: "",
     typeOfMoa: 1, // Default to Practicum ID (1)
@@ -126,9 +128,13 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
   // Initialize form data when modal opens
   useEffect(() => {
     if (isOpen && moaData) {
+      // Ensure typeOfMoa is a number value from the mapping
+      // Use the numeric ID from moaTypeMapping or default to 1
+      const typeOfMoaId = moaTypeMapping[moaData.type_of_moa] || 1;
+      
       setFormData({
         name: moaData.name || "",
-        typeOfMoa: moaTypeMapping[moaData.type_of_moa] || 1, // Convert type string to ID
+        typeOfMoa: typeOfMoaId, // Use the numeric ID
         natureOfBusiness: moaData.nature_of_business || "",
         address: moaData.address || "",
         firstname: moaData.firstname || "",
@@ -171,6 +177,72 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
     setFiles((prevFiles) => prevFiles.filter((_, index) => index !== indexToRemove));
   };
 
+  // Determine MOA types based on user role
+  const getMoaTypeOptions = () => {
+    const role = localStorage.getItem("role");
+    const accessOtherMOA = localStorage.getItem("accessOtherMoa");
+    const hasAccessToOthers = accessOtherMOA === "1";
+    
+    let options = [];
+    
+    switch(role) {
+      case "Super Admin":
+        options = [
+          { value: 1, label: "Practicum" },
+          { value: 2, label: "Employment" },
+          { value: 3, label: "Scholarship" },
+          { value: 4, label: "Research" }
+        ];
+        break;
+      case "Research Admin":
+        options = [
+          { value: 4, label: "Research" },
+          { value: 3, label: "Scholarship" }
+        ];
+        break;
+      case "Practicum Admin":
+        options = [
+          { value: 1, label: "Practicum" }
+        ];
+        break;
+      case "Employment Admin":
+        options = [
+          { value: 2, label: "Employment" }
+        ];
+        break;
+      default:
+        options = [
+          { value: 1, label: "Practicum" }
+        ];
+    }
+    
+    // Add "Others" option if user has access to other MOAs
+    if (hasAccessToOthers) {
+      options.push({ value: 5, label: "Others" });
+    }
+    
+    return options;
+  };
+
+  // Add this to your useEffect to load the options when component mounts
+  useEffect(() => {
+    const options = getMoaTypeOptions();
+    setMoaTypeOptions(options);
+    
+    // Set default MOA type based on role
+    const role = localStorage.getItem("role");
+    let defaultTypeId = 1; // Default to Practicum ID
+    
+    if (role === "Research Admin") defaultTypeId = 4; // Research ID
+    if (role === "Employment Admin") defaultTypeId = 2; // Employment ID
+    
+    setFormData(prev => ({
+      ...prev,
+      typeOfMoa: defaultTypeId
+    }));
+    
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
@@ -180,7 +252,7 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
       // Validate all required fields first
       const requiredFields = {
         name: formData.name,
-        type_of_moa: formData.typeOfMoa,
+        type_of_moa: parseInt(formData.typeOfMoa), // Ensure it's a number
         nature_of_business: formData.natureOfBusiness,
         address: formData.address,
         firstname: formData.firstname,
@@ -189,7 +261,7 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
         contact_number: formData.contactNumber,
         email_address: formData.email,
         status: formData.status,
-        years_validity: formData.validity, // Changed from validity to years_validity
+        years_validity: formData.validity,
         date_notarized: formData.dateNotarized,
         expiry_date: null, // Will be calculated later
         year_submitted: null, // Will be calculated from date_notarized
@@ -235,7 +307,7 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
     
       const dataToSend = {
         name: formData.name,
-        type_of_moa: parseInt(formData.typeOfMoa),
+        type_of_moa: parseInt(formData.typeOfMoa), // Ensure it's a number
         nature_of_business: formData.natureOfBusiness,
         address: formData.address,
         firstname: formData.firstname,
@@ -354,22 +426,26 @@ export default function EditMOAModal({ isOpen, onClose, moaData, onMOAUpdated })
 
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="typeOfMoa" className="block font-bold mb-2 text-sm sm:text-base">Type of MOA</label>
-                <select
-                  id="typeOfMoa"
-                  name="typeOfMoa"
-                  className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base"
-                  value={formData.typeOfMoa}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, typeOfMoa: Number(e.target.value) }))}
-                  required
-                >
-                <option value={1}>Practicum</option>
-                <option value={2}>Employment</option>
-                <option value={3}>Scholarship</option>
-                <option value={4}>Research</option>
+          <div>
+              <label htmlFor="typeOfMoa" className="block font-bold mb-2 text-sm sm:text-base">
+                Type of MOA
+              </label>
+              <select
+                id="typeOfMoa"
+                name="typeOfMoa"
+                className="border-gray-300 border px-3 py-2 w-full rounded-md text-sm sm:text-base"
+                value={formData.typeOfMoa}
+                onChange={handleChange}
+                required
+              >
+                {moaTypeOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
               </select>
             </div>
+
             <div>
               <label htmlFor="natureOfBusiness" className="block font-bold mb-2 text-sm sm:text-base">Nature of Business</label>
               <input type="text" id="natureOfBusiness" name="natureOfBusiness" className="border-gray-300 border px-3 py-2 w-full rounded-md" value={formData.natureOfBusiness} onChange={handleChange} required />
