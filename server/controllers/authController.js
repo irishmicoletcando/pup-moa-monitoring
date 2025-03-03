@@ -206,6 +206,7 @@ const login = async (req, res) => {
             role: user.role,
             token,
             lastLogin: user.last_login, // Send the updated last_login value
+            accessOtherMoa: user.access_other_moa,
             message: 'Login successful'
         });
     } catch (err) {

@@ -48,7 +48,7 @@ export default function AdminModal({ isOpen, onClose, onUserAdded }) {
     
     if (isSubmitting) return;
 
-    const { firstName, lastName, email, role, contact, password, confirmPassword, accessOtherMoa } = formData;
+    const { firstName, lastName, email, role, contact, password, confirmPassword } = formData;
 
     // const emailRegex = /^[a-zA-Z0-9._%+-]+@(pup\.edu\.ph|iskolarngbayan\.pup\.edu\.ph)$/;
   
