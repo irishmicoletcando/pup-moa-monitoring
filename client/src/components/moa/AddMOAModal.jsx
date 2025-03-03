@@ -141,33 +141,48 @@ export default function AddMOAModal({ isOpen, onClose, onMOAAdded }) {
   // Determine MOA types based on user role
   const getMoaTypeOptions = () => {
     const role = localStorage.getItem("role");
+    const accessOtherMOA = localStorage.getItem("accessOtherMoa");
+    const hasAccessToOthers = accessOtherMOA === "1";
+    
+    let options = [];
     
     switch(role) {
       case "Super Admin":
-        return [
+        options = [
           { value: "Practicum", label: "Practicum" },
           { value: "Employment", label: "Employment" },
           { value: "Scholarship", label: "Scholarship" },
           { value: "Research", label: "Research" }
         ];
+        break;
       case "Research Admin":
-        return [
+        options = [
           { value: "Research", label: "Research" },
           { value: "Scholarship", label: "Scholarship" }
         ];
+        break;
       case "Practicum Admin":
-        return [
+        options = [
           { value: "Practicum", label: "Practicum" }
         ];
+        break;
       case "Employment Admin":
-        return [
+        options = [
           { value: "Employment", label: "Employment" }
         ];
+        break;
       default:
-        return [
+        options = [
           { value: "Practicum", label: "Practicum" }
         ];
     }
+    
+    // Add "Others" option if user has access to other MOAs
+    if (hasAccessToOthers) {
+      options.push({ value: "Others", label: "Others" });
+    }
+    
+    return options;
   };
 
   // Add this to your useEffect to load the options when component mounts
