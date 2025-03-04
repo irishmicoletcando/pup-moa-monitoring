@@ -382,7 +382,26 @@ export default function AdminTable({ isModalOpen, setIsModalOpen, refreshTrigger
                     )}
                   </td>
                   <td className="p-4 text-sm text-center">
-                    {userRole === "Super Admin" && (
+                    {(userRole === "Super Admin" && user.role === "Super Admin") && (
+                      <div className="flex justify-center items-center w-full">
+                        <label className="relative inline-flex items-center cursor-not-allowed">
+                          <input
+                            type="checkbox"
+                            checked={true} // Always ON
+                            disabled // Prevent changes
+                            className="sr-only peer"
+                          />
+                          <div className="w-9 h-5 bg-maroon opacity-50 rounded-full peer 
+                              after:content-[''] after:absolute after:top-0.5 after:left-0.5 
+                              after:bg-white after:border-gray-300 after:border 
+                              after:rounded-full after:h-4 after:w-4 after:transition-all 
+                              peer-checked:after:translate-x-full peer-checked:after:bg-white">
+                          </div>
+                        </label>
+                      </div>
+                    )}
+
+                    {userRole === "Super Admin" && user.role !== "Super Admin" && (
                       <div className="flex justify-center items-center w-full">
                         <label className="relative inline-flex items-center cursor-pointer">
                           <input
@@ -396,12 +415,14 @@ export default function AdminTable({ isModalOpen, setIsModalOpen, refreshTrigger
                               after:content-[''] after:absolute after:top-0.5 after:left-0.5 
                               after:bg-white after:border-gray-300 after:border 
                               after:rounded-full after:h-4 after:w-4 after:transition-all 
-                              peer-checked:after:translate-x-full">
+                              peer-checked:after:translate-x-full peer-checked:after:bg-white">
                           </div>
                         </label>
                       </div>
                     )}
                   </td>
+
+
                   <td className="p-4 text-sm">
                     {/* Only show delete button if role is "Super Admin" */}
                     {userRole === "Super Admin" && (
