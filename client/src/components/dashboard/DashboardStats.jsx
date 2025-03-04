@@ -127,7 +127,7 @@ const MoaCard = ({ title, count, description }) => {
         <p className="text-md font-semibold text-gray-900 dark:text-white">{title}</p>
       </div>
       <div className="p-2 rounded-lg flex flex-row justify-center items-center space-x-4">
-        <p className="text-3xl font-bold text-slate-900 dark:text-white">{count}</p>
+        <p className="text-base md:text-xl lg:text-2xl xl:text-3xl font-bold text-slate-900 dark:text-white">{count}</p>
       </div>
       <p className="text-xs text-gray-600 dark:text-gray-300 font-semibold">{description}</p>
     </div>
