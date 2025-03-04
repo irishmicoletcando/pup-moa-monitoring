@@ -170,7 +170,7 @@ export default function MOAHeader({
       <th className="p-4 text-left text-sm font-medium min-w-[80px] max-w-xs break-words whitespace-normal">
         <FilterDropdown
           type="Type of MOA"
-          options={["Practicum", "Research", "Employment", "Scholarship"]}
+          options={["Practicum", "Research", "Employment", "Scholarship", "Others"]}
           selectedValues={filters.moaTypes}
           onChange={(value) => onFilterChange("moaTypes", value)}
         />
