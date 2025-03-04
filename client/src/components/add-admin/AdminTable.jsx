@@ -382,14 +382,24 @@ export default function AdminTable({ isModalOpen, setIsModalOpen, refreshTrigger
                     )}
                   </td>
                   <td className="p-4 text-sm text-center">
-                    {/* Only show checkbox if role is "Super Admin" */}
                     {userRole === "Super Admin" && (
-                    <input
-                      type="checkbox"
-                      checked={user.access_other_moa === 1}
-                      onChange={(e) => handleAccessChange(user.user_id, e.target.checked)}
-                      className="cursor-pointer"
-                    />
+                      <div className="flex justify-center items-center w-full">
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={user.access_other_moa === 1}
+                            onChange={(e) => handleAccessChange(user.user_id, e.target.checked)}
+                            className="sr-only peer"
+                          />
+                          <div className="w-9 h-5 bg-gray-300 rounded-full peer 
+                              peer-checked:bg-maroon 
+                              after:content-[''] after:absolute after:top-0.5 after:left-0.5 
+                              after:bg-white after:border-gray-300 after:border 
+                              after:rounded-full after:h-4 after:w-4 after:transition-all 
+                              peer-checked:after:translate-x-full">
+                          </div>
+                        </label>
+                      </div>
                     )}
                   </td>
                   <td className="p-4 text-sm">

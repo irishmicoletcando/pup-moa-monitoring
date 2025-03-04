@@ -10,7 +10,7 @@ export default function AdminHeader() {
       <th className="p-4 text-left text-sm font-medium">Last Login</th>
       {/* Only show checkbox if role is "Super Admin" */}
       {userRole === "Super Admin" && (
-        <th className="p-4 text-left text-sm font-medium">Access Other MOA?</th>
+        <th className="p-4 text-center text-sm font-medium">Access Other MOA?</th>
       )}
       <th className="p-4 text-left text-sm font-medium"></th>
     </tr>
