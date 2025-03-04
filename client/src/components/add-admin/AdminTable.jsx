@@ -382,12 +382,15 @@ export default function AdminTable({ isModalOpen, setIsModalOpen, refreshTrigger
                     )}
                   </td>
                   <td className="p-4 text-sm text-center">
+                    {/* Only show checkbox if role is "Super Admin" */}
+                    {userRole === "Super Admin" && (
                     <input
                       type="checkbox"
                       checked={user.access_other_moa === 1}
                       onChange={(e) => handleAccessChange(user.user_id, e.target.checked)}
                       className="cursor-pointer"
                     />
+                    )}
                   </td>
                   <td className="p-4 text-sm">
                     {/* Only show delete button if role is "Super Admin" */}
