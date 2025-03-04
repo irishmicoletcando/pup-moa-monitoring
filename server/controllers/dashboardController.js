@@ -17,7 +17,8 @@ const getMOACountByType = async (req, res) => {
             1: "practicum",
             2: "employment",
             3: "scholarship",
-            4: "research"
+            4: "research",
+            5: "others"
         };
 
         // Convert results into a dictionary

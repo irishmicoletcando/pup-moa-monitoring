@@ -24,6 +24,7 @@ export function BarGraph({ stats }) {
     research: { label: "Research", color: "hsla(43, 74%, 49%, 1)" },
     practicum: { label: "Practicum", color: "hsla(0, 100%, 25%, 1)" },
     scholarship: { label: "Scholarship", color: "hsl(var(--chart-4))" },
+    others:{ label: "Others", color: "rgb(255, 214, 90)" },
   };
 
   const chartData = [
@@ -31,6 +32,7 @@ export function BarGraph({ stats }) {
     { moaType: "research", moaNumber: stats.research, fill: "var(--color-research)" },
     { moaType: "practicum", moaNumber: stats.practicum, fill: "var(--color-practicum)" },
     { moaType: "scholarship", moaNumber: stats.scholarship, fill: "var(--color-scholarship)" },
+    { moaType: "others", moaNumber: stats.others, fill: "var(--color-others)" },
   ].sort((a, b) => b.moaNumber - a.moaNumber);
 
   return (
@@ -66,8 +68,6 @@ export function BarGraph({ stats }) {
                   {...props}
                   fillOpacity={0.8}
                   stroke={props.payload.fill}
-                  strokeDasharray={4}
-                  strokeDashoffset={4}
                 />
               )}
               onMouseMove={(_, index) => setActiveIndex(index)} // Set active bar on click
