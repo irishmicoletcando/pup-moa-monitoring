@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { PieGraph } from './PieGraph';
 import { BarGraph } from './BarGraph';
-import { Briefcase, Building2, GraduationCap, FileText } from "lucide-react";
+import { Briefcase, Building2, GraduationCap, FileText, CircleEllipsis} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useMoaFilterContext, MoaFilterProvider } from "../context/MoaFilterContext";
 
@@ -10,7 +10,8 @@ export default function DashboardStats() {
     practicum: 0,
     employment: 0,
     scholarship: 0,
-    research: 0
+    research: 0,
+    others: 0
   });
   
   const [statusStats, setStatusStats] = useState({
@@ -31,6 +32,7 @@ export default function DashboardStats() {
         }
 
         const data = await response.json();
+        console.log(data);
 
         setTypeStats(data);
       } catch (error) {
@@ -53,7 +55,6 @@ export default function DashboardStats() {
         }
 
         const data = await response.json();
-
         setStatusStats(data);
       } catch (error) {
         // console.error('Error fetching MOA status stats:', error);
@@ -84,6 +85,7 @@ export default function DashboardStats() {
           <MoaCard title="Research" count={typeStats.research} description="Total Number" />
           <MoaCard title="Practicum" count={typeStats.practicum} description="Total Number" />
           <MoaCard title="Scholarship" count={typeStats.scholarship} description="Total Number" />
+          <MoaCard title="Others" count={typeStats.others} description="Total Number" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <BarGraph stats={typeStats} />
@@ -99,6 +101,7 @@ const iconMap = {
   Research: <FileText className="text-white" size={20} />,
   Practicum: <Building2 className="text-white" size={20} />,
   Scholarship: <GraduationCap className="text-white" size={20} />,
+  Others: <CircleEllipsis className="text-white" size={20} />,
 };
 
 
