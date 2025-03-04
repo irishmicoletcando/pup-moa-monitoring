@@ -80,7 +80,7 @@ export default function DashboardStats() {
     <main className="flex-1 px-6 py-5 w-full">
       <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
       <div className="grid grid-cols-1 gap-4">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 h-full">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 h-full">
           <MoaCard title="Employment" count={typeStats.employment} description="Total Number"/>
           <MoaCard title="Research" count={typeStats.research} description="Total Number" />
           <MoaCard title="Practicum" count={typeStats.practicum} description="Total Number" />
@@ -117,19 +117,19 @@ const MoaCard = ({ title, count, description }) => {
 
   return (
     <div
-      className="p-4 rounded-xl shadow-md hover:shadow-lg transition bg-gradient-to-b from-white to-gray-50 border-2 border-gray-200 dark:bg-gray-800 flex flex-col cursor-pointer"
+      className="p-4 rounded hover:shadow-md transition bg-gradient-to-b from-white to-gray-50 border-2 border-gray-200 dark:bg-gray-800 flex flex-col cursor-pointer"
       onClick={handleClick}
     >
       <div className="flex items-center space-x-2 mb-2">
-        <div className="p-2 rounded-lg bg-gradient-to-tl from-maroon to-rose-900 flex items-center justify-center">
+        <div className="p-2 rounded bg-gradient-to-tl from-maroon to-rose-900 flex items-center justify-center">
           {iconMap[title] || <FileText className="text-white" size={20} />}
         </div>
         <p className="text-md font-semibold text-gray-900 dark:text-white">{title}</p>
       </div>
       <div className="p-2 rounded-lg flex flex-row justify-center items-center space-x-4">
-        <p className="text-4xl font-bold text-gray-900 dark:text-white">{count}</p>
+        <p className="text-3xl font-bold text-slate-900 dark:text-white">{count}</p>
       </div>
-      <p className="text-sm text-gray-600 dark:text-gray-300 font-semibold">{description}</p>
+      <p className="text-xs text-gray-600 dark:text-gray-300 font-semibold">{description}</p>
     </div>
   );
 };
