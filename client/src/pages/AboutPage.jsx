@@ -93,7 +93,7 @@ export default function About() {
               </p>
               <div className="flex flex-wrap gap-4">
                 <a
-                  href="/files/PUPMMS-User-Manual.pdf"
+                  href="/files/PUP-MMS-User-Manual.pdf"
                   download
                   className="bg-red text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-maroon w-full sm:w-auto justify-center"
                 >
