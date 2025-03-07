@@ -69,12 +69,12 @@ export default function About() {
 
       <div className="flex-1 overflow-x-auto">
         <div className="p-6">
-            <div className="flex justify-between items-center mb-6">
-                <div className="flex items-center gap-2">
-                <h1 className="text-3xl font-bold">About</h1>
-                </div>
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center gap-2">
+              <h1 className="text-3xl font-bold">About</h1>
             </div>
-            <div className="w-full">
+          </div>
+          <div className="w-full">
             {/* About Section */}
             <div className="mt-4 w-full mx-auto">
               <p className="text-gray-600 text-justify mb-12 bg-">
@@ -93,27 +93,27 @@ export default function About() {
               </p>
               <div className="flex flex-wrap gap-4">
                 <a
-                    href="/files/PUPMMS-User-Manual.pdf"
-                    download
-                    className="bg-red text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-maroon w-full sm:w-auto justify-center"
+                  href="/files/PUPMMS-User-Manual.pdf"
+                  download
+                  className="bg-red text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-maroon w-full sm:w-auto justify-center"
                 >
-                    <FileText size={20} /> User Manual
+                  <FileText size={20} /> User Manual
                 </a>
-                <a
+                {/* <a
                     href="/files/Developer_Manual.pdf"
                     download
                     className="bg-red text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-maroon w-full sm:w-auto justify-center"
                 >
                     <FileText size={20} /> Developer Manual
-                </a>
+                </a> */}
                 <a
-                    href="/files/PUPMMS_Excel.xlsx"
-                    download
-                    className="bg-green-600 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-green-700 w-full sm:w-auto justify-center"
+                  href="/files/PUPMMS_Excel.xlsx"
+                  download
+                  className="bg-green-600 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-green-700 w-full sm:w-auto justify-center"
                 >
-                    <FileSpreadsheet size={20} /> PUPMMS Excel File
+                  <FileSpreadsheet size={20} /> PUPMMS Excel File
                 </a>
-                </div>
+              </div>
 
             </div>
 
@@ -121,7 +121,7 @@ export default function About() {
             <div className="mt-12 mb-12 w-full mx-auto">
               <h4 className="text-xl md:text-2xl font-bold mb-6">Contributors</h4>
               <p className="text-gray-600 text-justify mb-6">
-              The developers and contributors to this system are Bachelor of
+                The developers and contributors to this system are Bachelor of
                 Science in Computer Engineering students from Section BSCOE 4-2, Batch 2021. This system is part of
                 the Database System Implementation (CMPE 40173) course requirement under Engr. Florinda Oquindo,
                 Associate Professor II, Director of Alumni Relations and Career Development. Below are the developers and contributors of the PUP MOA Monitoring System, along with their respective roles.
